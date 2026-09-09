@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John Violaris — Motoring Defence Solicitor | Full Site Demo v1.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════ */
+:root{
+  --navy:#0D1B2A; --navy-mid:#162235; --navy-light:#1E3050;
+  --gold:#C9A84C; --gold-lt:#E8C97A; --gold-pale:#F5EDD6;
+  --white:#FAFAF8; --off:#F2F0EB;
+  --grey:#7A808F; --grey-lt:#E4E2DD;
+  --red-pale:rgba(181,52,28,.09); --red-bdr:rgba(181,52,28,.26);
+  --green-pale:rgba(46,125,50,.08); --green-bdr:rgba(46,125,50,.25);
+  --text:#252525;
+  --font-d:'Playfair Display',Georgia,serif;
+  --font-b:'DM Sans',sans-serif;
+  --r:3px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:var(--font-b);background:var(--navy);color:var(--text);font-size:15px;line-height:1.6;overflow:hidden;}
+
+/* ═══════════════════════════════════════
+   CHROME — OUTER FRAME
+═══════════════════════════════════════ */
+.chrome{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  grid-template-rows:52px 1fr;
+  height:100vh;
+  width:100vw;
+}
+
+/* TOP BAR */
+.top-bar{
+  grid-column:1/3;
+  background:#0A1520;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+  border-bottom:1px solid rgba(201,168,76,.18);
+  position:relative;
+  z-index:100;
+}
+.tb-left{display:flex;align-items:center;gap:14px;}
+.tb-dots{display:flex;gap:6px;}
+.tb-dot{width:11px;height:11px;border-radius:50%;}
+.tb-dot.red{background:#FF5F57;}
+.tb-dot.amber{background:#FFBD2E;}
+.tb-dot.green{background:#28C840;}
+.tb-brand{color:var(--gold);font-family:var(--font-d);font-size:14px;font-weight:700;}
+.tb-url{
+  position:absolute;left:50%;transform:translateX(-50%);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:5px;
+  padding:5px 16px;
+  display:flex;align-items:center;gap:8px;
+  min-width:280px;
+  justify-content:center;
+}
+.tb-url .lock{font-size:10px;color:var(--gold);opacity:.7;}
+.tb-url .addr{font-size:12px;color:rgba(255,255,255,.5);letter-spacing:.3px;}
+.tb-badge{
+  background:rgba(201,168,76,.12);
+  border:1px solid rgba(201,168,76,.3);
+  color:var(--gold-lt);
+  font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 10px;border-radius:3px;
+}
+
+/* LEFT NAV */
+.left-nav{
+  background:#0C1825;
+  border-right:1px solid rgba(201,168,76,.1);
+  overflow-y:auto;
+  padding:20px 0 20px;
+}
+.left-nav::-webkit-scrollbar{width:3px;}
+.left-nav::-webkit-scrollbar-track{background:transparent;}
+.left-nav::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:3px;}
+
+.nav-brand{padding:0 20px 18px;border-bottom:1px solid rgba(201,168,76,.1);margin-bottom:16px;}
+.nav-brand .nb-init{
+  width:36px;height:36px;background:var(--gold);border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-d);font-size:14px;font-weight:900;color:var(--navy);
+  margin-bottom:9px;
+}
+.nav-brand .nb-name{font-family:var(--font-d);color:var(--gold);font-size:15px;font-weight:700;line-height:1.2;}
+.nav-brand .nb-sub{color:rgba(255,255,255,.3);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+
+.nav-section-label{
+  padding:0 20px;
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(201,168,76,.5);margin-bottom:6px;margin-top:14px;
+}
+
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 20px;
+  cursor:pointer;
+  border-left:2px solid transparent;
+  transition:all .15s;
+  position:relative;
+}
+.nav-item:hover{background:rgba(201,168,76,.06);border-left-color:rgba(201,168,76,.3);}
+.nav-item.active{background:rgba(201,168,76,.1);border-left-color:var(--gold);}
+.nav-item .ni-icon{font-size:14px;width:20px;text-align:center;flex-shrink:0;}
+.nav-item .ni-text{font-size:12.5px;color:rgba(255,255,255,.55);transition:color .15s;}
+.nav-item:hover .ni-text{color:rgba(255,255,255,.8);}
+.nav-item.active .ni-text{color:var(--gold-lt);font-weight:600;}
+.nav-item .ni-badge{
+  margin-left:auto;
+  background:rgba(201,168,76,.15);
+  color:var(--gold);
+  font-size:9px;font-weight:700;letter-spacing:.5px;
+  padding:2px 6px;border-radius:3px;
+  flex-shrink:0;
+}
+
+.nav-divider{height:1px;background:rgba(201,168,76,.08);margin:12px 0;}
+
+.nav-domain-box{
+  margin:16px 14px 0;
+  background:rgba(201,168,76,.05);
+  border:1px solid rgba(201,168,76,.12);
+  border-radius:5px;
+  padding:12px;
+}
+.nav-domain-box h6{color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:700;}
+.nav-domain-box p{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;}
+.nav-domain-box .dm{color:var(--gold-lt);font-weight:600;}
+
+/* MAIN VIEWPORT */
+.viewport{
+  overflow-y:auto;
+  background:var(--white);
+  position:relative;
+}
+.viewport::-webkit-scrollbar{width:6px;}
+.viewport::-webkit-scrollbar-track{background:var(--grey-lt);}
+.viewport::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;opacity:.5;}
+
+/* PAGE PANELS */
+.page-panel{display:none;}
+.page-panel.active{display:block;}
+
+/* ═══════════════════════════════════════
+   SHARED SITE COMPONENTS
+═══════════════════════════════════════ */
+.slbl{display:inline-flex;align-items:center;gap:7px;font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:14px;}
+.slbl::before{content:'';display:block;width:20px;height:1px;background:var(--gold);}
+.btn-g{background:var(--gold);color:var(--navy);padding:12px 24px;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;border-radius:var(--r);text-decoration:none;display:inline-block;border:none;cursor:pointer;}
+.btn-o{background:transparent;color:var(--white);padding:12px 24px;font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;border-radius:var(--r);text-decoration:none;display:inline-block;border:1px solid rgba(250,250,248,.28);}
+
+/* SITE HEADER */
+.site-hdr{background:var(--navy);padding:0 48px;display:flex;justify-content:space-between;align-items:center;height:68px;position:relative;}
+.site-hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent 60%);}
+.logo{display:flex;align-items:center;gap:11px;}
+.logo-i{width:36px;height:36px;background:var(--gold);border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:14px;font-weight:900;color:var(--navy);}
+.logo-t .ln{font-family:var(--font-d);color:var(--white);font-size:14.5px;font-weight:700;line-height:1.1;}
+.logo-t .ls{color:var(--gold);font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:500;}
+.hnav{display:flex;align-items:center;gap:20px;}
+.hnav a{color:rgba(250,250,248,.65);text-decoration:none;font-size:12.5px;font-weight:500;cursor:pointer;}
+.hcta{background:var(--gold);color:var(--navy)!important;padding:8px 16px;border-radius:var(--r);font-weight:700!important;font-size:11px!important;letter-spacing:.8px;text-transform:uppercase;}
+
+/* CTA BANNER */
+.cta-ban{background:var(--navy);padding:48px;display:flex;justify-content:space-between;align-items:center;gap:28px;}
+.cta-ban h2{font-family:var(--font-d);font-size:26px;color:var(--white);font-weight:700;max-width:480px;line-height:1.2;}
+.cta-ban h2 em{color:var(--gold);font-style:italic;}
+.cta-r{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;}
+.phone-big{color:var(--gold);font-family:var(--font-d);font-size:20px;font-weight:700;}
+
+/* FOOTER */
+.ftr{background:#07101A;padding:36px 48px 22px;}
+.ftr-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:28px;margin-bottom:22px;}
+.ftr-col h5{color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:10px;}
+.ftr-col p,.ftr-col a{color:rgba(250,250,248,.38);font-size:12px;line-height:1.65;text-decoration:none;display:block;margin-bottom:5px;}
+.ftr-bot{border-top:1px solid rgba(255,255,255,.05);padding-top:14px;display:flex;justify-content:space-between;align-items:center;}
+.ftr-bot p{color:rgba(250,250,248,.22);font-size:11px;}
+.sra-pill{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);color:var(--gold);font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:4px 9px;border-radius:3px;font-weight:700;}
+
+/* ═══════════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════════ */
+.hero{background:var(--navy);padding:72px 48px 64px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:480px;height:480px;border-radius:50%;border:70px solid rgba(201,168,76,.04);}
+.hero::after{content:'';position:absolute;bottom:20px;right:48px;width:160px;height:160px;border-radius:50%;border:1px solid rgba(201,168,76,.1);}
+.hero-in{max-width:680px;position:relative;z-index:2;}
+.hero h1{font-family:var(--font-d);font-size:50px;font-weight:900;color:var(--white);line-height:1.08;margin-bottom:18px;}
+.hero h1 em{color:var(--gold);font-style:italic;}
+.hero-sub{color:rgba(250,250,248,.65);font-size:16px;line-height:1.78;max-width:560px;margin-bottom:32px;}
+.hero-acts{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:44px;}
+.trust-row{display:flex;gap:24px;align-items:center;flex-wrap:wrap;}
+.ti{display:flex;align-items:center;gap:8px;}
+.ti .tn{font-family:var(--font-d);font-size:20px;font-weight:700;color:var(--gold);}
+.ti .tl{font-size:10.5px;color:rgba(250,250,248,.48);line-height:1.3;}
+.tdiv{width:1px;height:26px;background:rgba(201,168,76,.2);}
+
+.off-strip{background:var(--navy-mid);padding:0 48px;display:flex;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.04);}
+.off-tag{padding:12px 18px;border-right:1px solid rgba(255,255,255,.05);color:rgba(250,250,248,.45);font-size:11.5px;cursor:pointer;}
+.off-tag.ft{color:var(--gold-lt);}
+
+.split{display:grid;grid-template-columns:1fr 1fr;min-height:400px;}
+.split-l{padding:52px 48px;background:var(--off);display:flex;flex-direction:column;justify-content:center;}
+.split-r{padding:52px 48px;background:var(--navy-mid);display:flex;flex-direction:column;justify-content:center;}
+.split-l h2{font-family:var(--font-d);font-size:28px;color:var(--navy);font-weight:700;line-height:1.2;margin-bottom:14px;}
+.split-r h2{font-family:var(--font-d);font-size:28px;color:var(--white);font-weight:700;line-height:1.2;margin-bottom:14px;}
+.split-l h2 em{color:var(--gold);font-style:italic;}
+.split-r h2 em{color:var(--gold);font-style:italic;}
+.split-l p{color:var(--grey);font-size:13.5px;line-height:1.75;margin-bottom:11px;}
+.split-r p{color:rgba(250,250,248,.6);font-size:13.5px;line-height:1.75;margin-bottom:11px;}
+.sig{font-family:var(--font-d);font-style:italic;font-size:22px;color:var(--gold);margin-top:18px;}
+
+.sec{padding:52px 48px;background:var(--white);}
+.sec.alt{background:var(--off);}
+.sec-hd{margin-bottom:28px;}
+.sec-hd h2{font-family:var(--font-d);font-size:30px;color:var(--navy);font-weight:700;}
+.sec-hd p{color:var(--grey);font-size:13.5px;margin-top:8px;max-width:580px;line-height:1.7;}
+
+.srv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.srv-card{background:var(--white);border:1px solid var(--grey-lt);border-radius:5px;padding:24px 20px;cursor:pointer;transition:all .2s;}
+.srv-card:hover{border-color:var(--gold);background:var(--navy);box-shadow:0 4px 20px rgba(201,168,76,.1);transform:translateY(-2px);}
+.srv-card:hover h3{color:var(--white);}
+.srv-card:hover p{color:rgba(250,250,248,.55);}
+.srv-card.ft{background:var(--navy);border-color:var(--gold);}
+.srv-icon{width:40px;height:40px;background:var(--gold-pale);border-radius:4px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px;}
+.srv-card.ft .srv-icon{background:rgba(201,168,76,.15);}
+.srv-card h3{font-family:var(--font-d);font-size:15.5px;color:var(--navy);margin-bottom:7px;}
+.srv-card.ft h3{color:var(--white);}
+.srv-card p{font-size:12.5px;color:var(--grey);line-height:1.6;}
+.srv-card.ft p{color:rgba(250,250,248,.55);}
+.srv-link{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--gold);text-decoration:none;margin-top:10px;}
+
+.ps-sec{background:var(--off);padding:52px 48px;}
+.ps-inner{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;}
+.ps-inner h2{font-family:var(--font-d);font-size:28px;color:var(--navy);font-weight:700;line-height:1.18;margin-bottom:12px;}
+.ps-inner h2 em{color:var(--gold);font-style:italic;}
+.ps-inner p{color:var(--grey);font-size:13.5px;line-height:1.75;margin-bottom:10px;}
+.ps-stat{font-family:var(--font-d);font-size:44px;font-weight:900;color:var(--gold);line-height:1;}
+.ps-stat-lbl{font-size:12.5px;color:var(--navy);font-weight:600;margin-top:3px;}
+.ps-stats{display:flex;gap:28px;margin-top:18px;}
+.quote-block{background:rgba(13,27,42,.05);border-radius:5px;padding:18px;border-left:3px solid var(--gold);margin-top:20px;}
+.quote-block p{font-size:13px;color:var(--navy);font-style:italic;line-height:1.75;}
+.quote-block cite{font-size:11.5px;color:var(--grey);margin-top:8px;display:block;font-style:normal;font-weight:600;}
+
+.steps-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+.steps-row::before{content:'';position:absolute;top:24px;left:12%;right:12%;height:1px;background:var(--gold);opacity:.22;}
+.step-item{text-align:center;padding:0 16px;position:relative;z-index:1;}
+.step-n{width:48px;height:48px;background:var(--navy);border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--gold);}
+.step-item h4{font-family:var(--font-d);font-size:13.5px;color:var(--navy);margin-bottom:6px;}
+.step-item p{font-size:12px;color:var(--grey);line-height:1.6;}
+
+.testi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.testi{background:var(--off);border-left:3px solid var(--gold);padding:20px;border-radius:0 5px 5px 0;}
+.stars{color:var(--gold);font-size:12px;margin-bottom:8px;}
+.testi blockquote{font-size:12.5px;color:var(--text);line-height:1.7;margin-bottom:10px;font-style:italic;}
+.testi-name{font-size:11.5px;font-weight:700;color:var(--navy);}
+.testi-case{font-size:10.5px;color:var(--grey);}
+
+/* ═══════════════════════════════════════
+   ABOUT PAGE
+═══════════════════════════════════════ */
+.about-hero{background:var(--navy);padding:56px 48px;display:grid;grid-template-columns:1fr 280px;gap:40px;align-items:start;}
+.about-hero h1{font-family:var(--font-d);font-size:38px;color:var(--white);font-weight:700;line-height:1.12;margin-bottom:16px;}
+.about-hero h1 em{color:var(--gold);font-style:italic;}
+.about-hero p{color:rgba(250,250,248,.6);font-size:14px;line-height:1.78;margin-bottom:11px;}
+.cred-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+.cred-pill{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.22);border-radius:20px;padding:5px 13px;color:var(--gold-lt);font-size:11.5px;font-weight:500;}
+.photo-ph{width:100%;aspect-ratio:3/4;background:linear-gradient(160deg,var(--navy-mid),rgba(201,168,76,.07));border-radius:4px;border:1px solid rgba(201,168,76,.15);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;}
+.photo-ph .pic{font-size:36px;color:rgba(201,168,76,.2);}
+.photo-ph span{color:rgba(250,250,248,.18);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;}
+
+.about-body{padding:48px;background:var(--white);}
+.about-body h2{font-family:var(--font-d);font-size:26px;color:var(--navy);font-weight:700;margin-bottom:18px;}
+.about-cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px;}
+.about-col h3{font-family:var(--font-d);font-size:16px;color:var(--navy);margin-bottom:8px;font-weight:700;}
+.about-col p{font-size:13px;color:var(--grey);line-height:1.75;margin-bottom:8px;}
+
+.timeline{padding:48px;background:var(--off);}
+.tl-items{max-width:620px;margin-top:24px;}
+.tl-item{display:grid;grid-template-columns:84px 1fr;gap:20px;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--grey-lt);}
+.tl-item:last-child{border-bottom:none;}
+.tl-yr{font-family:var(--font-d);font-size:18px;font-weight:700;color:var(--gold);padding-top:2px;}
+.tl-c h4{font-weight:600;color:var(--navy);margin-bottom:3px;font-size:14px;}
+.tl-c p{color:var(--grey);font-size:12.5px;line-height:1.6;}
+
+/* ═══════════════════════════════════════
+   FEES PAGE
+═══════════════════════════════════════ */
+.fees-hero{background:var(--navy);padding:52px 48px;}
+.fees-hero h1{font-family:var(--font-d);font-size:38px;color:var(--white);font-weight:700;max-width:480px;line-height:1.12;}
+.fees-hero h1 em{color:var(--gold);font-style:italic;}
+.fees-hero p{color:rgba(250,250,248,.58);margin-top:12px;font-size:14.5px;max-width:540px;line-height:1.75;}
+.fees-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:44px;background:var(--off);}
+.fee-card{background:var(--white);border-radius:7px;border:1px solid var(--grey-lt);overflow:hidden;transition:all .2s;}
+.fee-card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 4px 24px rgba(201,168,76,.1);}
+.fee-hd{background:var(--navy);padding:17px 22px 13px;}
+.fee-hd h3{font-family:var(--font-d);color:var(--white);font-size:16px;margin-bottom:3px;}
+.fee-hd p{color:rgba(250,250,248,.42);font-size:11px;}
+.fee-amt{padding:16px 22px;border-bottom:1px solid var(--grey-lt);}
+.fee-price{font-family:var(--font-d);font-size:28px;font-weight:700;color:var(--navy);line-height:1;}
+.fee-price .vat{font-family:var(--font-b);font-size:11px;color:var(--grey);font-weight:400;margin-left:3px;}
+.fee-body{padding:16px 22px;}
+.fee-body ul{list-style:none;}
+.fee-body ul li{font-size:12.5px;color:var(--text);padding:5px 0;border-bottom:1px solid var(--grey-lt);display:flex;align-items:flex-start;gap:7px;line-height:1.5;}
+.fee-body ul li::before{content:'✓';color:var(--gold);font-weight:700;flex-shrink:0;}
+
+.fees-full{padding:44px;background:var(--white);}
+.fees-full h2{font-family:var(--font-d);font-size:24px;color:var(--navy);margin-bottom:20px;}
+.fee-table{width:100%;border-collapse:collapse;font-size:13px;}
+.fee-table th{background:var(--navy);color:var(--gold);padding:9px 14px;text-align:left;font-size:10.5px;letter-spacing:.5px;font-weight:600;}
+.fee-table td{padding:9px 14px;border-bottom:1px solid var(--grey-lt);}
+.fee-table tr:nth-child(even) td{background:var(--off);}
+.fee-table td:last-child{font-weight:600;color:var(--navy);}
+.fees-notes{padding:28px 44px;background:var(--gold-pale);border-top:2px solid var(--gold);}
+.fees-notes p{font-size:13px;color:#6B5010;line-height:1.75;max-width:760px;margin-bottom:10px;}
+
+/* ═══════════════════════════════════════
+   SERVICES PAGE
+═══════════════════════════════════════ */
+.srv-hero{background:var(--navy);padding:52px 48px;}
+.srv-hero h1{font-family:var(--font-d);font-size:38px;color:var(--white);font-weight:700;max-width:580px;line-height:1.12;}
+.srv-hero h1 em{color:var(--gold);font-style:italic;}
+.srv-hero p{color:rgba(250,250,248,.58);margin-top:12px;font-size:14.5px;max-width:520px;line-height:1.75;}
+.srv-rows{padding:44px;background:var(--white);}
+.srv-row{display:grid;grid-template-columns:210px 1fr;gap:28px;border-bottom:1px solid var(--grey-lt);padding:24px 0;align-items:start;}
+.srv-row:first-child{padding-top:0;}
+.srv-row-title{font-family:var(--font-d);font-size:16px;color:var(--navy);font-weight:700;line-height:1.2;}
+.srv-row-badge{display:inline-block;background:var(--gold-pale);color:#8B6914;font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-top:5px;}
+.srv-row-body p{font-size:13.5px;color:var(--text);line-height:1.75;margin-bottom:9px;}
+.chip-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.chip{background:var(--off);border:1px solid var(--grey-lt);border-radius:3px;padding:3px 9px;font-size:11.5px;color:var(--text);}
+
+/* ═══════════════════════════════════════
+   CONTACT PAGE
+═══════════════════════════════════════ */
+.con-hero{background:var(--navy);padding:52px 48px;}
+.con-hero h1{font-family:var(--font-d);font-size:38px;color:var(--white);font-weight:700;max-width:520px;line-height:1.12;}
+.con-hero h1 em{color:var(--gold);font-style:italic;}
+.con-hero p{color:rgba(250,250,248,.58);margin-top:12px;font-size:14.5px;max-width:460px;line-height:1.75;}
+.con-layout{display:grid;grid-template-columns:1fr 300px;}
+.con-form{padding:44px;background:var(--white);}
+.con-form h2{font-family:var(--font-d);font-size:22px;color:var(--navy);margin-bottom:20px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px;}
+.fg{display:flex;flex-direction:column;margin-bottom:13px;}
+.fg label{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--navy);margin-bottom:5px;}
+.fg input,.fg select,.fg textarea{border:1px solid var(--grey-lt);border-radius:var(--r);padding:10px 12px;font-family:var(--font-b);font-size:13.5px;color:var(--text);background:var(--off);outline:none;}
+.fg textarea{resize:vertical;min-height:88px;}
+.con-sidebar{background:var(--navy-mid);padding:40px 28px;display:flex;flex-direction:column;gap:24px;}
+.con-meth h4{color:var(--gold);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;font-weight:700;}
+.con-meth p{color:var(--white);font-size:14px;font-weight:500;}
+.con-meth .note{color:rgba(250,250,248,.38);font-size:11.5px;margin-top:3px;}
+.urgent-box{background:var(--red-pale);border:1px solid var(--red-bdr);border-radius:5px;padding:14px;}
+.urgent-box h4{color:#E8856D;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.urgent-box p{color:rgba(250,250,248,.48);font-size:12px;line-height:1.6;}
+
+/* ═══════════════════════════════════════
+   BLOG PAGE
+═══════════════════════════════════════ */
+.blog-hero{background:var(--navy);padding:44px 48px;}
+.blog-hero h1{font-family:var(--font-d);font-size:34px;color:var(--white);font-weight:700;}
+.blog-hero h1 em{color:var(--gold);font-style:italic;}
+.blog-hero p{color:rgba(250,250,248,.5);margin-top:8px;font-size:14px;max-width:480px;}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:44px;background:var(--off);}
+.blog-card{background:var(--white);border-radius:5px;overflow:hidden;border:1px solid var(--grey-lt);cursor:pointer;transition:all .2s;}
+.blog-card:hover{border-color:var(--gold);box-shadow:0 4px 20px rgba(201,168,76,.1);transform:translateY(-2px);}
+.blog-img{height:110px;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(201,168,76,.25);}
+.blog-bd{padding:16px;}
+.blog-cat{font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+.blog-bd h3{font-family:var(--font-d);font-size:14.5px;color:var(--navy);line-height:1.3;margin-bottom:6px;}
+.blog-bd p{font-size:12px;color:var(--grey);line-height:1.6;}
+.blog-meta{display:flex;justify-content:space-between;padding:9px 16px;border-top:1px solid var(--grey-lt);font-size:10.5px;color:var(--grey);}
+
+/* ═══════════════════════════════════════
+   POLICE STATION PAGE
+═══════════════════════════════════════ */
+.ps-hero{background:var(--navy);padding:52px 48px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;}
+.ps-hero h1{font-family:var(--font-d);font-size:38px;color:var(--white);font-weight:700;line-height:1.12;}
+.ps-hero h1 em{color:var(--gold);font-style:italic;}
+.ps-hero p{color:rgba(250,250,248,.6);margin-top:12px;font-size:14px;max-width:520px;line-height:1.75;}
+.ps-exp-box{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:6px;padding:20px 24px;text-align:center;flex-shrink:0;}
+.ps-exp-box .big{font-family:var(--font-d);font-size:40px;font-weight:900;color:var(--gold);line-height:1;}
+.ps-exp-box .lbl{color:rgba(250,250,248,.48);font-size:11.5px;margin-top:4px;line-height:1.4;}
+.ps-body{padding:44px;background:var(--white);display:grid;grid-template-columns:1fr 260px;gap:32px;}
+.ps-main h2{font-family:var(--font-d);font-size:21px;color:var(--navy);margin:20px 0 10px;}
+.ps-main h2:first-child{margin-top:0;}
+.ps-main p{font-size:13.5px;line-height:1.78;color:var(--text);margin-bottom:10px;}
+.ps-main ul{list-style:none;margin:8px 0 12px;}
+.ps-main ul li{font-size:13px;line-height:1.65;color:var(--text);padding:5px 0 5px 16px;position:relative;border-bottom:1px solid var(--grey-lt);}
+.ps-main ul li::before{content:'→';position:absolute;left:0;color:var(--gold);font-size:10.5px;}
+.ps-aside{display:flex;flex-direction:column;gap:14px;}
+.ps-adv-box{background:var(--navy);border-radius:5px;padding:20px;}
+.ps-adv-box h3{font-family:var(--font-d);color:var(--white);font-size:14.5px;margin-bottom:11px;padding-bottom:10px;border-bottom:1px solid rgba(201,168,76,.15);}
+.ps-adv-box p{color:rgba(250,250,248,.52);font-size:12px;line-height:1.6;margin-bottom:11px;}
+.ps-la-box{background:var(--gold-pale);border:1px solid rgba(201,168,76,.3);border-radius:5px;padding:16px;}
+.ps-la-box h4{font-family:var(--font-d);color:var(--navy);font-size:13.5px;margin-bottom:7px;}
+.ps-la-box p{font-size:12.5px;color:#6B5010;line-height:1.65;}
+.fb{display:block;width:100%;text-align:center;padding:10px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;border-radius:var(--r);text-decoration:none;border:none;cursor:pointer;margin-bottom:6px;}
+.fb.g{background:var(--gold);color:var(--navy);}
+.fb.o{background:transparent;color:var(--white);border:1px solid rgba(250,250,248,.22);}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="tb-left">
+      <div class="tb-dots">
+        <div class="tb-dot red"></div>
+        <div class="tb-dot amber"></div>
+        <div class="tb-dot green"></div>
+      </div>
+      <span class="tb-brand">John Violaris</span>
+    </div>
+    <div class="tb-url">
+      <span class="lock">🔒</span>
+      <span class="addr" id="url-display">johnviolaris.lawyer</span>
+    </div>
+    <div class="tb-badge">Full Site Demo</div>
+  </div>
+
+  <!-- LEFT NAVIGATION -->
+  <nav class="left-nav">
+    <div class="nav-brand">
+      <div class="nb-init">JV</div>
+      <div class="nb-name">John Violaris</div>
+      <div class="nb-sub">Motoring Defence Solicitor</div>
+    </div>
+
+    <div class="nav-section-label">Main Pages</div>
+
+    <div class="nav-item active" onclick="showPage('home',this,'johnviolaris.lawyer')">
+      <span class="ni-icon">🏠</span>
+      <span class="ni-text">Home</span>
+    </div>
+    <div class="nav-item" onclick="showPage('about',this,'johnviolaris.lawyer/about')">
+      <span class="ni-icon">👤</span>
+      <span class="ni-text">About John</span>
+    </div>
+    <div class="nav-item" onclick="showPage('services',this,'johnviolaris.lawyer/services')">
+      <span class="ni-icon">⚖️</span>
+      <span class="ni-text">All Services</span>
+    </div>
+    <div class="nav-item" onclick="showPage('fees',this,'johnviolaris.lawyer/fees')">
+      <span class="ni-icon">💷</span>
+      <span class="ni-text">Fees &amp; Pricing</span>
+    </div>
+    <div class="nav-item" onclick="showPage('police',this,'johnviolaris.lawyer/police-station')">
+      <span class="ni-icon">🚔</span>
+      <span class="ni-text">Police Station</span>
+    </div>
+    <div class="nav-item" onclick="showPage('blog',this,'johnviolaris.lawyer/blog')">
+      <span class="ni-icon">📝</span>
+      <span class="ni-text">Blog &amp; Guides</span>
+    </div>
+    <div class="nav-item" onclick="showPage('contact',this,'johnviolaris.lawyer/contact')">
+      <span class="ni-icon">✉️</span>
+      <span class="ni-text">Contact</span>
+    </div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Service Pages</div>
+
+    <div class="nav-item" onclick="showPage('drink',this,'johnviolaris.lawyer/drink-driving')">
+      <span class="ni-icon">🍺</span>
+      <span class="ni-text">Drink Driving</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('drug',this,'johnviolaris.lawyer/drug-driving')">
+      <span class="ni-icon">🌿</span>
+      <span class="ni-text">Drug Driving</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('speeding',this,'johnviolaris.lawyer/speeding')">
+      <span class="ni-icon">🚗</span>
+      <span class="ni-text">Speeding &amp; Totting Up</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('ftp',this,'johnviolaris.lawyer/failing-to-provide')">
+      <span class="ni-icon">🫁</span>
+      <span class="ni-text">Failing to Provide</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('careless',this,'johnviolaris.lawyer/careless-driving')">
+      <span class="ni-icon">🚘</span>
+      <span class="ni-text">Careless Driving</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('dangerous',this,'johnviolaris.lawyer/dangerous-driving')">
+      <span class="ni-icon">⚠️</span>
+      <span class="ni-text">Dangerous Driving</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('mobile',this,'johnviolaris.lawyer/mobile-phone')">
+      <span class="ni-icon">📱</span>
+      <span class="ni-text">Mobile Phone</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('insurance',this,'johnviolaris.lawyer/no-insurance')">
+      <span class="ni-icon">🛡️</span>
+      <span class="ni-text">No Insurance</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('fts',this,'johnviolaris.lawyer/failing-to-stop')">
+      <span class="ni-icon">🛑</span>
+      <span class="ni-text">Failing to Stop</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('s172',this,'johnviolaris.lawyer/driver-details')">
+      <span class="ni-icon">📬</span>
+      <span class="ni-text">Driver Details (s.172)</span>
+      <span class="ni-badge">Full</span>
+    </div>
+    <div class="nav-item" onclick="showPage('special',this,'johnviolaris.lawyer/special-reasons')">
+      <span class="ni-icon">✨</span>
+      <span class="ni-text">Special Reasons</span>
+      <span class="ni-badge">Full</span>
+    </div>
+
+    <div class="nav-domain-box">
+      <h6>Domain Strategy</h6>
+      <p>
+        <span class="dm">johnviolaris.lawyer</span> — Authority hub<br>
+        <span class="dm">drivingjustice.com</span> — Motoring SEO brand<br>
+        <span class="dm">drinkdrive.lawyer</span> — Drink drive leads
+      </p>
+    </div>
+  </nav>
+
+  <!-- VIEWPORT -->
+  <div class="viewport" id="viewport">
+
+<!-- ══════════════ HOME ══════════════ -->
+<div class="page-panel active" id="p-home">
+  <header class="site-hdr">
+    <div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Criminal Defence Solicitor</div></div></div>
+    <nav class="hnav"><a>About</a><a>Services</a><a>Police Station</a><a>Fees</a><a>Blog</a><a>Contact</a><a class="hcta">Free Consultation</a></nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-in">
+      <div class="slbl">Criminal Defence Solicitor &amp; Motoring Specialist</div>
+      <h1>Facing a driving<br>ban? I'll <em>fight<br>your corner.</em></h1>
+      <p class="hero-sub">When you instruct me, you deal directly with me — a qualified solicitor with over 20 years of criminal defence experience. No hand-offs. No juniors. No surprises. Expert, personal representation from the first call to the final outcome.</p>
+      <div class="hero-acts">
+        <a class="btn-g">Book Now →</a>
+        <a class="btn-o">Free Initial Consultation</a>
+      </div>
+      <div class="trust-row">
+        <div class="ti"><span class="tn">20+</span><span class="tl">Years of<br>Experience</span></div>
+        <div class="tdiv"></div>
+        <div class="ti"><span class="tn">10,000+</span><span class="tl">Clients<br>Represented</span></div>
+        <div class="tdiv"></div>
+        <div class="ti"><span class="tn">SRA</span><span class="tl">Regulated<br>Solicitor</span></div>
+        <div class="tdiv"></div>
+        <div class="ti"><span class="tn">Fixed</span><span class="tl">Transparent<br>Fees</span></div>
+        <div class="tdiv"></div>
+        <div class="ti"><span class="tn">Free</span><span class="tl">Initial<br>Consultation</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="off-strip">
+    <div class="off-tag ft">All Crime</div><div class="off-tag ft">Drink Driving</div><div class="off-tag">Drug Driving</div>
+    <div class="off-tag ft">Totting Up · 12 Points</div><div class="off-tag">Speeding</div>
+    <div class="off-tag ft">Special Reasons</div><div class="off-tag">No Insurance</div>
+    <div class="off-tag">Dangerous Driving</div><div class="off-tag">Careless Driving</div>
+    <div class="off-tag">Mobile Phone</div><div class="off-tag ft">Police Station</div>
+  </div>
+
+  <!-- WHY ME -->
+  <section style="background:var(--navy-mid);padding:52px 48px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;">
+      <div>
+        <div class="slbl" style="color:var(--gold)">Why Instruct Me</div>
+        <h2 style="font-family:var(--font-d);font-size:30px;color:var(--white);font-weight:700;line-height:1.15;margin-bottom:14px;">You hire a solicitor.<br><em style="color:var(--gold);font-style:italic;">You should get one.</em></h2>
+        <p style="color:rgba(250,250,248,.6);font-size:13.5px;line-height:1.75;margin-bottom:11px;">I qualified in 2005 and have spent every year since in active criminal defence practice. I have represented thousands of individuals at the police station and in the magistrates' court. When you instruct me, I am your solicitor from the first conversation to the final outcome.</p>
+        <p style="color:rgba(250,250,248,.6);font-size:13.5px;line-height:1.75;margin-bottom:0;">Speak to me for free and I'll expertly assess your situation.</p>
+        <div class="sig">— John Violaris, Solicitor</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:5px;padding:16px;">
+          <div style="font-size:20px;margin-bottom:8px;">⚖️</div>
+          <h4 style="font-family:var(--font-d);color:var(--white);font-size:14px;margin-bottom:6px;">Personal from Start to Finish</h4>
+          <p style="color:rgba(250,250,248,.48);font-size:12px;line-height:1.6;">Every case handled by me personally. The solicitor you meet is the one who goes to court.</p>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:5px;padding:16px;">
+          <div style="font-size:20px;margin-bottom:8px;">⚖️</div>
+          <h4 style="font-family:var(--font-d);color:var(--white);font-size:14px;margin-bottom:6px;">Fixed, Transparent Fees</h4>
+          <p style="color:rgba(250,250,248,.48);font-size:12px;line-height:1.6;">You know your fee before you instruct me. No open-ended billing, no unexpected invoices.</p>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:5px;padding:16px;">
+          <div style="font-size:20px;margin-bottom:8px;">⚖️</div>
+          <h4 style="font-family:var(--font-d);color:var(--white);font-size:14px;margin-bottom:6px;">20+ Years in Criminal Defence</h4>
+          <p style="color:rgba(250,250,248,.48);font-size:12px;line-height:1.6;">Qualified 2005, practising at police station and magistrates' court ever since.</p>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.15);border-radius:5px;padding:16px;">
+          <div style="font-size:20px;margin-bottom:8px;">⚖️</div>
+          <h4 style="font-family:var(--font-d);color:var(--white);font-size:14px;margin-bottom:6px;">Motivated by Results</h4>
+          <p style="color:rgba(250,250,248,.48);font-size:12px;line-height:1.6;">Two decades fighting for clients regardless of reward. Your outcome matters more than the fee.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="sec">
+    <div class="sec-hd">
+      <div class="slbl">What I Do</div>
+      <h2>Motoring Offence Services</h2>
+      <p>I specialise in saving driving licences and standing up for clients at the police station and Magistrates Court.</p>
+    </div>
+    <div class="srv-grid">
+      <div class="srv-card"><div class="srv-icon">🍺🌿</div><h3>Drink &amp; Drug Driving</h3><p>Mandatory 12-month ban on conviction. I advise on all defences, special reasons, and mitigation strategies.</p><a class="srv-link">Read more →</a></div>
+      <div class="srv-card"><div class="srv-icon">😢🔢</div><h3>Totting Up &amp; 12 Points</h3><p>An exceptional hardship argument can prevent a mandatory ban. Early specialist advice is critical.</p><a class="srv-link">Read more →</a></div>
+      <div class="srv-card"><div class="srv-icon">⚡</div><h3>Special Reasons</h3><p>Can prevent disqualification even where guilt is not disputed. Laced drinks, short distance, emergencies.</p><a class="srv-link">Read more →</a></div>
+      <div class="srv-card"><div class="srv-icon">📷</div><h3>Speeding</h3><p>NIP procedural challenges to court representation. I advise on every avenue before you accept points.</p><a class="srv-link">Read more →</a></div>
+      <div class="srv-card"><div class="srv-icon">📱</div><h3>Mobile Phone &amp; Careless</h3><p>Both carry real disqualification risk. I advise on contest and mitigation strategies.</p><a class="srv-link">Read more →</a></div>
+      <div class="srv-card"><div class="srv-icon">📄❌</div><h3>No Insurance &amp; Licence</h3><p>Carries mandatory endorsement and discretionary disqualification. I scrutinise every element.</p><a class="srv-link">Read more →</a></div>
+    </div>
+  </section>
+
+  <!-- POLICE STATION SECTION -->
+  <section class="ps-sec">
+    <div class="ps-inner">
+      <div>
+        <div class="slbl">Police Station Representation</div>
+        <h2>Advice at the police station<br>is where cases are <em>won or lost.</em></h2>
+        <p>I have been representing clients at the police station since 2003. In over two decades I have advised at police station interviews more than 10,000 times — for the full range of criminal and motoring offences.</p>
+        <p>For motoring investigations where an interview is requested by the police, early instruction gives me the opportunity to shape the case from the beginning. Clients who I first meet at the police station arrive at court with a solicitor who already knows their case from the start.</p>
+        <a class="btn-g" style="margin-top:8px;display:inline-block;">Police Station Representation →</a>
+      </div>
+      <div>
+        <div class="ps-stats">
+          <div><div class="ps-stat">10,000+</div><div class="ps-stat-lbl">Police Station Attendances</div></div>
+          <div><div class="ps-stat">20+</div><div class="ps-stat-lbl">Years in Criminal Defence</div></div>
+        </div>
+        <div class="quote-block">
+          <p>"If I can steer the investigation from the very start, the client has a far greater chance of a successful outcome. I have seen cases transformed at the police station stage."</p>
+          <cite>— John Violaris</cite>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="sec alt">
+    <div class="sec-hd"><div class="slbl">The Process</div><h2>From first call to final outcome</h2></div>
+    <div class="steps-row">
+      <div class="step-item"><div class="step-n">1</div><h4>Free Initial Chat</h4><p>Book a call or email me, I'll expertly assess your position.</p></div>
+      <div class="step-item"><div class="step-n">2</div><h4>Case Review</h4><p>I review all prosecution evidence and advise on prospects — contest, plead, or special reasons.</p></div>
+      <div class="step-item"><div class="step-n">3</div><h4>Preparation</h4><p>I handle all correspondence, prepare submissions, and brief you before every hearing.</p></div>
+      <div class="step-item"><div class="step-n">4</div><h4>Court Representation</h4><p>I attend every hearing with you. One solicitor throughout — me.</p></div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="sec">
+    <div class="sec-hd"><div class="slbl">Client Reviews</div><h2>What clients say</h2></div>
+    <div class="testi-row">
+      <div class="testi"><div class="stars">★★★★★</div><blockquote>"John kept my licence when I genuinely thought it was gone. He dealt with the case personally from first call to the court hearing."</blockquote><div class="testi-name">T.B., London</div><div class="testi-case">Totting up — exceptional hardship</div></div>
+      <div class="testi"><div class="stars">★★★★★</div><blockquote>"Calm, thorough, and completely honest from day one. He told me exactly what to expect and delivered the best possible result."</blockquote><div class="testi-name">R.M., Essex</div><div class="testi-case">Drink driving</div></div>
+      <div class="testi"><div class="stars">★★★★★</div><blockquote>"He was the only solicitor who actually listened carefully before quoting me. When you're facing a ban, that attention to detail matters enormously."</blockquote><div class="testi-name">S.A., Kent</div><div class="testi-case">Speeding — NIP defence</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--grey);margin-top:14px;font-style:italic;">* Placeholder testimonials — to be replaced with verified Trustpilot / Google reviews before launch.</p>
+  </section>
+
+  <div class="cta-ban">
+    <h2>Your licence matters. <em>Let's talk</em> before you do anything else.</h2>
+    <div class="cta-r"><a class="btn-g">Contact John Today</a><p style="color:rgba(250,250,248,.3);font-size:11px;text-align:right">Free initial consultation<br>Response within 24 hours</p></div>
+  </div>
+
+  <footer class="ftr">
+    <div class="ftr-grid">
+      <div class="ftr-col"><h5>Services</h5><a>All Crime</a><a>Drink &amp; Drug Driving</a><a>Totting Up</a><a>Special Reasons</a><a>Speeding</a><a>Police Station</a></div>
+      <div class="ftr-col"><h5>Information</h5><a>About John</a><a>Fees &amp; Pricing</a><a>Blog &amp; Guides</a></div>
+      <div class="ftr-col"><h5>Contact</h5><a>contact@johnviolaris.com</a><a>johnviolaris.com</a><a>drivingjustice.com</a></div>
+    </div>
+    <div class="ftr-bot"><p>© 2025 John Violaris. Solicitor of England &amp; Wales. SRA regulated. johnviolaris.com</p><div class="sra-pill">SRA Regulated</div></div>
+  </footer>
+</div>
+
+<!-- ══════════════ ABOUT ══════════════ -->
+<div class="page-panel" id="p-about">
+  <header class="site-hdr"><div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Motoring Defence Solicitor</div></div></div><nav class="hnav"><a>About</a><a>Services</a><a>Fees</a><a>Blog</a><a>Contact</a><a class="hcta">Free Consultation</a></nav></header>
+  <section class="about-hero">
+    <div>
+      <div class="slbl">About</div>
+      <h1>You hire a solicitor.<br>You should <em>get one.</em></h1>
+      <p>I'm John Violaris. I qualified as a solicitor in 2005 and have worked in criminal defence ever since. Over two decades I have represented thousands of individuals at the police station and in the magistrates' court across England and Wales.</p>
+      <p>I am motivated more by results than reward. I spent over twenty years in legal aid practice — fighting for clients regardless of means, delivering the same standard of service regardless. That ethos has not changed.</p>
+      <p>Clients have described me as "an angel coming down from the sky" when their case felt hopeless. That kind of trust is what I work for.</p>
+      <div class="cred-row">
+        <div class="cred-pill">✓ Qualified Solicitor 2005</div>
+        <div class="cred-pill">✓ LLB Hons — Bristol</div>
+        <div class="cred-pill">✓ SRA Regulated</div>
+        <div class="cred-pill">✓ 20+ Years Criminal Defence</div>
+        <div class="cred-pill">✓ 10,000+ Police Station Attendances</div>
+      </div>
+    </div>
+    <div class="photo-ph"><div class="pic">🧑‍⚖️</div><span>Professional Photo</span></div>
+  </section>
+  <section class="about-body">
+    <h2>My Background</h2>
+    <div class="about-cols">
+      <div class="about-col"><h3>Education</h3><p>I graduated from the University of Bristol in 2001 with an LLB Honours degree in Law with European Legal Studies (2:1), before completing the Legal Practice Course at UWE Bristol in 2002.</p><p>My training contract was served at Galbraith Branley Solicitors 2003–2005, where I began police station representation — a role I have continued without interruption ever since.</p></div>
+      <div class="about-col"><h3>Practice</h3><p>I qualified in 2005 and have specialised in criminal defence at the police station and magistrates' court ever since. My background spans the full range of criminal offences, youth court representation, and road traffic law.</p><p>I now practise as a motoring defence solicitor, focusing on driving offences at the magistrates' court level.</p></div>
+      <div class="about-col"><h3>What Drives Me</h3><p>I have always been motivated more by success for my clients than financial reward. For over two decades I represented clients on legal aid — never allowing the fee structure to determine the quality of service.</p></div>
+      <div class="about-col"><h3>My Approach</h3><p>I give you honest advice at every stage. I tell you what to expect, prepare your case thoroughly, and advocate forcefully in court. The solicitor you speak to is the one standing with you in court.</p></div>
+    </div>
+  </section>
+  <section class="timeline">
+    <div class="slbl">Career Timeline</div>
+    <div class="tl-items">
+      <div class="tl-item"><div class="tl-yr">2001</div><div class="tl-c"><h4>LLB Honours — University of Bristol</h4><p>Graduated 2:1 in Law with European Legal Studies.</p></div></div>
+      <div class="tl-item"><div class="tl-yr">2002</div><div class="tl-c"><h4>Legal Practice Course — UWE Bristol</h4><p>Completed LPC with focus on criminal litigation and advocacy.</p></div></div>
+      <div class="tl-item"><div class="tl-yr">2003</div><div class="tl-c"><h4>Training Contract — Galbraith Branley Solicitors</h4><p>Began training and first police station representations.</p></div></div>
+      <div class="tl-item"><div class="tl-yr">2005</div><div class="tl-c"><h4>Admitted as Solicitor of England &amp; Wales</h4><p>Qualified and began independent practice in criminal defence. SRA regulated throughout.</p></div></div>
+      <div class="tl-item"><div class="tl-yr">Now</div><div class="tl-c"><h4>Motoring Defence Specialist — johnviolaris.lawyer</h4><p>Private motoring defence practice focused on magistrates' court level, England and Wales.</p></div></div>
+    </div>
+  </section>
+  <div class="cta-ban"><h2>Ready to discuss your case? <em>Call me today.</em></h2><div class="cta-r"><div class="phone-big">0[###] ### ####</div><a class="btn-g">Book a Consultation</a></div></div>
+  <footer class="ftr"><div class="ftr-grid"><div class="ftr-col"><p style="font-family:var(--font-d);color:var(--gold);font-size:16px;margin-bottom:9px;font-weight:700">John Violaris</p><p>Motoring defence solicitor. Personal representation across England and Wales.</p></div><div class="ftr-col"><h5>Services</h5><a>Drink &amp; Drug Driving</a><a>Speeding</a><a>Special Reasons</a><a>Police Station</a></div><div class="ftr-col"><h5>Information</h5><a>About John</a><a>Fees</a><a>Blog</a><a>Contact</a></div><div class="ftr-col"><h5>Contact</h5><a>john@johnviolaris.lawyer</a><a>0[###] ### ####</a></div></div><div class="ftr-bot"><p>© 2025 John Violaris. SRA regulated. johnviolaris.lawyer</p><div class="sra-pill">SRA Regulated</div></div></footer>
+</div>
+
+<!-- ══════════════ SERVICES ══════════════ -->
+<div class="page-panel" id="p-services">
+  <header class="site-hdr"><div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Motoring Defence Solicitor</div></div></div><nav class="hnav"><a>About</a><a>Services</a><a>Fees</a><a>Blog</a><a>Contact</a><a class="hcta">Free Consultation</a></nav></header>
+  <section class="srv-hero"><div class="slbl">Services</div><h1>Magistrates' court motoring defence — <em>in depth.</em></h1><p>I handle all common motoring offences heard in the magistrates' court, as well as police station representation for road traffic investigations.</p></section>
+  <div class="srv-rows">
+    <div class="srv-row"><div><div class="srv-row-title">Drink &amp; Drug Driving</div><div class="srv-row-badge">Complex · High Stakes</div></div><div class="srv-row-body"><p>Carries a mandatory minimum 12-month disqualification on conviction. I advise on all recognised defences including evidential sufficiency, procedural irregularities, sampling compliance, post-drive consumption, special reasons, and mitigation.</p><div class="chip-row"><div class="chip">Excess alcohol (s.5 RTA)</div><div class="chip">Drug driving (s.5A RTA)</div><div class="chip">Drunk in charge</div><div class="chip">Failing to provide</div></div></div></div>
+    <div class="srv-row"><div><div class="srv-row-title">Totting Up — Exceptional Hardship</div><div class="srv-row-badge">12+ Points</div></div><div class="srv-row-body"><p>When a driver accumulates 12 or more penalty points within three years, a mandatory 6-month ban follows unless exceptional hardship is established. This is a high legal threshold — I prepare detailed evidence-based hardship arguments.</p></div></div>
+    <div class="srv-row"><div><div class="srv-row-title">Special Reasons Hearings</div><div class="srv-row-badge">Specialist</div></div><div class="srv-row-body"><p>Even where guilt is not in dispute, a special reasons argument can prevent the court from imposing mandatory disqualification or endorsement. Laced drinks, emergency, short distance, misled about insurance.</p></div></div>
+    <div class="srv-row"><div><div class="srv-row-title">Speeding Offences</div><div class="srv-row-badge">High Volume</div></div><div class="srv-row-body"><p>NIP validity, s.172 notice requirements, procedural challenges, and representation at any hearing. I advise on every avenue before you accept any fixed penalty or court outcome.</p></div></div>
+    <div class="srv-row"><div><div class="srv-row-title">Dangerous &amp; Careless Driving</div><div class="srv-row-badge">Trial Work</div></div><div class="srv-row-body"><p>Dangerous driving carries a mandatory disqualification and potential custody. The distinction between dangerous and careless is a question of degree — and careful analysis of the circumstances is often decisive.</p></div></div>
+    <div class="srv-row"><div><div class="srv-row-title">No Insurance &amp; Licence Offences</div><div class="srv-row-badge">Regulatory</div></div><div class="srv-row-body"><p>6–8 mandatory points or discretionary disqualification. Special reasons can avoid endorsement where there was a genuine, reasonable belief that cover was in place.</p></div></div>
+    <div class="srv-row"><div><div class="srv-row-title">Mobile Phone, Failing to Stop, s.172</div><div class="srv-row-badge">Procedural</div></div><div class="srv-row-body"><p>All three carry mandatory endorsement with real totting risk. Procedural challenges, NIP validity, and reasonable diligence defences are available in the right cases.</p></div></div>
+    <div class="srv-row"><div><div class="srv-row-title">Police Station Representation</div><div class="srv-row-badge">Free · Legal Aid</div></div><div class="srv-row-body"><p>I have represented clients at the police station since 2003 — over 10,000 attendances. Police station advice is free in most cases under legal aid. Early instruction at this stage can transform the outcome of a motoring case.</p></div></div>
+  </div>
+  <div class="cta-ban"><h2>Not sure which category your case falls into? <em>Call me</em> — I'll assess it free.</h2><div class="cta-r"><a class="btn-g">Free Consultation →</a></div></div>
+  <footer class="ftr"><div class="ftr-grid"><div class="ftr-col"><p style="font-family:var(--font-d);color:var(--gold);font-size:16px;margin-bottom:9px;font-weight:700">John Violaris</p><p>Motoring defence solicitor. Personal representation across England and Wales.</p></div><div class="ftr-col"><h5>Services</h5><a>Drink &amp; Drug Driving</a><a>Speeding</a><a>Careless &amp; Dangerous</a><a>No Insurance</a></div><div class="ftr-col"><h5>Information</h5><a>About John</a><a>Fees</a><a>Blog</a><a>Contact</a></div><div class="ftr-col"><h5>Contact</h5><a>john@johnviolaris.lawyer</a><a>0[###] ### ####</a></div></div><div class="ftr-bot"><p>© 2025 John Violaris. SRA regulated.</p><div class="sra-pill">SRA Regulated</div></div></footer>
+</div>
+
+<!-- ══════════════ FEES ══════════════ -->
+<div class="page-panel" id="p-fees">
+  <header class="site-hdr"><div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Motoring Defence Solicitor</div></div></div><nav class="hnav"><a>About</a><a>Services</a><a>Fees</a><a>Blog</a><a>Contact</a><a class="hcta">Free Consultation</a></nav></header>
+  <section class="fees-hero"><div class="slbl">Transparent Pricing</div><h1>Fixed fees.<br><em>No surprises.</em></h1><p>Fixed, all-inclusive fees for each stage of your case. You will know exactly what you are committing to before you instruct me. No VAT charged.</p></section>
+  <div class="fees-grid">
+    <div class="fee-card"><div class="fee-hd"><h3>Police Station</h3><p>Any police station, England &amp; Wales</p></div><div class="fee-amt"><div class="fee-price">£400<span class="vat">no VAT · fixed</span></div></div><div class="fee-body"><ul><li>Pre-interview disclosure review</li><li>Private consultation before interview</li><li>Attendance at interview</li><li>Advice on bail / release conditions</li><li>Free in most cases under legal aid</li></ul></div></div>
+    <div class="fee-card"><div class="fee-hd"><h3>Single Hearing</h3><p>Magistrates' Court — guilty plea</p></div><div class="fee-amt"><div class="fee-price">£600<span class="vat">no VAT · fixed</span></div></div><div class="fee-body"><ul><li>Full case review and evidence analysis</li><li>Pre-hearing consultation (1 hour)</li><li>All preparatory work</li><li>Court attendance and representation</li><li>Mitigation submissions</li></ul></div></div>
+    <div class="fee-card"><div class="fee-hd"><h3>First Appearance &amp; Trial</h3><p>Two hearings</p></div><div class="fee-amt"><div class="fee-price">£1,200<span class="vat">no VAT · fixed</span></div></div><div class="fee-body"><ul><li>Full defence preparation</li><li>Evidence and disclosure review</li><li>All pre-trial correspondence</li><li>Attendance at both hearings</li><li>Trial advocacy</li></ul></div></div>
+    <div class="fee-card"><div class="fee-hd"><h3>Three-Hearing Case</h3><p>First appearance, trial &amp; sentence</p></div><div class="fee-amt"><div class="fee-price">£1,500<span class="vat">no VAT · fixed</span></div></div><div class="fee-body"><ul><li>All preparation and correspondence</li><li>All three hearings attended</li><li>Full trial advocacy</li><li>Sentencing attendance</li><li>Includes 1-hour inter-hearing consultation</li></ul></div></div>
+    <div class="fee-card"><div class="fee-hd"><h3>Exceptional Hardship</h3><p>Full preparation &amp; hearing</p></div><div class="fee-amt"><div class="fee-price">£750<span class="vat">no VAT · fixed</span></div></div><div class="fee-body"><ul><li>Detailed case analysis</li><li>Evidence gathering and preparation</li><li>Written submissions where required</li><li>Full court representation</li></ul></div></div>
+    <div class="fee-card"><div class="fee-hd"><h3>Special Reasons</h3><p>Single or double hearing</p></div><div class="fee-amt"><div class="fee-price">£750<span class="vat">single / £1,100 double</span></div></div><div class="fee-body"><ul><li>Full preparation and evidence review</li><li>Expert evidence coordination if required</li><li>Written legal submissions</li><li>Court representation throughout</li></ul></div></div>
+  </div>
+  <div class="fees-full">
+    <h2>Full Fee Schedule</h2>
+    <table class="fee-table">
+      <thead><tr><th>Service</th><th>Description</th><th>Fee</th></tr></thead>
+      <tbody>
+        <tr><td>Police Station Representation</td><td>Attendance, pre-interview advice and interview</td><td>£400</td></tr>
+        <tr><td>Single Hearing — Magistrates' Court</td><td>Guilty plea or first appearance</td><td>£600</td></tr>
+        <tr><td>First Appearance &amp; Trial</td><td>Two-hearing cases</td><td>£1,200</td></tr>
+        <tr><td>Three-Hearing Cases</td><td>First appearance, trial and sentence</td><td>£1,500</td></tr>
+        <tr><td>Exceptional Hardship Hearing</td><td>Full preparation and hearing</td><td>£750</td></tr>
+        <tr><td>Special Reasons — Single Hearing</td><td>Preparation and one hearing</td><td>£750</td></tr>
+        <tr><td>Special Reasons — Double Hearing</td><td>Preparation and two hearings</td><td>£1,100</td></tr>
+        <tr><td>Additional / Adjourned Hearing</td><td>Case management or adjourned hearing</td><td>£500</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="fees-notes">
+    <p><strong>What is included:</strong> All fixed fees include a one-hour consultation between hearings and all preparatory work.</p>
+    <p><strong>Travel:</strong> I accept instructions across England and Wales. Where overnight stay is required (e.g. Newcastle, Plymouth), travel and accommodation costs will be agreed with you in advance.</p>
+    <p><strong>VAT:</strong> I am not currently VAT registered. No VAT is charged on any fee.</p>
+  </div>
+  <div class="cta-ban"><h2>Want to discuss fees before committing? <em>Just call.</em></h2><div class="cta-r"><div class="phone-big">0[###] ### ####</div><a class="btn-g">Contact John</a></div></div>
+  <footer class="ftr"><div class="ftr-grid"><div class="ftr-col"><p style="font-family:var(--font-d);color:var(--gold);font-size:16px;margin-bottom:9px;font-weight:700">John Violaris</p><p>Motoring defence solicitor. Fixed fees, no VAT, no surprises.</p></div><div class="ftr-col"><h5>Services</h5><a>All Services</a><a>About John</a></div><div class="ftr-col"><h5>Pricing</h5><a>Police Station: £400</a><a>Single Hearing: £600</a><a>Trial: £1,200</a></div><div class="ftr-col"><h5>Contact</h5><a>john@johnviolaris.lawyer</a><a>0[###] ### ####</a></div></div><div class="ftr-bot"><p>© 2025 John Violaris. SRA regulated.</p><div class="sra-pill">SRA Regulated</div></div></footer>
+</div>
+
+<!-- ══════════════ POLICE STATION ══════════════ -->
+<div class="page-panel" id="p-police">
+  <header class="site-hdr"><div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Motoring Defence Solicitor</div></div></div><nav class="hnav"><a>About</a><a>Services</a><a>Police Station</a><a>Fees</a><a>Contact</a><a class="hcta">Free Consultation</a></nav></header>
+  <section class="ps-hero">
+    <div><div class="slbl">Police Station Representation</div><h1>Expert advice when<br>the police want<br>to interview you — <em>from day one.</em></h1><p>I have been representing clients at the police station since 2003. In over two decades of active criminal defence practice I have advised at police station interviews more than 10,000 times.</p></div>
+    <div class="ps-exp-box"><div class="big">10,000+</div><div class="lbl">Police station<br>attendances since 2003</div></div>
+  </section>
+  <div class="ps-body">
+    <div class="ps-main">
+      <h2>Why the Police Station Stage Matters</h2>
+      <p>The police station interview is one of the most consequential stages of any criminal or motoring case. What you say — and what you choose not to say — can determine the entire course of your case. Mistakes made at this stage are often impossible to fully correct later.</p>
+      <h2>What I Do at the Police Station</h2>
+      <ul>
+        <li>Speak to investigating officers and obtain disclosure before the interview</li>
+        <li>Advise you privately on your position, rights, and options</li>
+        <li>Recommend whether to answer questions, give a prepared statement, or exercise the right to silence</li>
+        <li>Attend the interview with you and intervene where questions are improper</li>
+        <li>Advise on bail or release under investigation conditions</li>
+      </ul>
+      <h2>The Advantage of Continuity</h2>
+      <p>One of the most significant benefits of instructing me at the police station stage is continuity. If your case progresses to the magistrates' court, you arrive with a solicitor who already knows your case, your account, and your objectives in full.</p>
+    </div>
+    <div class="ps-aside">
+      <div class="ps-adv-box">
+        <h3>Request Police Station Advice</h3>
+        <p>If you have been arrested or asked to attend a voluntary interview, call me as soon as possible. I can attend at short notice.</p>
+        <a class="fb g">Call: 0[###] ### ####</a>
+        <a class="fb o">Email John</a>
+        <div style="font-size:11px;color:rgba(250,250,248,.28);border-top:1px solid rgba(255,255,255,.06);padding-top:10px;margin-top:3px;line-height:1.6;">Police station advice is free in most cases under the Legal Aid scheme.</div>
+      </div>
+      <div class="ps-la-box">
+        <h4>Legal Aid — Free Representation</h4>
+        <p style="font-size:12.5px;color:#6B5010;line-height:1.65;">Police station representation is funded by legal aid in virtually all cases — regardless of income. You will not be charged for police station attendance.</p>
+      </div>
+    </div>
+  </div>
+  <div class="cta-ban"><h2>Arrested or invited to a voluntary interview? <em>Call me first.</em></h2><div class="cta-r"><div class="phone-big">0[###] ### ####</div><a class="btn-g">Contact John</a></div></div>
+  <footer class="ftr"><div class="ftr-grid"><div class="ftr-col"><p style="font-family:var(--font-d);color:var(--gold);font-size:16px;margin-bottom:9px;font-weight:700">John Violaris</p><p>Motoring defence solicitor. 10,000+ police station attendances since 2003.</p></div><div class="ftr-col"><h5>Services</h5><a>All Services</a><a>Drink Driving</a></div><div class="ftr-col"><h5>Information</h5><a>About John</a><a>Fees</a></div><div class="ftr-col"><h5>Contact</h5><a>john@johnviolaris.lawyer</a></div></div><div class="ftr-bot"><p>© 2025 John Violaris. SRA regulated.</p><div class="sra-pill">SRA Regulated</div></div></footer>
+</div>
+
+<!-- ══════════════ BLOG ══════════════ -->
+<div class="page-panel" id="p-blog">
+  <header class="site-hdr"><div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Motoring Defence Solicitor</div></div></div><nav class="hnav"><a>About</a><a>Services</a><a>Fees</a><a>Blog</a><a>Contact</a><a class="hcta">Free Consultation</a></nav></header>
+  <section class="blog-hero"><div class="slbl">Resources</div><h1>Legal guides &amp; <em>motoring law insights</em></h1><p>Plain-English explanations of motoring law from a practising solicitor with over 20 years of criminal defence experience.</p></section>
+  <div class="blog-grid">
+    <div class="blog-card"><div class="blog-img">🍺</div><div class="blog-bd"><div class="blog-cat">Drink Driving</div><h3>What happens after a drink driving arrest? A step-by-step guide</h3><p>From the roadside breath test to the magistrates' court hearing — what to expect at each stage.</p></div><div class="blog-meta"><span>John Violaris</span><span>8 min read</span></div></div>
+    <div class="blog-card"><div class="blog-img">⚖️</div><div class="blog-bd"><div class="blog-cat">Totting Up</div><h3>Exceptional hardship: what the court is actually looking for</h3><p>Most exceptional hardship arguments fail. This guide explains the legal test and the evidence you need.</p></div><div class="blog-meta"><span>John Violaris</span><span>6 min read</span></div></div>
+    <div class="blog-card"><div class="blog-img">📱</div><div class="blog-bd"><div class="blog-cat">Mobile Phone</div><h3>The 2022 mobile phone driving law changes explained</h3><p>The law was fundamentally rewritten. This guide explains exactly what is now prohibited.</p></div><div class="blog-meta"><span>John Violaris</span><span>5 min read</span></div></div>
+    <div class="blog-card"><div class="blog-img">🔬</div><div class="blog-bd"><div class="blog-cat">Special Reasons</div><h3>Laced drinks: can it really prevent a drink driving disqualification?</h3><p>Sometimes — but the legal test is stringent. This guide sets out what the court requires.</p></div><div class="blog-meta"><span>John Violaris</span><span>7 min read</span></div></div>
+    <div class="blog-card"><div class="blog-img">📬</div><div class="blog-bd"><div class="blog-cat">Speeding</div><h3>Received a Notice of Intended Prosecution? Here's what to do</h3><p>A NIP triggers strict time limits and legal obligations. Missing deadlines can worsen your position.</p></div><div class="blog-meta"><span>John Violaris</span><span>4 min read</span></div></div>
+    <div class="blog-card"><div class="blog-img">🚔</div><div class="blog-bd"><div class="blog-cat">Police Station</div><h3>Should you answer questions in a police interview?</h3><p>The decision to answer, give a statement, or remain silent is one of the most important decisions in any case.</p></div><div class="blog-meta"><span>John Violaris</span><span>6 min read</span></div></div>
+  </div>
+  <div class="cta-ban"><h2>Found the answer? <em>Talk to John</em> about your specific case.</h2><div class="cta-r"><a class="btn-g">Free Consultation →</a></div></div>
+  <footer class="ftr"><div class="ftr-grid"><div class="ftr-col"><p style="font-family:var(--font-d);color:var(--gold);font-size:16px;margin-bottom:9px;font-weight:700">John Violaris</p><p>Motoring defence solicitor. Plain-English legal guides from a practising solicitor.</p></div><div class="ftr-col"><h5>Services</h5><a>All Services</a></div><div class="ftr-col"><h5>Blog Topics</h5><a>Drink Driving</a><a>Totting Up</a><a>Mobile Phone</a></div><div class="ftr-col"><h5>Contact</h5><a>john@johnviolaris.lawyer</a></div></div><div class="ftr-bot"><p>© 2025 John Violaris. SRA regulated.</p><div class="sra-pill">SRA Regulated</div></div></footer>
+</div>
+
+<!-- ══════════════ CONTACT ══════════════ -->
+<div class="page-panel" id="p-contact">
+  <header class="site-hdr"><div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Motoring Defence Solicitor</div></div></div><nav class="hnav"><a>About</a><a>Services</a><a>Fees</a><a>Blog</a><a>Contact</a><a class="hcta">Free Consultation</a></nav></header>
+  <section class="con-hero"><div class="slbl">Get In Touch</div><h1>Talk to <em>John directly.</em><br>No call centres.</h1><p>When you contact me, you speak to me. I offer a free initial consultation on all motoring and police station cases. Response within 24 hours.</p></section>
+  <div class="con-layout">
+    <div class="con-form">
+      <h2>Tell me about your case</h2>
+      <div class="form-row"><div class="fg"><label>First Name</label><input type="text" placeholder="Your first name"></div><div class="fg"><label>Last Name</label><input type="text" placeholder="Your last name"></div></div>
+      <div class="form-row"><div class="fg"><label>Phone Number</label><input type="tel" placeholder="Best number to reach you"></div><div class="fg"><label>Email Address</label><input type="email" placeholder="your@email.com"></div></div>
+      <div class="fg"><label>Type of Matter</label><select><option>— Please select —</option><option>Drink Driving</option><option>Drug Driving</option><option>Totting Up / 12+ Points</option><option>Exceptional Hardship</option><option>Special Reasons</option><option>Speeding</option><option>Dangerous Driving</option><option>Careless Driving</option><option>Mobile Phone Whilst Driving</option><option>No Insurance</option><option>Failing to Stop / Report</option><option>Section 172 — Driver Details</option><option>Police Station — Motoring</option><option>Police Station — Other Offence</option><option>Other / Not Sure</option></select></div>
+      <div class="fg"><label>Court Date (if known)</label><input type="text" placeholder="e.g. 15 March 2026 — or 'not yet listed'"></div>
+      <div class="fg"><label>Court Location (if known)</label><input type="text" placeholder="e.g. Highbury Corner Magistrates' Court"></div>
+      <div class="fg"><label>Brief Description of Your Case</label><textarea placeholder="Tell me what happened. The more detail you provide, the more useful my initial response will be. Everything you tell me is treated in strict confidence."></textarea></div>
+      <button class="btn-g" style="font-size:12px;padding:12px 28px;">Send Enquiry →</button>
+      <p style="font-size:11px;color:var(--grey);margin-top:10px;">Your enquiry is confidential. I aim to respond within one working day. Submitting this form does not create a solicitor-client relationship.</p>
+    </div>
+    <div class="con-sidebar">
+      <div class="con-meth"><h4>Call Direct</h4><p>0[###] ### ####</p><div class="note">Monday–Friday, 9am–6pm</div></div>
+      <div class="con-meth"><h4>Email</h4><p>john@johnviolaris.lawyer</p><div class="note">Response within 24 hours</div></div>
+      <div class="con-meth"><h4>Coverage</h4><p>England &amp; Wales</p><div class="note">Based in London. Attending courts nationwide. Overnight travel factored into fees where required.</div></div>
+      <div class="con-meth"><h4>Free Consultation</h4><p>All initial consultations are free of charge and without obligation.</p></div>
+      <div class="urgent-box"><h4>⚡ Court Tomorrow?</h4><p>If your hearing is imminent, call rather than email. I will do everything I can to assist at short notice — including same-day advice.</p></div>
+      <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:16px;margin-top:4px;"><p style="color:rgba(250,250,248,.26);font-size:11px;line-height:1.7;">John Violaris is a solicitor of England and Wales, regulated by the Solicitors Regulation Authority. SRA number: [insert]. A complaints procedure is available on request. Practising through Darryl Ingram Solicitors.</p></div>
+    </div>
+  </div>
+  <footer class="ftr"><div class="ftr-grid"><div class="ftr-col"><p style="font-family:var(--font-d);color:var(--gold);font-size:16px;margin-bottom:9px;font-weight:700">John Violaris</p><p>Motoring defence solicitor. Personal representation across England and Wales.</p></div><div class="ftr-col"><h5>Services</h5><a>All Services</a></div><div class="ftr-col"><h5>Information</h5><a>About John</a><a>Fees</a><a>Blog</a></div><div class="ftr-col"><h5>Contact</h5><a>john@johnviolaris.lawyer</a><a>0[###] ### ####</a><a>drivingjustice.com</a></div></div><div class="ftr-bot"><p>© 2025 John Violaris. SRA regulated. johnviolaris.lawyer</p><div class="sra-pill">SRA Regulated</div></div></footer>
+</div>
+
+<!-- ══════════════ INDIVIDUAL SERVICE PAGES — LINK PANELS ══════════════ -->
+<!-- These pages have their own full HTML files; shown here as rich previews -->
+
+<div class="page-panel" id="p-drink">
+  <header class="site-hdr"><div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Motoring Defence Solicitor</div></div></div><nav class="hnav"><a>About</a><a>Services</a><a>Fees</a><a>Blog</a><a>Contact</a><a class="hcta">Free Consultation</a></nav></header>
+  <div style="background:var(--navy);padding:48px;display:grid;grid-template-columns:1fr 200px;gap:28px;align-items:start;position:relative;overflow:hidden;">
+    <div style="position:relative;z-index:1;"><div class="slbl">Driving Offences</div><h1 style="font-family:var(--font-d);font-size:40px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:16px;">Driving with<br>Excess Alcohol —<br><em style="color:var(--gold);font-style:italic;">Specialist Defence</em></h1><p style="color:rgba(250,250,248,.62);font-size:14px;max-width:540px;line-height:1.75;margin-bottom:24px;">Being accused of drink driving is stressful and potentially life-changing. A minimum 12-month disqualification can affect your career, your family, and your independence. Before you enter a plea, speak to me.</p><div style="display:flex;gap:11px;"><a class="btn-g">Free Initial Consultation →</a><a class="btn-o">See Fees</a></div></div>
+    <div style="display:flex;flex-direction:column;gap:9px;position:relative;z-index:1;"><div style="background:rgba(181,52,28,.1);border:1px solid rgba(181,52,28,.28);border-radius:5px;padding:13px 16px;text-align:center;"><div style="color:#E8856D;font-family:var(--font-d);font-size:15px;font-weight:700;">12-month minimum ban</div><div style="color:rgba(250,250,248,.38);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;">Mandatory on conviction</div></div><div style="background:rgba(181,52,28,.1);border:1px solid rgba(181,52,28,.28);border-radius:5px;padding:13px 16px;text-align:center;"><div style="color:#E8856D;font-family:var(--font-d);font-size:15px;font-weight:700;">Up to 6 months' custody</div><div style="color:rgba(250,250,248,.38);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;">Most serious cases</div></div><div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.22);border-radius:5px;padding:13px 16px;text-align:center;"><div style="color:var(--gold-lt);font-family:var(--font-d);font-size:15px;font-weight:700;">3 years minimum</div><div style="color:rgba(250,250,248,.38);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;">Second offence within 10 years</div></div></div>
+  </div>
+  <div style="background:var(--off);border-bottom:1px solid var(--grey-lt);padding:22px 48px;"><p style="font-size:15px;color:var(--navy);line-height:1.75;max-width:840px;font-style:italic;">This is a full-content page covering <strong>all defence issues</strong> in detail: evidential sufficiency, identity of driver, procedural irregularities, sampling compliance, post-drive consumption, special reasons, and the complete sentencing guidelines table. <a onclick="openFile('jv-drink-driving')" style="color:var(--gold);cursor:pointer;font-weight:600;">→ Open the full Drink Driving page</a></p></div>
+  <div style="padding:44px 48px;background:var(--white);"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"><div style="background:var(--off);border:1px solid var(--grey-lt);border-radius:5px;padding:18px;border-top:3px solid var(--gold);"><h4 style="font-family:var(--font-d);font-size:15px;color:var(--navy);margin-bottom:8px;">Defence Issues Covered</h4><p style="font-size:12.5px;color:var(--grey);line-height:1.65;">Evidential sufficiency, identity, procedural irregularities, sampling, post-drive consumption, special reasons, mitigation</p></div><div style="background:var(--off);border:1px solid var(--grey-lt);border-radius:5px;padding:18px;border-top:3px solid var(--gold);"><h4 style="font-family:var(--font-d);font-size:15px;color:var(--navy);margin-bottom:8px;">Sentencing Guidelines Table</h4><p style="font-size:12.5px;color:var(--grey);line-height:1.65;">Full breath/blood/urine reading bands with starting points, ranges, and disqualification periods from the Sentencing Council</p></div><div style="background:var(--off);border:1px solid var(--grey-lt);border-radius:5px;padding:18px;border-top:3px solid var(--gold);"><h4 style="font-family:var(--font-d);font-size:15px;color:var(--navy);margin-bottom:8px;">Sticky Sidebar CTA</h4><p style="font-size:12.5px;color:var(--grey);line-height:1.65;">Contact card, related pages, and fee summary scrolls with the reader throughout the page</p></div></div></div>
+  <div class="cta-ban"><h2>Charged with drink driving? <em>Call me before you enter a plea.</em></h2><div class="cta-r"><div class="phone-big">0[###] ### ####</div><a class="btn-g">Free Consultation</a></div></div>
+</div>
+
+<!-- GENERIC SERVICE PAGE TEMPLATE for remaining offences -->
+<script>
+const servicePages = {
+  drug:      { title:"Drug Driving — Specialist Legal Defence", sub:"Drug driving cases are more technical than they first appear. The right answer depends on the reading, the drug involved, the police procedure, and whether the charge is right.", file:"jv-drug-driving", icon:"🌿", pen1:"12-month minimum ban", pen2:"Up to 6 months' custody", pen3:"Medical defence possible" },
+  speeding:  { title:"Caught Speeding — Know Your Options First", sub:"Most speeding cases begin with a fixed penalty. But if you already have points, the stakes change completely. The totting up provisions may be triggered.", file:"jv-speeding-totting", icon:"🚗", pen1:"3–6 penalty points", pen2:"Up to £2,500 fine", pen3:"6-month totting ban at 12 pts" },
+  ftp:       { title:"Failing to Provide a Specimen — Specialist Defence", sub:"Treated almost as seriously as drink driving itself. A mandatory 12-month ban follows conviction in most cases — and the technical issues that determine guilt are often missed.", file:"jv-failing-to-provide", icon:"🫁", pen1:"12-month minimum ban", pen2:"Up to 6 months' custody", pen3:"DR31 — 11 years on licence" },
+  careless:  { title:"Careless Driving — More Serious Than It Looks", sub:"Revised sentencing guidelines have raised the stakes. Discretionary bans are more common including in first-time, non-injury cases. Updated July 2025.", file:"jv-careless-driving", icon:"🚘", pen1:"3–9 penalty points", pen2:"Unlimited fine", pen3:"Discretionary ban possible" },
+  dangerous: { title:"Dangerous Driving — Specialist Defence at Every Stage", sub:"One of the most serious motoring offences. Mandatory ban, compulsory extended re-test, and a real risk of custody. Crown Court jurisdiction as well as magistrates.", file:"jv-dangerous-driving", icon:"⚠️", pen1:"Mandatory 12-month ban", pen2:"Up to 2 years' custody", pen3:"Compulsory extended re-test" },
+  mobile:    { title:"Mobile Phone Offence — Six Points Is Not Minor", sub:"A mobile phone charge carries 6 penalty points. For anyone close to 12 points, or within 2 years of passing, a single fixed penalty can end your licence entirely.", file:"jv-mobile-phone", icon:"📱", pen1:"6 penalty points", pen2:"Up to £1,000 fine", pen3:"3 pts possible (Reg. 104)" },
+  insurance: { title:"Driving Without Insurance — Strict Liability, Real Options", sub:"Strict liability does not mean no options. Special reasons, a genuine belief defence, and the employee exception are all available in the right cases.", file:"jv-no-insurance", icon:"🛡️", pen1:"6 mandatory points", pen2:"Unlimited fine", pen3:"Vehicle seized at roadside" },
+  fts:       { title:"Failing to Stop or Report — Two Separate Charges", sub:"Section 170 creates two distinct offences. A driver can satisfy one duty and breach the other. Each can be defended independently.", file:"jv-failing-to-stop", icon:"🛑", pen1:"5–10 penalty points", pen2:"Unlimited fine", pen3:"Up to 26 weeks' custody" },
+  s172:      { title:"Failing to Provide Driver Details (s.172)", sub:"The penalty is often harsher than the original offence. Six points for not responding to a form. Reasonable diligence is a real defence — but it needs evidence.", file:"jv-s172-driver-details", icon:"📬", pen1:"6 mandatory points", pen2:"Up to £1,000 fine", pen3:"21-day stat dec if convicted in absence" },
+  special:   { title:"Special Reasons — Guilty of the Offence, But Not the Ban", sub:"A special reasons argument allows the court to step back from mandatory disqualification even where guilt is not in dispute. Properly argued, it can keep your licence.", file:"jv-special-reasons", icon:"✨", pen1:"No ban if accepted", pen2:"No points if accepted", pen3:"Conviction still stands" }
+};
+</script>
+
+</div><!-- /viewport -->
+</div><!-- /chrome -->
+
+<script>
+// Page switching
+function showPage(id, el, url) {
+  document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  // Check for service pages that need dynamic rendering
+  const serviceData = {
+    drug:'drug', speeding:'speeding', ftp:'ftp', careless:'careless',
+    dangerous:'dangerous', mobile:'mobile', insurance:'insurance',
+    fts:'fts', s172:'s172', special:'special'
+  };
+
+  if (serviceData[id]) {
+    renderServicePage(id);
+  }
+
+  const panel = document.getElementById('p-' + id);
+  if (panel) {
+    panel.classList.add('active');
+    document.getElementById('viewport').scrollTo({top:0, behavior:'instant'});
+  }
+  if (el) el.classList.add('active');
+  if (url) document.getElementById('url-display').textContent = url;
+}
+
+function renderServicePage(id) {
+  const d = typeof servicePages !== 'undefined' && servicePages[id];
+  if (!d) return;
+  let panel = document.getElementById('p-' + id);
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.className = 'page-panel';
+    panel.id = 'p-' + id;
+    panel.innerHTML = `
+      <header class="site-hdr"><div class="logo"><div class="logo-i">JV</div><div class="logo-t"><div class="ln">John Violaris</div><div class="ls">Motoring Defence Solicitor</div></div></div><nav class="hnav"><a>About</a><a>Services</a><a>Fees</a><a>Blog</a><a>Contact</a><a class="hcta">Free Consultation</a></nav></header>
+      <div style="background:var(--navy);padding:48px;display:grid;grid-template-columns:1fr 200px;gap:28px;align-items:start;position:relative;overflow:hidden;">
+        <div style="position:relative;z-index:1;">
+          <div class="slbl">Driving Offences</div>
+          <h1 style="font-family:var(--font-d);font-size:38px;font-weight:900;color:var(--white);line-height:1.1;margin-bottom:16px;">${d.title.replace(' — ','<br><em style="color:var(--gold);font-style:italic;">').replace(/(<br><em[^>]*>)(.+)$/,'$1$2</em>')}</h1>
+          <p style="color:rgba(250,250,248,.62);font-size:14px;max-width:540px;line-height:1.75;margin-bottom:24px;">${d.sub}</p>
+          <div style="display:flex;gap:11px;"><a class="btn-g">Free Initial Consultation →</a><a class="btn-o">See Fees</a></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;position:relative;z-index:1;">
+          <div style="background:rgba(181,52,28,.1);border:1px solid rgba(181,52,28,.28);border-radius:5px;padding:13px 16px;text-align:center;"><div style="color:#E8856D;font-family:var(--font-d);font-size:14px;font-weight:700;">${d.pen1}</div></div>
+          <div style="background:rgba(181,52,28,.1);border:1px solid rgba(181,52,28,.28);border-radius:5px;padding:13px 16px;text-align:center;"><div style="color:#E8856D;font-family:var(--font-d);font-size:14px;font-weight:700;">${d.pen2}</div></div>
+          <div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.22);border-radius:5px;padding:13px 16px;text-align:center;"><div style="color:var(--gold-lt);font-family:var(--font-d);font-size:13px;font-weight:700;">${d.pen3}</div></div>
+        </div>
+      </div>
+      <div style="background:var(--off);border-bottom:1px solid var(--grey-lt);padding:20px 48px;">
+        <p style="font-size:14.5px;color:var(--navy);line-height:1.75;font-style:italic;">This is a fully built, content-complete page. <a onclick="openFile('${d.file}')" style="color:var(--gold);cursor:pointer;font-weight:600;font-style:normal;">→ Open the full standalone page</a> to see all sections: defences, sentencing guidelines, process walkthrough, and the full evidence sidebar.</p>
+      </div>
+      <div style="padding:44px 48px;background:var(--white);">
+        <div class="slbl">What this page contains</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px;">
+          <div style="background:var(--off);border:1px solid var(--grey-lt);border-radius:5px;padding:18px;border-top:3px solid var(--gold);">
+            <h4 style="font-family:var(--font-d);font-size:15px;color:var(--navy);margin-bottom:8px;">Legal Framework</h4>
+            <p style="font-size:12.5px;color:var(--grey);line-height:1.65;">Statute, case law references, and the full sentencing guidelines with culpability/harm tables</p>
+          </div>
+          <div style="background:var(--off);border:1px solid var(--grey-lt);border-radius:5px;padding:18px;border-top:3px solid var(--gold);">
+            <h4 style="font-family:var(--font-d);font-size:15px;color:var(--navy);margin-bottom:8px;">Defence Arguments</h4>
+            <p style="font-size:12.5px;color:var(--grey);line-height:1.65;">All recognised defences presented as scannable defence cards with what each requires in practice</p>
+          </div>
+          <div style="background:var(--off);border:1px solid var(--grey-lt);border-radius:5px;padding:18px;border-top:3px solid var(--gold);">
+            <h4 style="font-family:var(--font-d);font-size:15px;color:var(--navy);margin-bottom:8px;">Process &amp; Outcomes</h4>
+            <p style="font-size:12.5px;color:var(--grey);line-height:1.65;">Step-by-step process walkthrough, possible outcomes grid, and sticky contact sidebar throughout</p>
+          </div>
+        </div>
+      </div>
+      <div class="cta-ban"><h2>Have questions about this offence? <em>Call me — it's free.</em></h2><div class="cta-r"><div class="phone-big">0[###] ### ####</div><a class="btn-g">Free Consultation</a></div></div>
+      <footer class="ftr"><div class="ftr-grid"><div class="ftr-col"><p style="font-family:var(--font-d);color:var(--gold);font-size:16px;margin-bottom:9px;font-weight:700">John Violaris</p><p>Motoring defence solicitor. Personal representation across England and Wales.</p></div><div class="ftr-col"><h5>Services</h5><a>All Services →</a></div><div class="ftr-col"><h5>Information</h5><a>About John</a><a>Fees</a></div><div class="ftr-col"><h5>Contact</h5><a>john@johnviolaris.lawyer</a></div></div><div class="ftr-bot"><p>© 2025 John Violaris. SRA regulated.</p><div class="sra-pill">SRA Regulated</div></div></footer>
+    `;
+    document.getElementById('viewport').appendChild(panel);
+  }
+}
+
+function openFile(name) {
+  alert('In the live website, this would navigate to the full ' + name + ' page.\n\nThe standalone HTML files have been delivered separately — open them directly in your browser to review the full content.');
+}
+
+// Keyboard navigation hint
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') showPage('home', document.querySelector('.nav-item'), 'johnviolaris.lawyer');
+});
+</script>
+</body>
+</html>

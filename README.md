@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# John Violaris — Criminal Defence Solicitor
 
-## Getting Started
-
-First, run the development server:
+Next.js 16 App Router, React 19, TypeScript and Tailwind CSS v4.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Current implementation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+An editorial redesign using the exact reference HTML navy, gold and warm whites, with large
+serif typography and a typographic JV identity. The design intentionally works
+without stock portraits or invented client reviews.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Homepage with personal introduction, experience statistics, service explorer,
+  police station feature, process, expandable FAQs, fees preview and consultation CTA.
+- Original all-services mega-menu retained, including mouse hover, click,
+  keyboard activation, Escape dismissal and inert closed content. Available from
+  640px upward; smaller screens reach the catalogue through the mobile navigation.
+- Mobile navigation with scroll lock, focus trapping, Escape/close controls and
+  automatic dismissal on navigation or resizing to desktop.
+- About, Services, Police Station, Fees, Contact and Useful Information pages.
+- Fifteen service pages generated from a shared template and the service catalogue.
+- Page-specific titles, descriptions and canonical URLs; existing homepage structured data.
+- Consultation links route to the contact page until a real booking URL is configured.
 
-## Learn More
+## Content and configuration
 
-To learn more about Next.js, take a look at the following resources:
+`lib/site-config.ts` holds shared contact, booking, domain and navigation settings.
+Optional public environment variables (read at build time):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable                      | Purpose                            |
+| ----------------------------- | ---------------------------------- |
+| `NEXT_PUBLIC_PHONE_NUMBER`    | Confirmed E.164 telephone number   |
+| `NEXT_PUBLIC_PHONE_DISPLAY`   | Human-readable telephone number    |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | International digits for WhatsApp  |
+| `NEXT_PUBLIC_BOOKING_URL`     | Confirmed TidyCal consultation URL |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Phone and WhatsApp links fall back to the contact page when unset; no fabricated
+number is dialled. The contact page explains the outstanding preview details.
+Confirm the existing email address (`contact@johnviolaris.com`) before launch.
+Set the verified SRA number in central configuration when supplied.
 
-## Deploy on Vercel
+`lib/content/services.ts` remains the service catalogue. Concise service summaries
+live in `lib/content/service-descriptions.ts`. Check all professional claims,
+statute references and marketing copy with John before publication. The older
+`lib/content/home.ts` retains previous draft content for reference; its placeholder
+reviews and career history are not rendered by the redesigned pages.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scope still outstanding
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This is the public frontend redesign, not the complete production system in
+`prd.md`. Supabase CMS/authentication, a contact form with Resend delivery, a
+managed blog, analytics, sitemap/robots, domain configuration and production
+launch remain separate work. The contact page currently uses direct contact links;
+it does not pretend to submit or store an enquiry. The resources page contains
+preparation information, not invented blog articles.
+
+The existing Next.js/Vercel architecture is retained. No deployment or changes to
+external services are part of this local redesign.
+
+## Design and accessibility
+
+Shared styling lives in `app/globals.css`; reusable editorial page intros live in
+`components/pages/page-intro.tsx`. Components default to server rendering except
+navigation and the interactive service explorer. The explorer uses accessible
+tabs with arrow, Home and End keys. FAQs use native `details`/`summary` controls.
+The layout includes visible focus states and reduced-motion support.
+
+Responsive checks cover 375px, 768px, 1024px and 1440px. The mobile hero reflows the
+monogram card into a compact layout; service cards become a single column and
+sticky service contact panels return to normal flow.
