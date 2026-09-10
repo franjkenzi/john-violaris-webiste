@@ -7,6 +7,8 @@ import { MeetJohn } from "@/components/sections/meet-john";
 import { PoliceStation } from "@/components/sections/police-station";
 import { ProcessSteps } from "@/components/sections/process-steps";
 import { ServicesGrid } from "@/components/sections/services-grid";
+import { Testimonials } from "@/components/sections/testimonials";
+import { WhyInstruct } from "@/components/sections/why-instruct";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -63,8 +65,10 @@ export default function HomePage() {
       <Hero />
       <ServicesGrid />
       <MeetJohn />
+      <WhyInstruct />
       <PoliceStation />
       <ProcessSteps />
+      <Testimonials />
       <FeesPreview />
       <CtaBanner heading="Let’s take the" emphasis="next step. Together." />
     </>

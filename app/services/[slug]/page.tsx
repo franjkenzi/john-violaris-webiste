@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/pages/page-intro";
 import { Container } from "@/components/ui/container";
+import { OnThisPage } from "@/components/ui/on-this-page";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
 import { allServices, serviceGroups } from "@/lib/content/services";
@@ -48,6 +49,16 @@ export default async function ServicePage({
         group.services.some((item) => item.href === service.href),
       )
       ?.services.filter((item) => item.href !== service.href) ?? [];
+  /* Mirrors the headings rendered below, in document order. */
+  const sections = [
+    ...(detail ? [{ id: "at-a-glance", label: "At a glance" }] : []),
+    { id: "your-options", label: "Clarity first" },
+    ...(detail
+      ? [{ id: "how-the-case-proceeds", label: "How the case proceeds" }]
+      : []),
+    { id: "what-to-share", label: "What to share with John" },
+    { id: "personal-representation", label: "Personal representation" },
+  ];
   return (
     <>
       <PageIntro
@@ -99,7 +110,7 @@ export default async function ServicePage({
                   <p className="eyebrow">
                     <span className="small-rule" /> {detail.issuesHeading}
                   </p>
-                  <h2 className="display-heading">
+                  <h2 id="your-options" className="display-heading">
                     Clarity first.
                     <br />
                     <em>Then a way forward.</em>
@@ -113,7 +124,7 @@ export default async function ServicePage({
                       </div>
                     ))}
                   </dl>
-                  <h3>How the case proceeds</h3>
+                  <h3 id="how-the-case-proceeds">How the case proceeds</h3>
                   <ol className="detail-process">
                     {detail.process.map((step, index) => (
                       <li key={step.title}>
@@ -127,7 +138,7 @@ export default async function ServicePage({
                       </li>
                     ))}
                   </ol>
-                  <h3>What to share with John</h3>
+                  <h3 id="what-to-share">What to share with John</h3>
                   <ul>
                     <li>
                       Any notice, letter or charge paperwork you have received
@@ -147,7 +158,7 @@ export default async function ServicePage({
                     <span className="small-rule" /> Your case, considered
                     carefully
                   </p>
-                  <h2 className="display-heading">
+                  <h2 id="your-options" className="display-heading">
                     Clarity first.
                     <br />
                     <em>Then a way forward.</em>
@@ -157,7 +168,7 @@ export default async function ServicePage({
                     time to understand what has happened, review the material
                     available and explain how he can assist.
                   </p>
-                  <h3>What to share with John</h3>
+                  <h3 id="what-to-share">What to share with John</h3>
                   <ul>
                     <li>
                       Any notice, letter or charge paperwork you have received
@@ -172,7 +183,7 @@ export default async function ServicePage({
                   </ul>
                 </>
               )}
-              <h3>Personal representation</h3>
+              <h3 id="personal-representation">Personal representation</h3>
               <p>
                 You will discuss your case directly with John. Before you decide
                 to instruct him, he will explain the proposed work and discuss
@@ -183,26 +194,29 @@ export default async function ServicePage({
                 <Icon name="arrowRight" size={17} />
               </Link>
             </div>
-            <aside className="service-contact-card">
-              <span className="eyebrow">Speak directly to John</span>
-              <h2>
-                It starts with
-                <br />
-                <em>a conversation.</em>
-              </h2>
-              <p>
-                A free initial consultation. A chance to explain your situation
-                and understand the next step.
-              </p>
-              <Link href={siteConfig.bookingUrl} className="action-button">
-                Discuss your case <Icon name="arrowRight" size={17} />
-              </Link>
-              <span className="service-contact-caption">
-                20+ years in criminal defence
-                <br />
-                Representing clients across England & Wales
-              </span>
-            </aside>
+            <div className="page-rail">
+              <OnThisPage items={sections} />
+              <aside className="service-contact-card">
+                <span className="eyebrow">Speak directly to John</span>
+                <h2>
+                  It starts with
+                  <br />
+                  <em>a conversation.</em>
+                </h2>
+                <p>
+                  A free initial consultation. A chance to explain your
+                  situation and understand the next step.
+                </p>
+                <Link href={siteConfig.bookingUrl} className="action-button">
+                  Discuss your case <Icon name="arrowRight" size={17} />
+                </Link>
+                <span className="service-contact-caption">
+                  20+ years in criminal defence
+                  <br />
+                  Representing clients across England & Wales
+                </span>
+              </aside>
+            </div>
           </div>
           {related.length > 0 && (
             <div className="related-services">

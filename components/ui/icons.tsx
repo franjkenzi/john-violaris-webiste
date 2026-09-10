@@ -138,6 +138,7 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M3 10h18M8 3v4M16 3v4" />
     </>
   ),
+  check: <path d="m4.5 12.5 5 5 10-11" />,
   arrowRight: <path d="M4 12h15m-5.5-5.5L19.5 12l-6 5.5" />,
   menu: <path d="M3.5 7h17M3.5 12h17M3.5 17h17" />,
   close: <path d="M5.5 5.5l13 13M18.5 5.5l-13 13" />,

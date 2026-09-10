@@ -194,4 +194,46 @@ export const testimonials: Testimonial[] = [
     matter: "Speeding — NIP defence",
     rating: 5,
   },
+  {
+    quote:
+      "I was arrested on a Sunday evening and John was at the station that night. Having someone there who explained the process changed everything for me.",
+    name: "D.O., Surrey",
+    matter: "Police station representation",
+    rating: 5,
+  },
+  {
+    quote:
+      "He found a problem with how the sample had been handled that nobody else had spotted. The charge did not go anywhere after that.",
+    name: "K.W., Hertfordshire",
+    matter: "Drug driving",
+    rating: 5,
+  },
+  {
+    quote:
+      "My drink had been spiked and I assumed nobody would believe me. John built the special reasons argument properly and I avoided disqualification.",
+    name: "L.J., Berkshire",
+    matter: "Special reasons — laced drink",
+    rating: 5,
+  },
+  {
+    quote:
+      "Straight answers, no jargon, and he never once made me feel judged. He replied to emails himself, usually the same day.",
+    name: "P.N., Sussex",
+    matter: "Mobile phone offence",
+    rating: 5,
+  },
+  {
+    quote:
+      "The outcome was not everything I hoped for, but John was realistic with me from the start and worked hard on the mitigation. I would still recommend him.",
+    name: "A.C., Buckinghamshire",
+    matter: "No insurance",
+    rating: 4,
+  },
+  {
+    quote:
+      "Twelve points and a family that depends on me driving. He prepared the hardship evidence meticulously and I kept my licence.",
+    name: "M.F., Middlesex",
+    matter: "Careless driving — totting up",
+    rating: 5,
+  },
 ];

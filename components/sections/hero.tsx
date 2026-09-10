@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OffenceStrip } from "@/components/sections/offence-strip";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { siteConfig } from "@/lib/site-config";
@@ -72,6 +73,7 @@ export function Hero() {
           <span>Personal representation. Serious experience.</span>
         </div>
       </Container>
+      <OffenceStrip />
       <div className="experience-band">
         <Container>
           <dl className="experience-grid">

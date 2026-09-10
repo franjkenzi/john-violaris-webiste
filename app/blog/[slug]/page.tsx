@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
+import { OnThisPage } from "@/components/ui/on-this-page";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
 import { articles, findArticle } from "@/lib/content/blog";
 import { allServices } from "@/lib/content/services";
 import { siteConfig } from "@/lib/site-config";
+import { slugify } from "@/lib/slug";
 
 export function generateStaticParams() {
   return articles.map((article) => ({ slug: article.slug }));
@@ -45,6 +47,10 @@ export default async function ArticlePage({
     (service) => service.href === article.relatedService,
   );
   const more = articles.filter((item) => item.slug !== article.slug).slice(0, 3);
+  const sections = article.body.map((block) => ({
+    id: slugify(block.heading),
+    label: block.heading,
+  }));
 
   return (
     <>
@@ -72,7 +78,7 @@ export default async function ArticlePage({
             <div className="article-body">
               {article.body.map((block) => (
                 <section key={block.heading}>
-                  <h2>{block.heading}</h2>
+                  <h2 id={slugify(block.heading)}>{block.heading}</h2>
                   {block.paragraphs.map((paragraph) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}
@@ -106,26 +112,29 @@ export default async function ArticlePage({
               )}
             </div>
 
-            <aside className="service-contact-card">
-              <span className="eyebrow">Speak directly to John</span>
-              <h2>
-                It starts with
-                <br />
-                <em>a conversation.</em>
-              </h2>
-              <p>
-                A free initial consultation. A chance to explain your situation
-                and understand the next step.
-              </p>
-              <Link href={siteConfig.bookingUrl} className="action-button">
-                Discuss your case <Icon name="arrowRight" size={17} />
-              </Link>
-              <span className="service-contact-caption">
-                20+ years in criminal defence
-                <br />
-                Representing clients across England &amp; Wales
-              </span>
-            </aside>
+            <div className="page-rail">
+              <OnThisPage items={sections} />
+              <aside className="service-contact-card">
+                <span className="eyebrow">Speak directly to John</span>
+                <h2>
+                  It starts with
+                  <br />
+                  <em>a conversation.</em>
+                </h2>
+                <p>
+                  A free initial consultation. A chance to explain your
+                  situation and understand the next step.
+                </p>
+                <Link href={siteConfig.bookingUrl} className="action-button">
+                  Discuss your case <Icon name="arrowRight" size={17} />
+                </Link>
+                <span className="service-contact-caption">
+                  20+ years in criminal defence
+                  <br />
+                  Representing clients across England &amp; Wales
+                </span>
+              </aside>
+            </div>
           </div>
 
           {more.length > 0 && (

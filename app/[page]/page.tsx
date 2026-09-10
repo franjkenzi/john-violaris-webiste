@@ -4,6 +4,8 @@ import { PageIntro } from "@/components/pages/page-intro";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
+import { CareerBand } from "@/components/sections/career-band";
+import { FeesMatrix } from "@/components/sections/fees-matrix";
 import { MeetJohn } from "@/components/sections/meet-john";
 import { ServicesGrid } from "@/components/sections/services-grid";
 import { PoliceStation } from "@/components/sections/police-station";
@@ -92,6 +94,7 @@ export default async function InformationPage({
       {page === "about" && (
         <>
           <MeetJohn />
+          <CareerBand />
           <ProcessSteps />
         </>
       )}
@@ -160,6 +163,7 @@ export default async function InformationPage({
               </div>
             </Container>
           </section>
+          <FeesMatrix />
           <FeesPreview />
         </>
       )}

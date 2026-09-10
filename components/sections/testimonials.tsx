@@ -1,52 +1,67 @@
 import { Container } from "@/components/ui/container";
-import { SectionLabel } from "@/components/ui/section-label";
-import { Stars } from "@/components/ui/stars";
+import { TestimonialColumn } from "@/components/ui/testimonial-column";
 import { testimonials } from "@/lib/content/home";
 
+/** Deal round-robin so neighbouring columns never show the same review. */
+const columns = [0, 1, 2].map((column) =>
+  testimonials.filter((_, index) => index % 3 === column),
+);
+
+/** Seconds per pass. Deliberately uneven so the columns drift out of step. */
+const durations = [26, 34, 30];
+
+/**
+ * Client voices, on navy so the section reads as a pause between the two light
+ * bands either side of it.
+ *
+ * The columns are a marquee at tablet width and up. Below that a single column
+ * carries every review instead — splitting three reviews across three columns
+ * would leave a phone showing only the first of them.
+ */
 export function Testimonials() {
   return (
-    <section className="bg-sand" aria-labelledby="testimonials-heading">
-      <Container className="py-16 lg:py-20">
-        <div className="max-w-2xl">
-          <SectionLabel>Client reviews</SectionLabel>
-          <h2
-            id="testimonials-heading"
-            className="mt-5 font-display text-[32px] leading-[1.14] font-bold text-ink sm:text-[38px]"
-          >
-            What clients say
-          </h2>
+    <section
+      className="voices-section section-space"
+      aria-labelledby="testimonials-heading"
+    >
+      <Container>
+        <div className="section-heading-row">
+          <div>
+            <p className="eyebrow">
+              <span className="small-rule" /> In their words
+            </p>
+            <h2 id="testimonials-heading" className="display-heading">
+              People who were
+              <br />
+              <em>where you are now.</em>
+            </h2>
+          </div>
+          <p className="section-intro">
+            Every case is different.
+            <br />
+            What stays the same is who handles it.
+          </p>
         </div>
 
-        <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((testimonial) => (
-            <li key={testimonial.name}>
-              <figure className="relative flex h-full flex-col bg-white p-7 shadow-[0_2px_24px_rgba(19,30,44,0.06)]">
-                <span
-                  aria-hidden="true"
-                  className="absolute top-4 right-6 font-display text-[64px] leading-none text-gold/18"
-                >
-                  &rdquo;
-                </span>
-                <Stars rating={testimonial.rating} />
-                <blockquote className="mt-4 flex-1 text-[15px] leading-[1.72] text-ink">
-                  {testimonial.quote}
-                </blockquote>
-                <figcaption className="mt-6 border-t border-line pt-4">
-                  <span className="block text-[13.5px] font-bold text-ink">
-                    {testimonial.name}
-                  </span>
-                  <span className="block text-[12px] text-muted">
-                    {testimonial.matter}
-                  </span>
-                </figcaption>
-              </figure>
-            </li>
+        <div className="voices-marquee">
+          <TestimonialColumn
+            testimonials={testimonials}
+            duration={30}
+            className="voices-column-stacked"
+          />
+          {columns.map((column, index) => (
+            <TestimonialColumn
+              key={index}
+              testimonials={column}
+              duration={durations[index]}
+              className={`voices-column-split voices-column-${index + 1}`}
+            />
           ))}
-        </ul>
+        </div>
 
-        <p className="mt-6 text-[12px] text-muted italic">
-          * Placeholder testimonials — to be replaced with verified reviews
-          before launch.
+        <p className="voices-note">
+          Placeholder reviews. These must be replaced with verified client
+          reviews before launch.
         </p>
       </Container>
     </section>

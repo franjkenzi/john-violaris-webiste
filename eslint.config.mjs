@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Downloaded reference projects kept for design comparison only.
+    ".refs-tmp/**",
   ]),
 ]);
 
