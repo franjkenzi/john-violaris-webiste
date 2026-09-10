@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/layout/logo";
-import { footerNav, mailtoHref, siteConfig } from "@/lib/site-config";
+import { footerNav, mailtoHref, siteConfig, telHref } from "@/lib/site-config";
 
 export function SiteFooter() {
   return (
@@ -43,7 +43,36 @@ export function SiteFooter() {
             <Link href={siteConfig.bookingUrl}>
               Arrange a consultation <span>↗</span>
             </Link>
-            <a href={mailtoHref}>{siteConfig.contact.email}</a>
+
+            {/*
+              The practical detail the reference firms all publish — how to
+              reach someone, how quickly they answer, where they work. Only
+              confirmed routes appear.
+            */}
+            <dl className="footer-facts">
+              <div>
+                <dt>Email</dt>
+                <dd>
+                  <a href={mailtoHref}>{siteConfig.contact.email}</a>
+                </dd>
+              </div>
+              {siteConfig.contact.phoneE164 ? (
+                <div>
+                  <dt>Telephone</dt>
+                  <dd>
+                    <a href={telHref}>{siteConfig.contact.phoneDisplay}</a>
+                  </dd>
+                </div>
+              ) : null}
+              <div>
+                <dt>Response</dt>
+                <dd>{siteConfig.contact.responseTime}</dd>
+              </div>
+              <div>
+                <dt>Coverage</dt>
+                <dd>{siteConfig.jurisdiction}</dd>
+              </div>
+            </dl>
           </div>
         </div>
         <div className="footer-bottom">

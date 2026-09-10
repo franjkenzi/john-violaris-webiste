@@ -16,6 +16,11 @@ without stock portraits or invented client reviews.
 
 - Homepage with personal introduction, experience statistics, service explorer,
   police station feature, process, expandable FAQs, fees preview and consultation CTA.
+- A persistent route to John on every page: a slim contact rail above the masthead
+  from 640px up, and a docked action bar below 1280px that appears once the hero
+  has been scrolled past. Both render only the routes that are configured.
+- Footer contact facts (email, telephone when set, response time, coverage) and a
+  plain-language note on the contact page that getting in touch is not instructing.
 - Original all-services mega-menu retained, including mouse hover, click,
   keyboard activation, Escape dismissal and inert closed content. Available from
   640px upward; smaller screens reach the catalogue through the mobile navigation.
@@ -39,7 +44,8 @@ Optional public environment variables (read at build time):
 | `NEXT_PUBLIC_BOOKING_URL`     | Confirmed TidyCal consultation URL |
 
 Phone and WhatsApp links fall back to the contact page when unset; no fabricated
-number is dialled. The contact page explains the outstanding preview details.
+number is dialled, and no view renders the placeholder string as if it were a
+number — the label changes instead ("Speak to John", "Urgent? Contact John"). The contact page explains the outstanding preview details.
 Confirm the existing email address (`contact@johnviolaris.com`) before launch.
 Set the verified SRA number in central configuration when supplied.
 

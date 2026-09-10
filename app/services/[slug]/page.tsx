@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
 import { allServices, serviceGroups } from "@/lib/content/services";
 import { serviceDescriptions } from "@/lib/content/service-descriptions";
+import { serviceDetails } from "@/lib/content/service-detail";
 import { siteConfig } from "@/lib/site-config";
 
 function findService(slug: string) {
@@ -25,9 +26,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = findService(slug);
   if (!service) return {};
+  const detail = serviceDetails[service.href];
   return {
     title: `${service.name} Solicitor`,
-    description: serviceDescriptions[service.href]?.intro,
+    description: detail?.intro ?? serviceDescriptions[service.href]?.intro,
     alternates: { canonical: service.href },
   };
 }
@@ -39,6 +41,7 @@ export default async function ServicePage({
   const { slug } = await params;
   const service = findService(slug);
   if (!service) notFound();
+  const detail = serviceDetails[service.href];
   const related =
     serviceGroups
       .find((group) =>
@@ -48,42 +51,127 @@ export default async function ServicePage({
   return (
     <>
       <PageIntro
-        eyebrow="Personal advice & representation"
-        title={service.name.replace(" · ", " / ")}
-        emphasis="Let’s understand your options."
+        /* The breadcrumb reads from `eyebrow`, so the offence name belongs here. */
+        eyebrow={service.name}
+        title={detail?.headline ?? service.name.replace(" · ", " / ")}
+        emphasis={detail?.emphasis ?? "Let’s understand your options."}
         description={
+          detail?.intro ??
           serviceDescriptions[service.href]?.intro ??
           "Personal advice and representation from John Violaris, across England and Wales."
         }
       />
+      {detail && (
+        <section className="penalty-strip" aria-labelledby="at-a-glance">
+          <Container>
+            <div className="penalty-strip-head">
+              <p className="eyebrow" id="at-a-glance">
+                <span className="small-rule" /> At a glance
+              </p>
+              {service.statute && (
+                <span className="penalty-statute">{service.statute}</span>
+              )}
+            </div>
+            <div className="penalty-cards">
+              {detail.penalties.map((penalty) => (
+                <div
+                  key={penalty.label}
+                  className={`penalty-card penalty-card--${penalty.tone}`}
+                >
+                  <strong>{penalty.label}</strong>
+                  <span>{penalty.note}</span>
+                </div>
+              ))}
+            </div>
+            <p className="penalty-caveat">
+              A general guide only. What applies in your case depends on its own
+              facts — John will explain where you stand.
+            </p>
+          </Container>
+        </section>
+      )}
       <section className="section-space">
         <Container>
           <div className="service-detail-grid">
             <div className="service-detail-copy">
-              <p className="eyebrow">
-                <span className="small-rule" /> Your case, considered carefully
-              </p>
-              <h2 className="display-heading">
-                Clarity first.
-                <br />
-                <em>Then a way forward.</em>
-              </h2>
-              <p>
-                Every case has its own circumstances. John will take the time to
-                understand what has happened, review the material available and
-                explain how he can assist.
-              </p>
-              <h3>What to share with John</h3>
-              <ul>
-                <li>
-                  Any notice, letter or charge paperwork you have received
-                </li>
-                <li>The dates and location of any hearing or interview</li>
-                <li>
-                  Your account of what happened and any supporting documents
-                </li>
-                <li>Your main concerns and the questions you want answered</li>
-              </ul>
+              {detail ? (
+                <>
+                  <p className="eyebrow">
+                    <span className="small-rule" /> {detail.issuesHeading}
+                  </p>
+                  <h2 className="display-heading">
+                    Clarity first.
+                    <br />
+                    <em>Then a way forward.</em>
+                  </h2>
+                  <p>{detail.issuesIntro}</p>
+                  <dl className="issue-list">
+                    {detail.defenceIssues.map((issue) => (
+                      <div key={issue.title}>
+                        <dt>{issue.title}</dt>
+                        <dd>{issue.body}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <h3>How the case proceeds</h3>
+                  <ol className="detail-process">
+                    {detail.process.map((step, index) => (
+                      <li key={step.title}>
+                        <span className="detail-process-number">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <div>
+                          <strong>{step.title}</strong>
+                          <p>{step.body}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                  <h3>What to share with John</h3>
+                  <ul>
+                    <li>
+                      Any notice, letter or charge paperwork you have received
+                    </li>
+                    <li>The dates and location of any hearing or interview</li>
+                    <li>
+                      Your account of what happened and any supporting documents
+                    </li>
+                    <li>
+                      Your main concerns and the questions you want answered
+                    </li>
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <p className="eyebrow">
+                    <span className="small-rule" /> Your case, considered
+                    carefully
+                  </p>
+                  <h2 className="display-heading">
+                    Clarity first.
+                    <br />
+                    <em>Then a way forward.</em>
+                  </h2>
+                  <p>
+                    Every case has its own circumstances. John will take the
+                    time to understand what has happened, review the material
+                    available and explain how he can assist.
+                  </p>
+                  <h3>What to share with John</h3>
+                  <ul>
+                    <li>
+                      Any notice, letter or charge paperwork you have received
+                    </li>
+                    <li>The dates and location of any hearing or interview</li>
+                    <li>
+                      Your account of what happened and any supporting documents
+                    </li>
+                    <li>
+                      Your main concerns and the questions you want answered
+                    </li>
+                  </ul>
+                </>
+              )}
               <h3>Personal representation</h3>
               <p>
                 You will discuss your case directly with John. Before you decide

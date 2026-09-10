@@ -1526,3 +1526,460 @@ body {
     margin-top: 35px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   PERSISTENT CONTACT
+   A thin contact rail above the masthead on larger screens, and a docked
+   action bar on small ones. Between them there is always a live route to
+   John on screen, whatever page the visitor landed on.
+   ══════════════════════════════════════════════════════════ */
+.utility-bar {
+  background: var(--color-navy-deep);
+  border-bottom: 1px solid rgb(201 168 76 / 14%);
+  color: rgb(250 250 248 / 62%);
+}
+.utility-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  /* Matches the Container gutter so the rail lines up with the masthead. */
+  padding: 0 32px;
+  height: 34px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.utility-promise {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.utility-promise span[aria-hidden] {
+  color: rgb(201 168 76 / 45%);
+  margin-right: 3px;
+}
+.utility-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--color-gold);
+  flex-shrink: 0;
+}
+.utility-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  white-space: nowrap;
+}
+.utility-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgb(250 250 248 / 72%);
+  transition: color 0.18s ease;
+}
+.utility-actions a:hover {
+  color: var(--color-gold-light);
+}
+.utility-actions svg {
+  color: var(--color-gold);
+  flex-shrink: 0;
+}
+
+@media (min-width: 1280px) {
+  .utility-bar-inner {
+    padding: 0 48px;
+  }
+}
+/* Shed the least essential item first, then the next, as room runs out. */
+@media (max-width: 1023px) {
+  .utility-bar .utility-response {
+    display: none;
+  }
+  .utility-bar-inner {
+    justify-content: center;
+    gap: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .utility-bar .utility-email {
+    display: none;
+  }
+}
+@media (max-width: 639px) {
+  /* The docked bar covers this ground on phones. */
+  .utility-bar {
+    display: none;
+  }
+}
+
+.mobile-contact-bar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 45;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 1px;
+  background: rgb(201 168 76 / 20%);
+  border-top: 1px solid rgb(201 168 76 / 35%);
+  box-shadow: 0 -10px 30px rgb(7 16 26 / 30%);
+  transition:
+    transform 0.28s ease,
+    opacity 0.28s ease;
+}
+.mobile-contact-bar[data-visible="false"] {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.mobile-contact-bar a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 15px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.mobile-contact-primary {
+  background: var(--color-gold);
+  color: var(--color-navy);
+}
+.mobile-contact-secondary {
+  background: var(--color-navy);
+  color: var(--color-cream);
+}
+@media (min-width: 1280px) {
+  .mobile-contact-bar {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-contact-bar {
+    transition: none;
+  }
+}
+
+/* Keep the docked bar clear of the last of the footer. */
+@media (max-width: 1279px) {
+  .editorial-footer {
+    padding-bottom: 85px;
+  }
+}
+
+/* Practical contact detail in the footer — label above value, hairline ruled. */
+.footer-facts {
+  margin-top: 26px;
+  border-top: 1px solid #ffffff20;
+}
+.footer-facts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid #ffffff10;
+}
+.footer-facts dt {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  flex-shrink: 0;
+}
+.footer-facts dd {
+  font-size: 11px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.footer-facts dd a:hover {
+  color: var(--color-gold);
+}
+
+/* Plain-language note that making contact is not yet instructing John. */
+.contact-disclaimer {
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-line);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--color-muted);
+  max-width: 46ch;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SERVICE PAGE — "at a glance" penalty strip
+   Replaces the three penalty cards that sat beside the heading in the demo's
+   service-page template (pen1 / pen2 / pen3).
+   ══════════════════════════════════════════════════════════ */
+.penalty-strip {
+  background: var(--color-off);
+  border-bottom: 1px solid var(--color-line);
+  padding: 34px 0 38px;
+}
+.penalty-strip-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.penalty-statute {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.penalty-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.penalty-card {
+  padding: 18px 20px;
+  border-radius: var(--radius-sharp);
+  border: 1px solid;
+}
+.penalty-card strong {
+  display: block;
+  font: 700 16px/1.35 var(--font-display);
+}
+.penalty-card span {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+.penalty-card--risk {
+  background: rgb(181 52 28 / 6%);
+  border-color: rgb(181 52 28 / 26%);
+}
+.penalty-card--risk strong {
+  color: var(--color-alert);
+}
+.penalty-card--note {
+  background: rgb(201 168 76 / 10%);
+  border-color: rgb(201 168 76 / 30%);
+}
+.penalty-card--note strong {
+  color: var(--color-gold-ink);
+}
+.penalty-caveat {
+  margin-top: 18px;
+  font-size: 11px;
+  line-height: 1.75;
+  color: var(--color-muted);
+  max-width: 62ch;
+}
+
+/* The points John examines, as a ruled definition list. */
+.issue-list {
+  margin-top: 30px;
+  border-top: 1px solid var(--color-line);
+}
+.issue-list > div {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.issue-list dt {
+  font: 400 20px/1.35 var(--font-display);
+  color: var(--color-navy);
+}
+.issue-list dd {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+/* Numbered "how the case proceeds" steps. */
+.detail-process {
+  margin-top: 8px;
+}
+.detail-process li {
+  display: flex;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.detail-process-number {
+  font: 400 13px/1 var(--font-display);
+  color: var(--color-gold-ink);
+  padding-top: 5px;
+  flex-shrink: 0;
+}
+.detail-process strong {
+  font: 400 19px/1.35 var(--font-display);
+  color: var(--color-navy);
+}
+.detail-process p {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+/* ══════════════════════════════════════════════════════════
+   BLOG — index cards and article pages
+   ══════════════════════════════════════════════════════════ */
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+.article-card {
+  border: 1px solid var(--color-line);
+  border-top: 3px solid var(--color-gold);
+  background: var(--color-cream);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.article-card:hover {
+  border-color: var(--color-sand);
+  border-top-color: var(--color-gold);
+  transform: translateY(-2px);
+}
+.article-card a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 26px;
+}
+.article-card-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--color-gold-ink);
+}
+.article-card h2 {
+  margin-top: 16px;
+  font: 400 21px/1.35 var(--font-display);
+  color: var(--color-navy);
+}
+.article-card p {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--color-body);
+}
+.article-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 20px;
+  font-size: 10px;
+  color: var(--color-muted);
+}
+
+.article-intro {
+  background: var(--color-navy);
+  color: var(--color-cream);
+  padding: 30px 0 60px;
+}
+.article-intro .eyebrow {
+  color: var(--color-gold);
+}
+.article-intro h1 {
+  font: 400 clamp(32px, 4vw, 52px)/1.2 var(--font-display);
+  letter-spacing: -1.2px;
+  margin-top: 22px;
+  max-width: 22ch;
+}
+.article-standfirst {
+  margin-top: 26px;
+  max-width: 620px;
+  font-size: 15px;
+  line-height: 1.85;
+  color: rgb(250 250 248 / 75%);
+}
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #ffffff26;
+  font-size: 10px;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: rgb(250 250 248 / 60%);
+}
+
+/* Same proportions as the service pages, so the sticky card behaves alike. */
+.article-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 100px;
+  align-items: start;
+}
+.article-body > section + section {
+  margin-top: 40px;
+}
+.article-body h2 {
+  font: 400 27px/1.3 var(--font-display);
+  color: var(--color-navy);
+  margin-bottom: 16px;
+}
+.article-body p {
+  font-size: 15px;
+  line-height: 1.9;
+}
+.article-body p + p {
+  margin-top: 16px;
+}
+.article-body ul {
+  list-style: disc;
+  padding-left: 18px;
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 2;
+}
+.article-body .text-link {
+  margin-top: 32px;
+}
+.article-disclaimer {
+  margin-top: 44px;
+  padding: 20px 22px;
+  background: var(--color-off);
+  border-left: 2px solid var(--color-gold);
+  font-size: 12px !important;
+  line-height: 1.8 !important;
+  color: var(--color-muted);
+}
+
+@media (max-width: 1023px) {
+  .article-layout {
+    gap: 40px;
+  }
+  .article-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .article-layout,
+  .article-grid,
+  .penalty-cards {
+    grid-template-columns: 1fr;
+  }
+  .penalty-strip {
+    padding: 26px 0 30px;
+  }
+  .detail-process li {
+    gap: 14px;
+  }
+}

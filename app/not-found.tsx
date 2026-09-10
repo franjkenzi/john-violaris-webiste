@@ -22,9 +22,15 @@ export default function NotFound() {
             <ButtonLink href="/" size="lg">
               Back to home
             </ButtonLink>
+            {/*
+              Until a number is confirmed this routes to the contact page
+              rather than rendering the placeholder as a phone number.
+            */}
             <ButtonLink href={telHref} variant="outline" size="lg">
               <Icon name="call" size={15} />
-              Call {siteConfig.contact.phoneDisplay}
+              {siteConfig.contact.phoneE164
+                ? `Call ${siteConfig.contact.phoneDisplay}`
+                : "Urgent? Contact John"}
             </ButtonLink>
           </div>
         </div>

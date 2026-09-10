@@ -227,7 +227,9 @@ export function ServicesMenu() {
                     className="flex items-center gap-2 font-display text-[17px] font-bold text-gold transition-colors hover:text-gold-light"
                   >
                     <Icon name="call" size={16} />
-                    {siteConfig.contact.phoneDisplay}
+                    {siteConfig.contact.phoneE164
+                      ? siteConfig.contact.phoneDisplay
+                      : "Speak to John"}
                   </a>
                   <Link
                     href="/services"

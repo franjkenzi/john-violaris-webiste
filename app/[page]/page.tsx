@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/pages/page-intro";
 import { Container } from "@/components/ui/container";
@@ -56,13 +55,11 @@ const pages: Record<
     description:
       "A free initial conversation, directly with John. Share your situation, your concerns and any important dates.",
   },
-  blog: {
-    eyebrow: "Useful information",
-    title: "A little clarity.",
-    emphasis: "Before we talk.",
-    description:
-      "Practical information to help you prepare for your first conversation with John.",
-  },
+  /*
+   * `blog` is deliberately absent: it has its own route at `app/blog/page.tsx`
+   * so that the index and the article pages under `/blog/[slug]` sit in one
+   * tree. Adding it back here would create two candidates for `/blog`.
+   */
 };
 export function generateStaticParams() {
   return Object.keys(pages).map((page) => ({ page }));
@@ -198,6 +195,17 @@ export default async function InformationPage({
                     <Icon name="whatsapp" size={20} />
                   </a>
                 </div>
+                {/*
+                  Standard practice on the reference firms' contact pages: say
+                  plainly that making contact is not yet instructing anyone.
+                */}
+                <p className="contact-disclaimer">
+                  Getting in touch does not create a solicitor–client
+                  relationship, and no relationship exists until John has
+                  confirmed he is able to act and the terms of business are
+                  agreed. Please do not send confidential details of your case
+                  until then.
+                </p>
               </div>
               <aside className="contact-note">
                 <p className="eyebrow">Your first conversation</p>
@@ -236,54 +244,6 @@ export default async function InformationPage({
             </div>
           </Container>
         </section>
-      )}
-      {page === "blog" && (
-        <>
-          <section className="section-space">
-            <Container>
-              <div className="information-grid">
-                <article>
-                  <span className="eyebrow">Getting ready</span>
-                  <h2>Your first conversation.</h2>
-                  <p>
-                    Bring together any documents you have received, note
-                    important dates and write down the questions you would like
-                    to ask. You don’t need to understand every legal term before
-                    getting in touch.
-                  </p>
-                  <Link href="/contact" className="text-link">
-                    Speak to John <Icon name="arrowRight" size={16} />
-                  </Link>
-                </article>
-                <article>
-                  <span className="eyebrow">Finding support</span>
-                  <h2>What are you facing?</h2>
-                  <p>
-                    Explore the areas of practice to find the support that fits
-                    your situation. If you’re unsure which category applies,
-                    explain what has happened to John directly.
-                  </p>
-                  <Link href="/services" className="text-link">
-                    Explore services <Icon name="arrowRight" size={16} />
-                  </Link>
-                </article>
-                <article>
-                  <span className="eyebrow">Planning ahead</span>
-                  <h2>Understanding fees.</h2>
-                  <p>
-                    Your first conversation is free. Before instructing John,
-                    discuss what work is needed, what the fees cover and how any
-                    further hearings would be handled.
-                  </p>
-                  <Link href="/fees" className="text-link">
-                    Read about fees <Icon name="arrowRight" size={16} />
-                  </Link>
-                </article>
-              </div>
-            </Container>
-          </section>
-          <FeesPreview />
-        </>
       )}
       {page !== "contact" && (
         <CtaBanner heading="Let’s take the" emphasis="next step. Together." />

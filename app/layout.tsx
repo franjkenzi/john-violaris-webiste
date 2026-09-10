@@ -5,8 +5,10 @@ import {
   Playfair_Display,
 } from "next/font/google";
 
+import { MobileContactBar } from "@/components/layout/mobile-contact-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { UtilityBar } from "@/components/layout/utility-bar";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
@@ -65,11 +67,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        <UtilityBar />
         <SiteHeader />
         <main id="main" className="flex-1">
           {children}
         </main>
         <SiteFooter />
+        <MobileContactBar />
       </body>
     </html>
   );
