@@ -42,6 +42,10 @@ export const metadata: Metadata = {
     "John Violaris is a criminal defence solicitor specialising in motoring offences and police station representation across England and Wales. You deal directly with John.",
   applicationName: siteConfig.name,
   authors: [{ name: siteConfig.name }],
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml", sizes: "any" }],
+    shortcut: ["/favicon.svg"],
+  },
   openGraph: {
     type: "website",
     locale: "en_GB",
