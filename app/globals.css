@@ -1466,6 +1466,9 @@ body {
   gap: 100px;
   align-items: start;
 }
+.service-detail-copy {
+  min-width: 0;
+}
 .service-detail-copy > p:not(.eyebrow) {
   font-size: 15px;
   line-height: 1.9;
@@ -2659,3 +2662,391 @@ body {
   means restoring this block *and* gating the effect in TestimonialColumn —
   one without the other leaves the track scrolling into empty space.
 */
+
+/* ══════════════════════════════════════════════════════════
+   REFERENCE CONTENT COMPLETION
+   About, police station, draft fees and enquiry preview
+   ══════════════════════════════════════════════════════════ */
+.about-background {
+  background: var(--color-off);
+}
+.about-background-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid var(--color-line);
+}
+.about-background-grid article {
+  padding: 34px 38px 38px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.about-background-grid article:nth-child(even) {
+  padding-right: 0;
+  padding-left: 38px;
+  border-left: 1px solid var(--color-line);
+}
+.about-background-grid article > span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--color-gold-ink);
+}
+.about-background-grid h3 {
+  margin: 15px 0;
+  font: 400 28px/1.25 var(--font-display);
+  color: var(--color-navy);
+}
+.about-background-grid p {
+  max-width: 620px;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.about-background-grid p + p {
+  margin-top: 12px;
+}
+
+.police-detail {
+  background: var(--color-off);
+}
+.police-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+  gap: 90px;
+  align-items: start;
+}
+.police-detail-copy > section {
+  padding: 30px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.police-detail-copy h3,
+.legal-aid-note h3,
+.police-urgent-card h3 {
+  font: 400 27px/1.3 var(--font-display);
+  color: var(--color-navy);
+}
+.police-detail-copy section p,
+.police-detail-copy li {
+  margin-top: 13px;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.police-detail-copy ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+.police-detail-rail {
+  display: grid;
+  gap: 18px;
+}
+.legal-aid-note,
+.police-urgent-card {
+  padding: 32px;
+}
+.legal-aid-note {
+  background: var(--color-gold-pale);
+  border-top: 3px solid var(--color-gold);
+}
+.legal-aid-note .eyebrow,
+.police-urgent-card .eyebrow {
+  color: var(--color-gold-ink);
+}
+.legal-aid-note h3,
+.police-urgent-card h3 {
+  margin: 16px 0;
+}
+.legal-aid-note > p:last-child,
+.police-urgent-card > p:not(.eyebrow) {
+  font-size: 13px;
+  line-height: 1.85;
+}
+.police-urgent-card {
+  background: var(--color-cream);
+  border: 1px solid var(--color-line);
+}
+.police-urgent-card > div {
+  display: grid;
+  gap: 15px;
+  margin-top: 24px;
+}
+.police-urgent-card .action-button {
+  justify-content: center;
+}
+.police-detail-prep {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-line);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.draft-fees-section {
+  background: var(--color-off);
+  border-top: 1px solid var(--color-line);
+}
+.draft-fee-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.draft-fee-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-cream);
+  border: 1px solid var(--color-line);
+}
+.draft-fee-card-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: start;
+  padding: 25px;
+  border-top: 3px solid var(--color-gold);
+  border-bottom: 1px solid var(--color-line);
+}
+.draft-fee-card h3 {
+  font: 400 23px/1.25 var(--font-display);
+  color: var(--color-navy);
+  text-transform: capitalize;
+}
+.draft-fee-card-head p {
+  margin-top: 7px;
+  font-size: 10.5px;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+.draft-fee-card-head strong {
+  font: 400 25px/1.1 var(--font-display);
+  color: var(--color-gold-ink);
+  white-space: nowrap;
+}
+.draft-fee-card ul {
+  display: grid;
+  gap: 10px;
+  padding: 23px 25px 27px;
+}
+.draft-fee-card li {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.draft-fee-card li svg {
+  margin-top: 2px;
+  color: var(--color-gold-ink);
+}
+.draft-fee-table-wrap,
+.service-outcomes-table-wrap {
+  overflow-x: auto;
+  margin-top: 40px;
+  border: 1px solid var(--color-line);
+}
+.draft-fee-table,
+.service-outcomes-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  text-align: left;
+}
+.draft-fee-table caption,
+.service-outcomes-table caption {
+  padding: 16px 20px;
+  background: var(--color-navy);
+  color: var(--color-cream);
+  font: 400 18px/1.3 var(--font-display);
+  text-align: left;
+}
+.draft-fee-table th,
+.draft-fee-table td,
+.service-outcomes-table th,
+.service-outcomes-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.draft-fee-table thead th,
+.service-outcomes-table thead th {
+  background: var(--color-gold-pale);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-gold-ink);
+}
+.draft-fee-table tbody th,
+.service-outcomes-table tbody th {
+  font-weight: 700;
+  color: var(--color-navy);
+}
+.draft-fee-table tbody td:last-child {
+  font: 400 18px/1.3 var(--font-display);
+  color: var(--color-gold-ink);
+  white-space: nowrap;
+}
+.draft-fee-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+  padding: 24px;
+  background: var(--color-gold-pale);
+  border-left: 3px solid var(--color-gold);
+}
+.draft-fee-notes p {
+  font-size: 11.5px;
+  line-height: 1.8;
+}
+
+.enquiry-section {
+  background: var(--color-off);
+}
+.enquiry-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  gap: 80px;
+  align-items: start;
+}
+.enquiry-intro {
+  max-width: 480px;
+  margin-top: 24px;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.enquiry-form {
+  padding: 36px;
+  background: var(--color-cream);
+  border: 1px solid var(--color-line);
+}
+.enquiry-form fieldset {
+  display: grid;
+  gap: 18px;
+  border: 0;
+}
+.enquiry-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.enquiry-form label {
+  display: grid;
+  gap: 8px;
+}
+.enquiry-form label > span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-navy);
+}
+.enquiry-form input,
+.enquiry-form select,
+.enquiry-form textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 13px;
+  border: 1px solid var(--color-line);
+  background: var(--color-off);
+  color: var(--color-body);
+  font: inherit;
+  font-size: 14px;
+}
+.enquiry-form textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+.enquiry-form button {
+  justify-self: start;
+  padding: 14px 22px;
+  border: 0;
+  background: var(--color-navy);
+  color: var(--color-cream);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.52;
+  cursor: not-allowed;
+}
+.enquiry-preview-note {
+  margin-top: 18px;
+  padding-left: 12px;
+  border-left: 2px solid var(--color-gold);
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--color-muted);
+}
+
+.service-section-heading {
+  margin: 0 0 18px;
+  font: 400 31px/1.3 var(--font-display);
+  color: var(--color-navy);
+}
+.service-outcomes-table-wrap {
+  margin-top: 22px;
+}
+.service-outcomes-table {
+  min-width: 480px;
+}
+.service-fee-card {
+  padding: 28px;
+  background: var(--color-gold-pale);
+  border-top: 3px solid var(--color-gold);
+}
+.service-fee-card .eyebrow {
+  color: var(--color-gold-ink);
+}
+.service-fee-card h2 {
+  margin: 15px 0;
+  font: 400 24px/1.35 var(--font-display);
+  color: var(--color-navy);
+}
+.service-fee-card p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.service-fee-card .text-link {
+  margin-top: 20px;
+}
+
+@media (max-width: 1023px) {
+  .police-detail-grid,
+  .enquiry-layout {
+    gap: 45px;
+  }
+  .draft-fee-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .about-background-grid,
+  .police-detail-grid,
+  .enquiry-layout,
+  .draft-fee-notes {
+    grid-template-columns: 1fr;
+  }
+  .about-background-grid article,
+  .about-background-grid article:nth-child(even) {
+    padding: 28px 0;
+    border-left: 0;
+  }
+  .draft-fee-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 639px) {
+  .enquiry-form,
+  .legal-aid-note,
+  .police-urgent-card {
+    padding: 24px;
+  }
+  .enquiry-form-row {
+    grid-template-columns: 1fr;
+  }
+  .draft-fee-card-head {
+    grid-template-columns: 1fr;
+  }
+}

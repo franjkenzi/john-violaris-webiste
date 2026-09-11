@@ -28,6 +28,13 @@ without stock portraits or invented client reviews.
   automatic dismissal on navigation or resizing to desktop.
 - About, Services, Police Station, Fees, Contact and Useful Information pages.
 - Fifteen service pages generated from a shared template and the service catalogue.
+- Full draft fee schedule carried over from the supplied reference, visibly marked
+  for confirmation before publication.
+- A complete contact-form preview with all planned fields; it is intentionally
+  non-submitting until the delivery workflow is connected.
+- Expanded professional background, police-station guidance, service evidence
+  checklists, sentencing summaries and fee guidance.
+- Six complete legal-guide article pages based on the reference index cards.
 - Page-specific titles, descriptions and canonical URLs; existing homepage structured data.
 - Consultation links route to the contact page until a real booking URL is configured.
 
@@ -57,12 +64,12 @@ reviews and career history are not rendered by the redesigned pages.
 
 ## Scope still outstanding
 
-This is the public frontend redesign, not the complete production system in
-`prd.md`. Supabase CMS/authentication, a contact form with Resend delivery, a
-managed blog, analytics, sitemap/robots, domain configuration and production
-launch remain separate work. The contact page currently uses direct contact links;
-it does not pretend to submit or store an enquiry. The resources page contains
-preparation information, not invented blog articles.
+This is the complete public frontend represented by the supplied HTML, not the
+complete production system in `prd.md`. Supabase CMS/authentication, Resend
+delivery for the preview contact form, a managed blog, analytics, sitemap/robots,
+domain configuration and production launch remain separate work. Until delivery
+is connected, the contact form is disabled and clearly states that it does not
+submit or store information.
 
 The existing Next.js/Vercel architecture is retained. No deployment or changes to
 external services are part of this local redesign.

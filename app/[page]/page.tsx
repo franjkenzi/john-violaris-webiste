@@ -1,16 +1,20 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { CtaBanner } from "@/components/layout/cta-banner";
 import { PageIntro } from "@/components/pages/page-intro";
+import { AboutBackground } from "@/components/sections/about-background";
+import { CareerBand } from "@/components/sections/career-band";
+import { ContactEnquiryPlaceholder } from "@/components/sections/contact-enquiry-placeholder";
+import { FeesMatrix } from "@/components/sections/fees-matrix";
+import { FeesSchedule } from "@/components/sections/fees-schedule";
+import { FeesPreview } from "@/components/sections/fees-preview";
+import { MeetJohn } from "@/components/sections/meet-john";
+import { PoliceStation } from "@/components/sections/police-station";
+import { PoliceStationDetail } from "@/components/sections/police-station-detail";
+import { ProcessSteps } from "@/components/sections/process-steps";
+import { ServicesGrid } from "@/components/sections/services-grid";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
-import { CtaBanner } from "@/components/layout/cta-banner";
-import { CareerBand } from "@/components/sections/career-band";
-import { FeesMatrix } from "@/components/sections/fees-matrix";
-import { MeetJohn } from "@/components/sections/meet-john";
-import { ServicesGrid } from "@/components/sections/services-grid";
-import { PoliceStation } from "@/components/sections/police-station";
-import { ProcessSteps } from "@/components/sections/process-steps";
-import { FeesPreview } from "@/components/sections/fees-preview";
 import {
   mailtoHref,
   siteConfig,
@@ -94,6 +98,7 @@ export default async function InformationPage({
       {page === "about" && (
         <>
           <MeetJohn />
+          <AboutBackground />
           <CareerBand />
           <ProcessSteps />
         </>
@@ -102,6 +107,7 @@ export default async function InformationPage({
       {page === "police-station" && (
         <>
           <PoliceStation />
+          <PoliceStationDetail />
           <section className="section-space">
             <Container>
               <div className="information-grid">
@@ -164,90 +170,92 @@ export default async function InformationPage({
             </Container>
           </section>
           <FeesMatrix />
+          <FeesSchedule />
           <FeesPreview />
         </>
       )}
       {page === "contact" && (
-        <section className="section-space" id="consultation">
-          <Container>
-            <div className="contact-grid">
-              <div>
-                <p className="eyebrow">Start a conversation</p>
-                <h2 className="display-heading">
-                  A direct line.
-                  <br />
-                  <em>A personal response.</em>
-                </h2>
-                <div className="contact-methods">
-                  <a href={mailtoHref}>
-                    <span>Email John</span>
-                    <strong>{siteConfig.contact.email}</strong>
-                    <Icon name="arrowRight" size={20} />
-                  </a>
-                  <a href={telHref}>
-                    <span>Call John</span>
-                    <strong>{siteConfig.contact.phoneDisplay}</strong>
-                    <Icon name="call" size={20} />
-                  </a>
-                  <a
-                    href={whatsappHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span>Prefer a message?</span>
-                    <strong>WhatsApp John</strong>
-                    <Icon name="whatsapp" size={20} />
-                  </a>
-                </div>
-                {/*
-                  Standard practice on the reference firms' contact pages: say
-                  plainly that making contact is not yet instructing anyone.
-                */}
-                <p className="contact-disclaimer">
-                  Getting in touch does not create a solicitor–client
-                  relationship, and no relationship exists until John has
-                  confirmed he is able to act and the terms of business are
-                  agreed. Please do not send confidential details of your case
-                  until then.
-                </p>
-              </div>
-              <aside className="contact-note">
-                <p className="eyebrow">Your first conversation</p>
-                <h2>
-                  We’ll take it
-                  <br />
-                  <em>one step at a time.</em>
-                </h2>
-                <p>It helps to have:</p>
-                <ul>
-                  <li>A brief outline of what happened</li>
-                  <li>Any letters or court papers</li>
-                  <li>Your hearing or interview date</li>
-                  <li>The location of your case</li>
-                </ul>
-                <p>
-                  You can still get in touch if you don’t have everything yet.
-                </p>
-                <a href={mailtoHref} className="action-button">
-                  Arrange a free consultation{" "}
-                  <Icon name="arrowRight" size={17} />
-                </a>
-                <div className="contact-urgent" id="urgent">
-                  <strong>Court tomorrow? Interview today?</strong>
-                  <p>
-                    Please call rather than email. Make the date and urgency
-                    clear when you get in touch.
+        <>
+          <ContactEnquiryPlaceholder />
+          <section className="section-space" id="consultation">
+            <Container>
+              <div className="contact-grid">
+                <div>
+                  <p className="eyebrow">Start a conversation</p>
+                  <h2 className="display-heading">
+                    A direct line.
+                    <br />
+                    <em>A personal response.</em>
+                  </h2>
+                  <div className="contact-methods">
+                    <a href={mailtoHref}>
+                      <span>Email John</span>
+                      <strong>{siteConfig.contact.email}</strong>
+                      <Icon name="arrowRight" size={20} />
+                    </a>
+                    <a href={telHref}>
+                      <span>Call John</span>
+                      <strong>{siteConfig.contact.phoneDisplay}</strong>
+                      <Icon name="call" size={20} />
+                    </a>
+                    <a
+                      href={whatsappHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span>Prefer a message?</span>
+                      <strong>WhatsApp John</strong>
+                      <Icon name="whatsapp" size={20} />
+                    </a>
+                  </div>
+                  <p className="contact-disclaimer">
+                    Getting in touch does not create a solicitor–client
+                    relationship, and no relationship exists until John has
+                    confirmed he is able to act and the terms of business are
+                    agreed. Please do not send confidential details of your
+                    case until then.
                   </p>
                 </div>
-                <p className="contact-preview-note">
-                  Preview: John’s phone and WhatsApp numbers are awaiting
-                  confirmation. Email and booking details must also be confirmed
-                  before launch.
-                </p>
-              </aside>
-            </div>
-          </Container>
-        </section>
+                <aside className="contact-note">
+                  <p className="eyebrow">Your first conversation</p>
+                  <h2>
+                    We’ll take it
+                    <br />
+                    <em>one step at a time.</em>
+                  </h2>
+                  <p>It helps to have:</p>
+                  <ul>
+                    <li>A brief outline of what happened</li>
+                    <li>Any letters or court papers</li>
+                    <li>Your hearing or interview date</li>
+                    <li>The location of your case</li>
+                  </ul>
+                  <p>
+                    You can still get in touch if you don’t have everything
+                    yet.
+                  </p>
+                  <a href={mailtoHref} className="action-button">
+                    Arrange a free consultation{" "}
+                    <Icon name="arrowRight" size={17} />
+                  </a>
+                  <div className="contact-urgent" id="urgent">
+                    <strong>Court tomorrow? Interview today?</strong>
+                    <p>
+                      Please call rather than email. Make the date and urgency
+                      clear when you get in touch.
+                    </p>
+                  </div>
+                  <p className="contact-preview-note">
+                    Preview: John’s phone, WhatsApp, booking URL, SRA number,
+                    practice arrangement and complaints information must be
+                    confirmed before launch. The email address should also be
+                    checked.
+                  </p>
+                </aside>
+              </div>
+            </Container>
+          </section>
+        </>
       )}
       {page !== "contact" && (
         <CtaBanner heading="Let’s take the" emphasis="next step. Together." />

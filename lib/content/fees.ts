@@ -1,10 +1,10 @@
 /**
  * What is covered at each stage of instructing John.
  *
- * Deliberately describes *scope of work*, not prices. John's fees depend on the
- * allegation, the evidence and the stage the case has reached, and are agreed
- * with each client before they instruct him — so no figures are published here
- * and none should be added without his confirmation.
+ * The comparison describes scope of work. A separate draft schedule lower in
+ * this file preserves the figures supplied in the reference HTML, but the UI
+ * identifies them as unconfirmed until John has approved the prices, VAT
+ * position, inclusions and travel terms.
  */
 
 export type FeeStageKey = "consultation" | "review" | "representation";
@@ -20,6 +20,96 @@ export type FeeInclusion = {
   name: string;
   /** The earliest stage that includes this; every later stage includes it too. */
   from: FeeStageKey;
+};
+
+export type DraftFee = {
+  name: string;
+  description: string;
+  price: string;
+  included: string[];
+};
+
+/**
+ * Draft figures carried over from the supplied full-site HTML reference.
+ * They are deliberately labelled as unconfirmed wherever they are rendered:
+ * pricing, VAT status and travel terms must be approved by John before launch.
+ */
+export const draftFees: DraftFee[] = [
+  {
+    name: "Police station",
+    description: "Any police station, England & Wales",
+    price: "£400",
+    included: [
+      "Pre-interview disclosure review",
+      "Private consultation before interview",
+      "Attendance at interview",
+      "Advice on bail or release conditions",
+    ],
+  },
+  {
+    name: "Single hearing",
+    description: "Magistrates’ Court — guilty plea or first appearance",
+    price: "£600",
+    included: [
+      "Full case review and evidence analysis",
+      "Pre-hearing consultation",
+      "All preparatory work",
+      "Court attendance and representation",
+      "Mitigation submissions where required",
+    ],
+  },
+  {
+    name: "First appearance & trial",
+    description: "Two-hearing case",
+    price: "£1,200",
+    included: [
+      "Full defence preparation",
+      "Evidence and disclosure review",
+      "Pre-trial correspondence",
+      "Attendance at both hearings",
+      "Trial advocacy",
+    ],
+  },
+  {
+    name: "Three-hearing case",
+    description: "First appearance, trial and sentence",
+    price: "£1,500",
+    included: [
+      "Preparation and correspondence",
+      "Attendance at all three hearings",
+      "Trial advocacy",
+      "Sentencing attendance",
+      "Inter-hearing consultation",
+    ],
+  },
+  {
+    name: "Exceptional hardship",
+    description: "Full preparation and hearing",
+    price: "£750",
+    included: [
+      "Detailed case analysis",
+      "Evidence gathering and preparation",
+      "Written submissions where required",
+      "Court representation",
+    ],
+  },
+  {
+    name: "Special reasons",
+    description: "Single or double hearing",
+    price: "£750 / £1,100",
+    included: [
+      "Preparation and evidence review",
+      "Expert evidence coordination where required",
+      "Written legal submissions",
+      "Court representation throughout",
+    ],
+  },
+];
+
+export const additionalDraftFee = {
+  name: "Additional or adjourned hearing",
+  description: "Case management or an adjourned hearing",
+  price: "£500",
 };
 
 export const feeStages: FeeStage[] = [

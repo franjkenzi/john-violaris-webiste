@@ -52,9 +52,13 @@ export default async function ServicePage({
   /* Mirrors the headings rendered below, in document order. */
   const sections = [
     ...(detail ? [{ id: "at-a-glance", label: "At a glance" }] : []),
+    ...(detail ? [{ id: "legal-framework", label: "Legal framework" }] : []),
     { id: "your-options", label: "Clarity first" },
     ...(detail
       ? [{ id: "how-the-case-proceeds", label: "How the case proceeds" }]
+      : []),
+    ...(detail
+      ? [{ id: "sentencing-and-outcomes", label: "Sentencing and outcomes" }]
       : []),
     { id: "what-to-share", label: "What to share with John" },
     { id: "personal-representation", label: "Personal representation" },
@@ -107,6 +111,15 @@ export default async function ServicePage({
             <div className="service-detail-copy">
               {detail ? (
                 <>
+                  <h2 id="legal-framework" className="service-section-heading">
+                    The legal framework
+                  </h2>
+                  <p>
+                    The headline reference for this service is {service.statute}.
+                    John will identify the precise charge, statutory provisions
+                    and legal authorities that apply after reviewing the facts
+                    and procedural history of your case.
+                  </p>
                   <p className="eyebrow">
                     <span className="small-rule" /> {detail.issuesHeading}
                   </p>
@@ -138,6 +151,34 @@ export default async function ServicePage({
                       </li>
                     ))}
                   </ol>
+                  <h3 id="sentencing-and-outcomes">
+                    Sentencing and possible outcomes
+                  </h3>
+                  <p>
+                    The court considers the offence, its seriousness, any
+                    aggravating or mitigating features, your plea and your
+                    circumstances. These headline consequences are an
+                    orientation only, not a prediction of sentence.
+                  </p>
+                  <div className="service-outcomes-table-wrap">
+                    <table className="service-outcomes-table">
+                      <caption>Headline consequences for {service.name}</caption>
+                      <thead>
+                        <tr>
+                          <th scope="col">Potential consequence</th>
+                          <th scope="col">When it may apply</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {detail.penalties.map((penalty) => (
+                          <tr key={penalty.label}>
+                            <th scope="row">{penalty.label}</th>
+                            <td>{penalty.note}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                   <h3 id="what-to-share">What to share with John</h3>
                   <ul>
                     <li>
@@ -146,6 +187,14 @@ export default async function ServicePage({
                     <li>The dates and location of any hearing or interview</li>
                     <li>
                       Your account of what happened and any supporting documents
+                    </li>
+                    <li>
+                      Photographs, messages, receipts, witness details or other
+                      material that may support your account
+                    </li>
+                    <li>
+                      Details of your driving record and how a conviction or
+                      disqualification would affect other people
                     </li>
                     <li>
                       Your main concerns and the questions you want answered
@@ -215,6 +264,17 @@ export default async function ServicePage({
                   <br />
                   Representing clients across England & Wales
                 </span>
+              </aside>
+              <aside className="service-fee-card">
+                <span className="eyebrow">Fees and next steps</span>
+                <h2>Know the proposed work before you decide.</h2>
+                <p>
+                  Review the current draft schedule, then confirm the scope and
+                  fee for your own case directly with John.
+                </p>
+                <Link href="/fees" className="text-link">
+                  View the fee guide <Icon name="arrowRight" size={15} />
+                </Link>
               </aside>
             </div>
           </div>
