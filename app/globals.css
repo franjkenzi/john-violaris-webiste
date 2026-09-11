@@ -189,7 +189,13 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
 }
+.hero-scroll-stage {
+  position: relative;
+  height: 170svh;
+}
 .hero-composition {
+  position: sticky;
+  top: 84px;
   display: grid;
   grid-template-columns: 1.6fr 1fr;
   gap: 80px;
@@ -252,12 +258,82 @@ body {
   margin: 0 8px;
   color: var(--color-gold);
 }
-.hero-letter {
+.hero-profile {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  margin-right: 6px;
+  background: var(--color-navy-mid);
+  border: 1px solid rgb(255 255 255 / 16%);
+  box-shadow: 14px 17px 0 #ffffff08;
+  transform: rotate(-1.25deg);
+}
+.hero-portrait {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--color-navy-mid);
+}
+.hero-photo-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 55%,
+    rgb(7 16 26 / 74%) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+.hero-photo-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 50% 40%;
+  will-change: opacity, transform;
+}
+.hero-portrait-image {
+  object-fit: cover;
+  object-position: 52% 42%;
+  filter: saturate(0.82) contrast(1.04);
+}
+.hero-portrait-image-primary {
+  object-position: 50% 42%;
+}
+.portrait-caption {
+  position: absolute;
+  right: 26px;
+  bottom: 24px;
+  left: 26px;
+  z-index: 3;
+  color: var(--color-cream);
+}
+.portrait-caption span {
+  display: block;
+  font: 400 25px/1.15 var(--font-display);
+}
+.portrait-caption small {
+  display: block;
+  margin-top: 6px;
+  color: rgb(250 250 248 / 72%);
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+.hero-scroll-card {
+  position: absolute;
+  inset: 8% 0 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
   color: var(--color-navy);
   background: var(--color-cream);
-  transform: rotate(2deg);
-  margin: 0 6px 0 0;
-  box-shadow: 14px 17px 0 #ffffff08;
+  box-shadow: 0 18px 46px rgb(7 16 26 / 30%);
+  transform-origin: 50% 100%;
+  will-change: transform;
 }
 .letter-top {
   display: flex;
@@ -270,12 +346,12 @@ body {
   text-transform: uppercase;
 }
 .letter-monogram {
+  padding: 12px 38px 0;
   font-family: var(--font-display);
-  font-size: clamp(100px, 14vw, 195px);
-  letter-spacing: -19px;
+  font-size: clamp(100px, 11vw, 170px);
   font-weight: 400;
-  line-height: 1.08;
-  padding: 5px 38px 0;
+  letter-spacing: -19px;
+  line-height: 1;
 }
 .letter-monogram span {
   font-style: italic;
@@ -285,19 +361,19 @@ body {
   font-style: normal;
 }
 .letter-body {
-  padding: 20px 30px 26px;
+  padding: 14px 30px 20px;
 }
 .letter-body .eyebrow {
-  font-size: 8px;
   color: var(--color-gold-ink);
+  font-size: 8px;
   letter-spacing: 1.7px;
 }
 .letter-body p {
+  margin: 10px 0 17px;
   font-family: var(--font-display);
-  font-size: 29px;
-  line-height: 1.4;
-  margin: 13px 0 22px;
+  font-size: 27px;
   letter-spacing: -0.7px;
+  line-height: 1.4;
 }
 .letter-body p em {
   text-decoration: underline;
@@ -305,10 +381,10 @@ body {
   text-underline-offset: 7px;
 }
 .letter-rule {
-  height: 1px;
   width: 36px;
-  background: var(--color-gold-ink);
+  height: 1px;
   margin-bottom: 17px;
+  background: var(--color-gold-ink);
 }
 .letter-name {
   display: block;
@@ -318,15 +394,16 @@ body {
 .letter-role {
   display: block;
   margin-top: 4px;
-  font-size: 9px;
   color: var(--color-body);
+  font-size: 9px;
 }
 .letter-footer {
-  border-top: 1px solid var(--color-line);
-  padding: 16px 30px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: 16px 30px;
+  border-top: 1px solid var(--color-line);
   font-size: 10px;
   transition: background 0.2s;
 }
@@ -419,8 +496,8 @@ body {
     font-size: 7px;
   }
   .letter-monogram {
-    font-size: 150px;
     padding-left: 25px;
+    font-size: 150px;
   }
   .experience-grid > div {
     padding-left: 20px;
@@ -458,28 +535,52 @@ body {
     font-size: 14px;
     margin-top: 23px;
   }
-  .hero-letter {
+  .hero-scroll-stage {
+    height: auto;
+  }
+  .hero-composition {
+    position: static;
+  }
+  .hero-profile {
+    overflow: visible;
+    aspect-ratio: auto;
     margin: 43px 9px 0;
-    transform: rotate(1.5deg);
-    display: grid;
-    grid-template-columns: 1fr 1.45fr;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    transform: none;
+  }
+  .hero-portrait {
+    position: relative;
+    inset: auto;
+    overflow: visible;
+    background: transparent;
+  }
+  .hero-photo-layer {
+    position: relative;
+    inset: auto;
+    aspect-ratio: 3 / 4;
+    box-shadow: 10px 12px 0 #ffffff08;
+    transform: rotate(-1deg) !important;
+  }
+  .hero-scroll-card {
+    position: relative;
+    inset: auto;
+    min-height: 0;
+    margin-top: -28px;
+    transform: rotate(1deg) !important;
   }
   .letter-top {
-    grid-column: 1/-1;
     padding: 15px 0;
     font-size: 8px;
   }
   .letter-monogram {
-    font-size: 110px;
+    padding: 28px 28px 0;
+    font-size: 118px;
     letter-spacing: -13px;
-    padding: 34px 0 0 17px;
   }
   .letter-body {
-    padding: 24px 16px 24px 10px;
-  }
-  .letter-body .eyebrow {
-    font-size: 7px;
-    letter-spacing: 0.7px;
+    padding: 20px 24px 24px;
   }
   .letter-body p {
     font-size: 22px;
@@ -489,9 +590,6 @@ body {
   }
   .letter-role {
     font-size: 8px;
-  }
-  .letter-footer {
-    grid-column: 1/-1;
   }
   .hero-bottom > span {
     display: none;
@@ -512,6 +610,42 @@ body {
   }
   .experience-grid > div:nth-child(n + 3) {
     border-top: 1px solid var(--color-line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll-stage {
+    height: auto;
+  }
+  .hero-composition {
+    position: static;
+  }
+  .hero-profile {
+    overflow: visible;
+    aspect-ratio: auto;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    transform: none;
+  }
+  .hero-portrait {
+    position: relative;
+    inset: auto;
+    overflow: visible;
+    background: transparent;
+  }
+  .hero-photo-primary {
+    position: relative;
+    inset: auto;
+    aspect-ratio: 3 / 4;
+    box-shadow: 10px 12px 0 #ffffff08;
+    transform: none !important;
+  }
+  .hero-scroll-card {
+    position: relative;
+    inset: auto;
+    margin-top: -28px;
+    transform: none !important;
   }
 }
 .section-space {
