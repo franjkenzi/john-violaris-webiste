@@ -3,19 +3,40 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { OffenceStrip } from "@/components/sections/offence-strip";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { siteConfig } from "@/lib/site-config";
 
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const updateMatch = () => setMatches(mediaQuery.matches);
+
+    updateMatch();
+    mediaQuery.addEventListener("change", updateMatch);
+    return () => mediaQuery.removeEventListener("change", updateMatch);
+  }, [query]);
+
+  return matches;
+}
+
 export function Hero() {
   const scrollStageRef = useRef<HTMLDivElement>(null);
+  const mobileScrollStageRef = useRef<HTMLDivElement>(null);
+  const isMobile = useMediaQuery("(max-width: 639px)");
   const prefersReducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: scrollStageRef,
     offset: ["start start", "end end"],
+  });
+  const { scrollYProgress: mobileScrollYProgress } = useScroll({
+    target: mobileScrollStageRef,
+    offset: ["start start", "end 65%"],
   });
   const commitmentCardY = useTransform(
     scrollYProgress,
@@ -27,11 +48,34 @@ export function Hero() {
     [0.08, 0.82],
     [1.1, 0],
   );
+  const mobileCommitmentCardY = useTransform(
+    mobileScrollYProgress,
+    [0.08, 0.82],
+    ["100%", "0%"],
+  );
+  const mobileCommitmentCardRotate = useTransform(
+    mobileScrollYProgress,
+    [0.08, 0.82],
+    [1.1, 0],
+  );
   const firstPortraitScale = useTransform(
     scrollYProgress,
     [0, 0.82],
     [1, 1.035],
   );
+  const mobilePortraitScale = useTransform(
+    mobileScrollYProgress,
+    [0, 0.82],
+    [1, 1.035],
+  );
+
+  const activeCardY = isMobile ? mobileCommitmentCardY : commitmentCardY;
+  const activeCardRotate = isMobile
+    ? mobileCommitmentCardRotate
+    : commitmentCardRotate;
+  const activePortraitScale = isMobile
+    ? mobilePortraitScale
+    : firstPortraitScale;
 
   return (
     <section className="hero-editorial" aria-labelledby="hero-heading">
@@ -68,61 +112,63 @@ export function Hero() {
                 Free initial consultation <span>·</span> No obligation
               </p>
             </div>
-            <div className="hero-profile">
-              <figure className="hero-portrait">
-                <motion.div
-                  className="hero-photo-layer hero-photo-primary"
-                  style={{
-                    scale: prefersReducedMotion ? 1 : firstPortraitScale,
-                  }}
-                >
-                  <Image
-                    src="/John Violaris 1.JPG"
-                    alt="John Violaris in court attire outdoors"
-                    fill
-                    preload
-                    sizes="(max-width: 639px) calc(100vw - 62px), (max-width: 1023px) 34vw, 28vw"
-                    className="hero-portrait-image hero-portrait-image-primary"
-                  />
-                  <figcaption className="portrait-caption">
-                    <span>John Violaris</span>
-                    <small>Criminal Defence Solicitor</small>
-                  </figcaption>
-                </motion.div>
-                <motion.aside
-                  className="hero-scroll-card"
-                  aria-label="John’s personal commitment"
-                  style={{
-                    y: prefersReducedMotion ? "0%" : commitmentCardY,
-                    rotate: prefersReducedMotion ? 0 : commitmentCardRotate,
-                  }}
-                >
-                  <div className="letter-top">
-                    <span>A personal commitment</span>
-                    <span>01 / JV</span>
-                  </div>
-                  <div className="letter-monogram" aria-hidden="true">
-                    J<span>V</span>
-                    <i>.</i>
-                  </div>
-                  <div className="letter-body">
-                    <span className="eyebrow">One solicitor. Throughout.</span>
-                    <p>
-                      When you instruct me,
-                      <br />
-                      you deal with <em>me.</em>
-                    </p>
-                    <div className="letter-rule" />
-                    <span className="letter-name">John Violaris</span>
-                    <span className="letter-role">
-                      Criminal Defence & Motoring Solicitor
-                    </span>
-                  </div>
-                  <Link href="/about" className="letter-footer">
-                    Meet your solicitor <Icon name="arrowRight" size={18} />
-                  </Link>
-                </motion.aside>
-              </figure>
+            <div ref={mobileScrollStageRef} className="hero-profile-stage">
+              <div className="hero-profile">
+                <figure className="hero-portrait">
+                  <motion.div
+                    className="hero-photo-layer hero-photo-primary"
+                    style={{
+                      scale: prefersReducedMotion ? 1 : activePortraitScale,
+                    }}
+                  >
+                    <Image
+                      src="/John Violaris 1.JPG"
+                      alt="John Violaris in court attire outdoors"
+                      fill
+                      preload
+                      sizes="(max-width: 639px) calc(100vw - 62px), (max-width: 1023px) 34vw, 28vw"
+                      className="hero-portrait-image hero-portrait-image-primary"
+                    />
+                    <figcaption className="portrait-caption">
+                      <span>John Violaris</span>
+                      <small>Criminal Defence Solicitor</small>
+                    </figcaption>
+                  </motion.div>
+                  <motion.aside
+                    className="hero-scroll-card"
+                    aria-label="John’s personal commitment"
+                    style={{
+                      y: prefersReducedMotion ? "0%" : activeCardY,
+                      rotate: prefersReducedMotion ? 0 : activeCardRotate,
+                    }}
+                  >
+                    <div className="letter-top">
+                      <span>A personal commitment</span>
+                      <span>01 / JV</span>
+                    </div>
+                    <div className="letter-monogram" aria-hidden="true">
+                      J<span>V</span>
+                      <i>.</i>
+                    </div>
+                    <div className="letter-body">
+                      <span className="eyebrow">One solicitor. Throughout.</span>
+                      <p>
+                        When you instruct me,
+                        <br />
+                        you deal with <em>me.</em>
+                      </p>
+                      <div className="letter-rule" />
+                      <span className="letter-name">John Violaris</span>
+                      <span className="letter-role">
+                        Criminal Defence & Motoring Solicitor
+                      </span>
+                    </div>
+                    <Link href="/about" className="letter-footer">
+                      Meet your solicitor <Icon name="arrowRight" size={18} />
+                    </Link>
+                  </motion.aside>
+                </figure>
+              </div>
             </div>
           </div>
         </div>

@@ -270,6 +270,10 @@ body {
   box-shadow: 14px 17px 0 #ffffff08;
   transform: rotate(-1.25deg);
 }
+.hero-profile-stage {
+  min-width: 0;
+  width: 100%;
+}
 .hero-portrait {
   position: absolute;
   inset: 0;
@@ -541,34 +545,15 @@ body {
   .hero-composition {
     position: static;
   }
+  .hero-profile-stage {
+    position: relative;
+    height: 160svh;
+    margin-top: 43px;
+  }
   .hero-profile {
-    overflow: visible;
-    aspect-ratio: auto;
-    margin: 43px 9px 0;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    transform: none;
-  }
-  .hero-portrait {
-    position: relative;
-    inset: auto;
-    overflow: visible;
-    background: transparent;
-  }
-  .hero-photo-layer {
-    position: relative;
-    inset: auto;
-    aspect-ratio: 3 / 4;
-    box-shadow: 10px 12px 0 #ffffff08;
-    transform: rotate(-1deg) !important;
-  }
-  .hero-scroll-card {
-    position: relative;
-    inset: auto;
-    min-height: 0;
-    margin-top: -28px;
-    transform: rotate(1deg) !important;
+    position: sticky;
+    top: 84px;
+    margin: 0 9px;
   }
   .letter-top {
     padding: 15px 0;
@@ -619,6 +604,10 @@ body {
   }
   .hero-composition {
     position: static;
+  }
+  .hero-profile-stage {
+    height: auto;
+    margin-top: 43px;
   }
   .hero-profile {
     overflow: visible;
