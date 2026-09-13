@@ -1,4 +1,4 @@
-import { ButtonLink } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { SectionLabel } from "@/components/ui/section-label";
