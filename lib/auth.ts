@@ -5,18 +5,19 @@ import { cache } from "react";
 
 import { createClient } from "@/utils/supabase/server";
 
-type Claims = Record<string, unknown>;
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
-export function hasAdminRole(claims: Claims | null | undefined) {
-  if (!claims) return false;
+export async function hasAdminRole(
+  supabase: SupabaseServerClient,
+  userId: string,
+) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
 
-  const appMetadata = claims.app_metadata;
-  const appMetadataRole =
-    typeof appMetadata === "object" && appMetadata !== null && "role" in appMetadata
-      ? appMetadata.role
-      : undefined;
-
-  return appMetadataRole === "admin" || claims.user_role === "admin";
+  return !error && data?.role === "admin";
 }
 
 export const getAdminSession = cache(async () => {
@@ -24,7 +25,13 @@ export const getAdminSession = cache(async () => {
   const { data, error } = await supabase.auth.getClaims();
   const claims = data?.claims;
 
-  if (error || !claims || !hasAdminRole(claims)) return null;
+  if (
+    error ||
+    !claims?.sub ||
+    !(await hasAdminRole(supabase, claims.sub))
+  ) {
+    return null;
+  }
 
   return {
     userId: claims.sub,

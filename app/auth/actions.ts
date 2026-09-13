@@ -44,7 +44,13 @@ export async function signIn(
     const { data: claimsData, error: claimsError } =
       await supabase.auth.getClaims();
 
-    if (claimsError || !hasAdminRole(claimsData?.claims)) {
+    const userId = claimsData?.claims?.sub;
+
+    if (
+      claimsError ||
+      !userId ||
+      !(await hasAdminRole(supabase, userId))
+    ) {
       await supabase.auth.signOut({ scope: "local" });
       return {
         error: "This account is not authorised to access the CMS.",
