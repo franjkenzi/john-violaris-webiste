@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
-import { CheckCircle2, LockKeyhole, UserPlus } from "lucide-react";
+import { CheckCircle2, House, LockKeyhole, UserPlus } from "lucide-react";
 
 import {
   signIn,
@@ -14,6 +15,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -79,6 +81,14 @@ export function AuthForm() {
           <SignUpForm key="sign-up" onBackToSignIn={() => setMode("sign-in")} />
         )}
       </CardContent>
+      <CardFooter>
+        <Button asChild variant="outline" className="w-full">
+          <Link href="/">
+            <House aria-hidden="true" />
+            Back to website
+          </Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
@@ -118,10 +128,6 @@ function SignUpForm({ onBackToSignIn }: { onBackToSignIn: () => void }) {
           <p className="text-sm leading-6 text-muted-foreground">
             This dashboard is only for approved administrators. If you are one
             of them, your access will be enabled soon.
-          </p>
-          <p className="text-sm leading-6 text-muted-foreground">
-            Please check your inbox if you are asked to confirm your email
-            address.
           </p>
         </div>
         <Button

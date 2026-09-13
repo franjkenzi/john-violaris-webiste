@@ -7,7 +7,9 @@ import {
   BriefcaseBusiness,
   FolderTree,
   FileText,
+  House,
   LibraryBig,
+  LogOut,
   MessageSquareQuote,
   Newspaper,
   Search,
@@ -15,6 +17,7 @@ import {
 } from "lucide-react";
 
 import {
+  SidebarFooter,
   Sidebar,
   SidebarContent,
   SidebarGroup,
@@ -27,6 +30,7 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { signOut } from "@/app/auth/actions";
 
 const contentItems = [
   { title: "Website Content", href: "/admin", icon: FileText },
@@ -98,6 +102,30 @@ export function AdminSidebar() {
           pathname={pathname}
         />
       </SidebarContent>
+      <SidebarFooter className="border-t border-sidebar-border p-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Back to website">
+              <Link href="/">
+                <House aria-hidden="true" />
+                <span>Back to website</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <form action={signOut}>
+              <SidebarMenuButton
+                type="submit"
+                className="w-full"
+                tooltip="Log out"
+              >
+                <LogOut aria-hidden="true" />
+                <span>Log out</span>
+              </SidebarMenuButton>
+            </form>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

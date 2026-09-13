@@ -10,6 +10,13 @@ export type AuthActionState = {
   success: boolean;
 };
 
+export async function signOut() {
+  const supabase = await createClient();
+
+  await supabase.auth.signOut({ scope: "local" });
+  redirect("/auth");
+}
+
 export async function signIn(
   _previousState: AuthActionState,
   formData: FormData,
