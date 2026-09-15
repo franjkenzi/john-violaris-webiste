@@ -180,9 +180,6 @@ export function validateEnquiry(input: EnquiryValues): EnquiryValidationResult {
 
   if (!values.description) {
     fieldErrors.description = "Tell John briefly what has happened.";
-  } else if (values.description.length < 20) {
-    fieldErrors.description =
-      "Add a little more detail so John can see what the matter involves.";
   }
 
   if (Object.keys(fieldErrors).length > 0) {
