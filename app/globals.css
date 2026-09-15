@@ -2992,6 +2992,17 @@ body {
   min-height: 130px;
   resize: vertical;
 }
+.enquiry-form input:focus-visible,
+.enquiry-form select:focus-visible,
+.enquiry-form textarea:focus-visible {
+  border-color: var(--color-navy);
+  outline: 2px solid var(--color-gold);
+  outline-offset: 1px;
+}
+.enquiry-form [aria-invalid="true"] {
+  border-color: var(--color-alert);
+  background: color-mix(in srgb, var(--color-alert) 4%, var(--color-off));
+}
 .enquiry-form button {
   justify-self: start;
   padding: 14px 22px;
@@ -3002,8 +3013,95 @@ body {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.52;
-  cursor: not-allowed;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.enquiry-form button:hover {
+  background: var(--color-navy-light);
+  color: var(--color-gold-light);
+}
+.enquiry-form fieldset:disabled button {
+  cursor: progress;
+  opacity: 0.55;
+}
+/* Bot trap: out of sight, out of the tab order, never announced. */
+.enquiry-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.enquiry-alert {
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--color-alert) 7%, var(--color-off));
+  border-left: 3px solid var(--color-alert);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-alert);
+}
+.enquiry-alert:focus-visible {
+  outline: 2px solid var(--color-alert);
+  outline-offset: 2px;
+}
+/* Specific enough to beat `.enquiry-form label > span`, which would otherwise
+   render the message as a small-caps field label rather than a sentence. */
+.enquiry-form label > span.enquiry-error {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.6;
+  color: var(--color-alert);
+}
+.enquiry-direct {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+.enquiry-direct a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--color-navy);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  justify-self: start;
+}
+.enquiry-direct a:hover {
+  border-bottom-color: var(--color-gold);
+}
+.enquiry-direct svg {
+  color: var(--color-gold-ink);
+  flex-shrink: 0;
+}
+.enquiry-success {
+  padding: 40px 36px;
+  background: var(--color-cream);
+  border: 1px solid var(--color-line);
+  border-top: 3px solid var(--color-gold);
+}
+.enquiry-success h3 {
+  margin: 18px 0 20px;
+  font: 400 30px/1.25 var(--font-display);
+  color: var(--color-navy);
+}
+.enquiry-success p {
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.enquiry-success-note {
+  margin: 24px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--color-line);
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--color-muted);
 }
 .enquiry-preview-note {
   margin-top: 18px;
@@ -3075,9 +3173,13 @@ body {
 
 @media (max-width: 639px) {
   .enquiry-form,
+  .enquiry-success,
   .legal-aid-note,
   .police-urgent-card {
     padding: 24px;
+  }
+  .enquiry-success h3 {
+    font-size: 25px;
   }
   .enquiry-form-row {
     grid-template-columns: 1fr;

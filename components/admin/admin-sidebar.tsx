@@ -8,12 +8,15 @@ import {
   FolderTree,
   FileText,
   House,
+  Inbox,
+  LayoutDashboard,
   LibraryBig,
   LogOut,
   MessageSquareQuote,
   Newspaper,
   Search,
   Settings2,
+  type LucideIcon,
 } from "lucide-react";
 
 import {
@@ -25,6 +28,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -32,8 +36,20 @@ import {
 } from "@/components/ui/sidebar";
 import { signOut } from "@/app/auth/actions";
 
-const contentItems = [
-  { title: "Website Content", href: "/admin", icon: FileText },
+type NavItem = {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+  /** Rendered as a count when above zero; omitted entirely otherwise. */
+  badge?: number;
+};
+
+const overviewItems: NavItem[] = [
+  { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
+];
+
+const contentItems: NavItem[] = [
+  { title: "Website Content", href: "/admin/website-content", icon: FileText },
   { title: "Services", href: "/admin/services", icon: BriefcaseBusiness },
   {
     title: "Service Pages",
@@ -54,7 +70,7 @@ const contentItems = [
   },
 ];
 
-const configurationItems = [
+const configurationItems: NavItem[] = [
   { title: "SEO Metadata", href: "/admin/seo-metadata", icon: Search },
   {
     title: "Site Settings",
@@ -63,10 +79,22 @@ const configurationItems = [
   },
 ];
 
-type NavItem = (typeof contentItems)[number] | (typeof configurationItems)[number];
-
-export function AdminSidebar() {
+export function AdminSidebar({
+  newEnquiryCount = 0,
+}: {
+  /** Unactioned enquiries, counted in the layout and badged on the Enquiries link. */
+  newEnquiryCount?: number;
+}) {
   const pathname = usePathname();
+
+  const inboxItems: NavItem[] = [
+    {
+      title: "Enquiries",
+      href: "/admin/enquiries",
+      icon: Inbox,
+      badge: newEnquiryCount,
+    },
+  ];
 
   return (
     <Sidebar collapsible="icon">
@@ -91,6 +119,8 @@ export function AdminSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
+        <NavGroup label="Overview" items={overviewItems} pathname={pathname} />
+        <NavGroup label="Inbox" items={inboxItems} pathname={pathname} />
         <NavGroup
           label="Content"
           items={contentItems}
@@ -163,6 +193,12 @@ function NavGroup({
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
+                {item.badge ? (
+                  <SidebarMenuBadge>
+                    {item.badge}
+                    <span className="sr-only"> awaiting a reply</span>
+                  </SidebarMenuBadge>
+                ) : null}
               </SidebarMenuItem>
             );
           })}

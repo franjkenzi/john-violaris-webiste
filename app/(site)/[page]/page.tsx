@@ -4,7 +4,7 @@ import { CtaBanner } from "@/components/layout/cta-banner";
 import { PageIntro } from "@/components/pages/page-intro";
 import { AboutBackground } from "@/components/sections/about-background";
 import { CareerBand } from "@/components/sections/career-band";
-import { ContactEnquiryPlaceholder } from "@/components/sections/contact-enquiry-placeholder";
+import { ContactEnquiryForm } from "@/components/sections/contact-enquiry-form";
 import { FeesMatrix } from "@/components/sections/fees-matrix";
 import { FeesSchedule } from "@/components/sections/fees-schedule";
 import { FeesPreview } from "@/components/sections/fees-preview";
@@ -176,7 +176,7 @@ export default async function InformationPage({
       )}
       {page === "contact" && (
         <>
-          <ContactEnquiryPlaceholder />
+          <ContactEnquiryForm />
           <section className="section-space" id="consultation">
             <Container>
               <div className="contact-grid">
