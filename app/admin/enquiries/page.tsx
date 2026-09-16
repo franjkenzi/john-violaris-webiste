@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Inbox } from "lucide-react";
 
+import { EnquiryRow } from "@/components/admin/enquiry-row";
 import { EnquiryStatusBadge } from "@/components/admin/enquiry-status-badge";
 import { cn } from "cn";
 import {
@@ -131,16 +132,16 @@ export default async function AdminEnquiriesPage({
             </thead>
             <tbody>
               {enquiries.map((enquiry) => (
-                <tr
+                <EnquiryRow
                   key={enquiry.id}
-                  className="border-b last:border-b-0 hover:bg-muted/40"
+                  href={`/admin/enquiries/${enquiry.id}`}
                 >
                   <td className="px-4 py-3 align-top">
                     <EnquiryStatusBadge status={enquiry.status} />
                   </td>
                   <td className="px-4 py-3 align-top">
-                    {/* The whole row is reachable from this one link, which
-                        keeps a single tab stop per enquiry. */}
+                    {/* The row opens from anywhere, but this stays the one link
+                        and the one tab stop per enquiry. */}
                     <Link
                       href={`/admin/enquiries/${enquiry.id}`}
                       className="font-medium underline-offset-4 hover:underline focus-visible:underline"
@@ -166,7 +167,7 @@ export default async function AdminEnquiriesPage({
                       {formatUkShortDateTime(enquiry.created_at)}
                     </time>
                   </td>
-                </tr>
+                </EnquiryRow>
               ))}
             </tbody>
           </table>
