@@ -11,16 +11,14 @@ import {
 } from "lucide-react";
 
 import { DeleteEnquiryButton } from "@/components/admin/delete-enquiry-button";
-import { EnquiryStatusBadge } from "@/components/admin/enquiry-status-badge";
-import { Button } from "@/components/ui/button";
-import { cn } from "cn";
-import { updateEnquiryStatus } from "@/lib/enquiries/admin-actions";
-import { getEnquiry } from "@/lib/enquiries/queries";
 import {
-  enquiryFullName,
-  enquiryStatusLabels,
-  enquiryStatuses,
-} from "@/lib/enquiries/schema";
+  EnquiryStatusActions,
+  EnquiryStatusHeaderBadge,
+  EnquiryStatusProvider,
+} from "@/components/admin/enquiry-status-control";
+import { Button } from "@/components/ui/button";
+import { getEnquiry } from "@/lib/enquiries/queries";
+import { enquiryFullName } from "@/lib/enquiries/schema";
 import { formatUkDateTime } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -41,137 +39,120 @@ export default async function AdminEnquiryPage({
   const replySubject = encodeURIComponent("Your enquiry — John Violaris");
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pt-14 pb-12 md:px-8 md:pt-10">
-      <Link
-        href="/admin/enquiries"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-      >
-        <ArrowLeft className="size-4" aria-hidden="true" />
-        All enquiries
-      </Link>
-
-      <header className="mt-4 mb-6 flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-semibold">{name}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {enquiry.matter_type} · received{" "}
-            <time dateTime={enquiry.created_at}>
-              {formatUkDateTime(enquiry.created_at)}
-            </time>
-          </p>
-        </div>
-        <EnquiryStatusBadge status={enquiry.status} className="mt-1.5" />
-      </header>
-
-      <div className="mb-6 flex flex-wrap gap-2">
-        <Button asChild size="lg">
-          <a href={`mailto:${enquiry.email}?subject=${replySubject}`}>
-            <Mail aria-hidden="true" />
-            Reply by email
-          </a>
-        </Button>
-        <Button asChild size="lg" variant="outline">
-          <a href={`tel:${enquiry.phone.replace(/\s+/g, "")}`}>
-            <Phone aria-hidden="true" />
-            {enquiry.phone}
-          </a>
-        </Button>
-      </div>
-
-      <section
-        className="mb-6 rounded-xl border p-4"
-        aria-labelledby="enquiry-status-heading"
-      >
-        <h2
-          id="enquiry-status-heading"
-          className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase"
+    // The status badge and the status buttons sit at opposite ends of the page
+    // but show one value, so the optimistic state lives above both. Everything
+    // inside stays server-rendered — it is passed through as `children`.
+    <EnquiryStatusProvider id={enquiry.id} status={enquiry.status}>
+      <div className="mx-auto w-full max-w-4xl px-4 pt-14 pb-12 md:px-8 md:pt-10">
+        <Link
+          href="/admin/enquiries"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
         >
-          Status
-        </h2>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {enquiryStatuses.map((status) => {
-            const isCurrent = status === enquiry.status;
+          <ArrowLeft className="size-4" aria-hidden="true" />
+          All enquiries
+        </Link>
 
-            return (
-              <form key={status} action={updateEnquiryStatus}>
-                <input type="hidden" name="id" value={enquiry.id} />
-                <input type="hidden" name="status" value={status} />
-                <Button
-                  type="submit"
-                  size="sm"
-                  variant={isCurrent ? "default" : "outline"}
-                  disabled={isCurrent}
-                  aria-current={isCurrent ? "true" : undefined}
-                  className={cn(isCurrent && "disabled:opacity-100")}
-                >
-                  {isCurrent ? "Marked " : "Mark as "}
-                  {enquiryStatusLabels[status].toLowerCase()}
-                </Button>
-              </form>
-            );
-          })}
+        <header className="mt-4 mb-6 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-semibold">{name}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {enquiry.matter_type} · received{" "}
+              <time dateTime={enquiry.created_at}>
+                {formatUkDateTime(enquiry.created_at)}
+              </time>
+            </p>
+          </div>
+          <EnquiryStatusHeaderBadge className="mt-1.5" />
+        </header>
+
+        <div className="mb-6 flex flex-wrap gap-2">
+          <Button asChild size="lg">
+            <a href={`mailto:${enquiry.email}?subject=${replySubject}`}>
+              <Mail aria-hidden="true" />
+              Reply by email
+            </a>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <a href={`tel:${enquiry.phone.replace(/\s+/g, "")}`}>
+              <Phone aria-hidden="true" />
+              {enquiry.phone}
+            </a>
+          </Button>
         </div>
-      </section>
 
-      <section
-        className="mb-6 rounded-xl border"
-        aria-labelledby="enquiry-details-heading"
-      >
-        <h2 id="enquiry-details-heading" className="sr-only">
-          Enquiry details
-        </h2>
-        <dl className="divide-y">
-          <DetailRow label="Telephone">{enquiry.phone}</DetailRow>
-          <DetailRow label="Email">{enquiry.email}</DetailRow>
-          <DetailRow label="Type of matter">{enquiry.matter_type}</DetailRow>
-          <DetailRow label="Court / interview date">
-            {enquiry.court_date || "Not given"}
-          </DetailRow>
-          <DetailRow label="Court / police station">
-            {enquiry.court_location || "Not given"}
-          </DetailRow>
-          <DetailRow label="Description">
-            {/* Visitor-written text: preserve their line breaks rather than
-                collapsing a structured account into one paragraph. */}
-            <span className="whitespace-pre-wrap">{enquiry.description}</span>
-          </DetailRow>
-          <DetailRow label="Sent from">
-            {enquiry.source_path || "Unknown page"}
-          </DetailRow>
-        </dl>
-      </section>
-
-      <section
-        className="mb-8 rounded-xl border p-4"
-        aria-labelledby="enquiry-delivery-heading"
-      >
-        <h2
-          id="enquiry-delivery-heading"
-          className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase"
+        <section
+          className="mb-6 rounded-xl border p-4"
+          aria-labelledby="enquiry-status-heading"
         >
-          Email delivery
-        </h2>
-        <ul className="mt-3 grid gap-2 text-sm">
-          <DeliveryRow
-            label="Notification to John"
-            sentAt={enquiry.admin_notified_at}
-          />
-          <DeliveryRow
-            label="Confirmation to the sender"
-            sentAt={enquiry.visitor_confirmed_at}
-          />
-        </ul>
-        {enquiry.email_error ? (
-          <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
-            {enquiry.email_error}
-          </p>
-        ) : null}
-      </section>
+          <h2
+            id="enquiry-status-heading"
+            className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase"
+          >
+            Status
+          </h2>
+          <EnquiryStatusActions />
+        </section>
 
-      <div className="flex justify-end border-t pt-5">
-        <DeleteEnquiryButton id={enquiry.id} name={name} />
+        <section
+          className="mb-6 rounded-xl border"
+          aria-labelledby="enquiry-details-heading"
+        >
+          <h2 id="enquiry-details-heading" className="sr-only">
+            Enquiry details
+          </h2>
+          <dl className="divide-y">
+            <DetailRow label="Telephone">{enquiry.phone}</DetailRow>
+            <DetailRow label="Email">{enquiry.email}</DetailRow>
+            <DetailRow label="Type of matter">{enquiry.matter_type}</DetailRow>
+            <DetailRow label="Court / interview date">
+              {enquiry.court_date || "Not given"}
+            </DetailRow>
+            <DetailRow label="Court / police station">
+              {enquiry.court_location || "Not given"}
+            </DetailRow>
+            <DetailRow label="Description">
+              {/* Visitor-written text: preserve their line breaks rather than
+                  collapsing a structured account into one paragraph. */}
+              <span className="whitespace-pre-wrap">{enquiry.description}</span>
+            </DetailRow>
+            <DetailRow label="Sent from">
+              {enquiry.source_path || "Unknown page"}
+            </DetailRow>
+          </dl>
+        </section>
+
+        <section
+          className="mb-8 rounded-xl border p-4"
+          aria-labelledby="enquiry-delivery-heading"
+        >
+          <h2
+            id="enquiry-delivery-heading"
+            className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase"
+          >
+            Email delivery
+          </h2>
+          <ul className="mt-3 grid gap-2 text-sm">
+            <DeliveryRow
+              label="Notification to John"
+              sentAt={enquiry.admin_notified_at}
+            />
+            <DeliveryRow
+              label="Confirmation to the sender"
+              sentAt={enquiry.visitor_confirmed_at}
+            />
+          </ul>
+          {enquiry.email_error ? (
+            <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+              {enquiry.email_error}
+            </p>
+          ) : null}
+        </section>
+
+        <div className="flex justify-end border-t pt-5">
+          <DeleteEnquiryButton id={enquiry.id} name={name} />
+        </div>
       </div>
-    </div>
+    </EnquiryStatusProvider>
   );
 }
 

@@ -15,11 +15,14 @@ import { createClient } from "@/utils/supabase/server";
  * because the check that counts is the one the database makes.
  */
 
-export async function updateEnquiryStatus(formData: FormData) {
+/**
+ * Called straight from the status buttons inside a transition, rather than as a
+ * form action: the button paints the new state optimistically and this catches
+ * up behind it. Arguments are still treated as untrusted — a Server Action is a
+ * public POST endpoint whatever calls it.
+ */
+export async function updateEnquiryStatus(id: string, status: string) {
   await requireAdmin();
-
-  const id = formData.get("id");
-  const status = formData.get("status");
 
   if (typeof id !== "string" || !isEnquiryStatus(status)) return;
 

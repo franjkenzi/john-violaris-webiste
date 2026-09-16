@@ -109,6 +109,30 @@ export type Enquiry = {
 export const enquirySelect =
   "id, first_name, last_name, phone, email, matter_type, court_date, court_location, description, status, admin_notified_at, visitor_confirmed_at, email_error, source_path, created_at, updated_at";
 
+/**
+ * What a row in the inbox list or on the dashboard actually shows.
+ *
+ * `description` runs to 5,000 characters and none of it appears until an
+ * enquiry is opened, so a list of 200 would otherwise ship — and serialise into
+ * the payload — most of a megabyte of prose nobody reads.
+ */
+export type EnquiryListItem = Pick<
+  Enquiry,
+  | "id"
+  | "first_name"
+  | "last_name"
+  | "email"
+  | "matter_type"
+  | "court_date"
+  | "status"
+  | "email_error"
+  | "created_at"
+>;
+
+/** Columns making up an `EnquiryListItem`, for `.select()`. */
+export const enquiryListSelect =
+  "id, first_name, last_name, email, matter_type, court_date, status, email_error, created_at";
+
 /** Returned by the submit action and consumed by `useActionState`. */
 export type EnquiryFormState = {
   status: "idle" | "success" | "error";

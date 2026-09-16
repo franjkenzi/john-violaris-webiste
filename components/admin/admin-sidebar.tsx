@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 import {
   BadgePoundSterling,
   BriefcaseBusiness,
@@ -28,7 +29,6 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -40,8 +40,12 @@ type NavItem = {
   title: string;
   href: string;
   icon: LucideIcon;
-  /** Rendered as a count when above zero; omitted entirely otherwise. */
-  badge?: number;
+  /**
+   * A `<SidebarMenuBadge>` rendered beside the link. A node rather than a
+   * number so the layout can stream it in — the sidebar paints without waiting
+   * on a count query.
+   */
+  badge?: ReactNode;
 };
 
 const overviewItems: NavItem[] = [
@@ -80,10 +84,10 @@ const configurationItems: NavItem[] = [
 ];
 
 export function AdminSidebar({
-  newEnquiryCount = 0,
+  enquiryBadge,
 }: {
-  /** Unactioned enquiries, counted in the layout and badged on the Enquiries link. */
-  newEnquiryCount?: number;
+  /** Unactioned enquiry count, streamed in by the layout. */
+  enquiryBadge?: ReactNode;
 }) {
   const pathname = usePathname();
 
@@ -92,7 +96,7 @@ export function AdminSidebar({
       title: "Enquiries",
       href: "/admin/enquiries",
       icon: Inbox,
-      badge: newEnquiryCount,
+      badge: enquiryBadge,
     },
   ];
 
@@ -193,12 +197,7 @@ function NavGroup({
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
-                {item.badge ? (
-                  <SidebarMenuBadge>
-                    {item.badge}
-                    <span className="sr-only"> awaiting a reply</span>
-                  </SidebarMenuBadge>
-                ) : null}
+                {item.badge}
               </SidebarMenuItem>
             );
           })}

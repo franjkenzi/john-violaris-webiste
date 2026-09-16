@@ -3,7 +3,11 @@ import { AlertTriangle, ArrowRight } from "lucide-react";
 
 import { EnquiryStatusBadge } from "@/components/admin/enquiry-status-badge";
 import { getAdminSession } from "@/lib/auth";
-import { countEnquiries, listEnquiries } from "@/lib/enquiries/queries";
+import {
+  countEnquiries,
+  countUndeliveredEnquiries,
+  listEnquiries,
+} from "@/lib/enquiries/queries";
 import {
   enquiryFullName,
   enquiryStatusLabels,
@@ -11,15 +15,18 @@ import {
 } from "@/lib/enquiries/schema";
 import { formatUkShortDateTime } from "@/lib/format";
 
+/** How many recent enquiries the dashboard lists. */
+const recentLimit = 5;
+
 export default async function AdminPage() {
-  const [session, counts, recent] = await Promise.all([
+  // Five rows and two numbers. Asking for the whole inbox and slicing it here
+  // meant fetching every description on the way to a list that shows none.
+  const [session, counts, latest, undelivered] = await Promise.all([
     getAdminSession(),
     countEnquiries(),
-    listEnquiries(),
+    listEnquiries("all", recentLimit),
+    countUndeliveredEnquiries(),
   ]);
-
-  const latest = recent.slice(0, 5);
-  const undelivered = recent.filter((enquiry) => enquiry.email_error).length;
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 pt-14 pb-12 md:px-8 md:pt-10">
