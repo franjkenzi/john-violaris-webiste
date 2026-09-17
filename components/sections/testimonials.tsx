@@ -1,4 +1,7 @@
+import Link from "next/link";
+
 import { Container } from "@/components/ui/container";
+import { Icon } from "@/components/ui/icons";
 import { TestimonialColumn } from "@/components/ui/testimonial-column";
 import { testimonials } from "@/lib/content/home";
 
@@ -59,10 +62,14 @@ export function Testimonials() {
           ))}
         </div>
 
-        <p className="voices-note">
-          Placeholder reviews. These must be replaced with verified client
-          reviews before launch.
-        </p>
+        <div className="voices-action">
+          <Link href="/reviews" className="action-button">
+            View all verified reviews <Icon name="arrowRight" size={17} />
+          </Link>
+          <p className="voices-note">
+            Independently collected and published by ReviewSolicitors.
+          </p>
+        </div>
       </Container>
     </section>
   );

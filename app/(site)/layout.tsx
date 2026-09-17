@@ -4,6 +4,7 @@ import { MobileContactBar } from "@/components/layout/mobile-contact-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { UtilityBar } from "@/components/layout/utility-bar";
+import { ReviewSolicitorsWidget } from "@/components/ui/review-solicitors";
 
 export default function SiteLayout({ children }: { children: ReactNode }) {
   return (
@@ -21,6 +22,13 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
       </main>
       <SiteFooter />
       <MobileContactBar />
+      {/*
+        ReviewSolicitors pins this to the right edge of the viewport, vertically
+        centred, so it clears the contact bar docked along the bottom. It lives
+        in the layout rather than on a page so the tab survives client-side
+        navigation instead of reloading itself on every route change.
+      */}
+      <ReviewSolicitorsWidget widget="side" elementId="rswidget_35c26" />
     </div>
   );
 }

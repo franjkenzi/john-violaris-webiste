@@ -14,6 +14,7 @@ import { PoliceStationDetail } from "@/components/sections/police-station-detail
 import { ProcessSteps } from "@/components/sections/process-steps";
 import { ServicesGrid } from "@/components/sections/services-grid";
 import { Container } from "@/components/ui/container";
+import { ReviewSolicitorsWidget } from "@/components/ui/review-solicitors";
 import { Icon } from "@/components/ui/icons";
 import {
   mailtoHref,
@@ -53,6 +54,13 @@ const pages: Record<
     emphasis: "the first conversation.",
     description:
       "Understand the work involved and discuss the fees before deciding whether to instruct John.",
+  },
+  reviews: {
+    eyebrow: "Client reviews",
+    title: "Verified reviews.",
+    emphasis: "Independently collected.",
+    description:
+      "Reviews left by John’s clients on ReviewSolicitors, the independent review site for the legal profession. Collected and published by them, not by this website.",
   },
   contact: {
     eyebrow: "Speak to John",
@@ -108,6 +116,22 @@ export default async function InformationPage({
         </>
       )}
       {page === "services" && <ServicesGrid />}
+      {page === "reviews" && (
+        <section className="section-space reviews-page">
+          <Container>
+            {/*
+              `afterInteractive`, not the component default: on this page the
+              reviews are what the visitor came for, so the widget should not
+              wait for browser idle time.
+            */}
+            <ReviewSolicitorsWidget
+              widget="full-page"
+              elementId="rswidget_8448b"
+              strategy="afterInteractive"
+            />
+          </Container>
+        </section>
+      )}
       {page === "police-station" && (
         <>
           <PoliceStation />

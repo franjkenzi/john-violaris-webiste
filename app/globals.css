@@ -2372,25 +2372,9 @@ body {
   color: rgb(250 250 248 / 88%);
 }
 .voice-card figcaption {
-  display: flex;
-  align-items: center;
-  gap: 13px;
   margin-top: 26px;
   padding-top: 16px;
   border-top: 1px solid #ffffff1a;
-}
-/* Initials in place of a photograph — these reviews are anonymised. */
-.voice-monogram {
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgb(201 168 76 / 45%);
-  font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: -0.5px;
-  color: var(--color-gold);
 }
 .voice-name {
   display: block;
@@ -2403,11 +2387,36 @@ body {
   font-size: 10px;
   color: var(--color-gold);
 }
+/*
+  The route through to the verified reviews. Centred under the marquee so it
+  reads as the end of the section rather than as one more card.
+*/
+.voices-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 40px;
+  text-align: center;
+}
 .voices-note {
-  margin-top: 26px;
   font-size: 10px;
   font-style: italic;
   color: rgb(250 250 248 / 55%);
+}
+/*
+  The ReviewSolicitors full-page widget is an iframe that measures itself and
+  posts its height to us on load. Until that message arrives the iframe has no
+  height at all, so the page would open on a collapsed, empty section.
+
+  The floor is a reservation, not a size: the listing measures ~1210px at this
+  container's desktop width and taller as the cards stack, so the widget always
+  grows past it — but the footer no longer jumps up the screen while it loads.
+*/
+.reviews-page iframe {
+  display: block;
+  width: 100%;
+  min-height: 700px;
 }
 
 /* ══════════════════════════════════════════════════════════

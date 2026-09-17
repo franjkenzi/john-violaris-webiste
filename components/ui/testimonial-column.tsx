@@ -6,11 +6,6 @@ import { useEffect, useRef } from "react";
 import { Stars } from "@/components/ui/stars";
 import type { Testimonial } from "@/lib/content/home";
 
-/** "T.B., London" → "T.B." — the reviewer's initials, used as the monogram. */
-function monogram(name: string): string {
-  return name.split(",")[0].trim();
-}
-
 /** Just enough of the playback handle for pause/resume. */
 type Playback = { pause: () => void; play: () => void; stop: () => void };
 
@@ -84,13 +79,8 @@ export function TestimonialColumn({
               <Stars rating={testimonial.rating} />
               <blockquote>{testimonial.quote}</blockquote>
               <figcaption>
-                <span className="voice-monogram" aria-hidden="true">
-                  {monogram(testimonial.name)}
-                </span>
-                <span>
-                  <span className="voice-name">{testimonial.name}</span>
-                  <span className="voice-matter">{testimonial.matter}</span>
-                </span>
+                <span className="voice-name">{testimonial.name}</span>
+                <span className="voice-matter">{testimonial.matter}</span>
               </figcaption>
             </figure>
           )),
