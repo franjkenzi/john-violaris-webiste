@@ -9,7 +9,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
       aria-label={`${siteConfig.name} — home`}
     >
       <span>
-        John Violaris<span className="wordmark-dot">.</span>
+        John Violaris
       </span>
       {!compact && <small>Criminal Defence Solicitor</small>}
     </Link>

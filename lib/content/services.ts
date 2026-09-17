@@ -81,6 +81,11 @@ export const serviceGroups: ServiceGroup[] = [
         icon: "spark",
         featured: true,
       },
+    ],
+  },
+  {
+    heading: "Driving standards",
+    services: [
       {
         name: "Speeding",
         href: "/services/speeding",
@@ -88,11 +93,6 @@ export const serviceGroups: ServiceGroup[] = [
         icon: "camera",
         featured: true,
       },
-    ],
-  },
-  {
-    heading: "Driving standards",
-    services: [
       {
         name: "Careless Driving",
         href: "/services/careless-driving",
@@ -108,7 +108,7 @@ export const serviceGroups: ServiceGroup[] = [
         featured: true,
       },
       {
-        name: "Mobile Phone",
+        name: "Using Mobile Phone",
         href: "/services/mobile-phone",
         statute: "s.41D RTA 1988",
         icon: "phone",
@@ -134,7 +134,7 @@ export const serviceGroups: ServiceGroup[] = [
         icon: "stop",
       },
       {
-        name: "Driver Details",
+        name: "Failing to Provide Driver Details",
         href: "/services/driver-details",
         statute: "s.172 RTA 1988",
         icon: "mail",
@@ -152,10 +152,9 @@ export const serviceGroups: ServiceGroup[] = [
         featured: true,
       },
       {
-        name: "General Criminal Defence",
-        short: "Criminal Defence",
+        name: "Magistrates Court",
         href: "/services/criminal-defence",
-        statute: "Magistrates' court",
+        statute: "Criminal defence",
         icon: "scales",
       },
     ],

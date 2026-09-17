@@ -207,9 +207,6 @@ body {
   font: 500 26px/1.1 var(--font-display);
   letter-spacing: -0.9px;
 }
-.wordmark-dot {
-  color: var(--color-gold);
-}
 .wordmark small {
   font-size: 8px;
   letter-spacing: 2px;

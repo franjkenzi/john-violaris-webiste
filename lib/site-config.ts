@@ -116,6 +116,7 @@ export const mainNav: NavLink[] = [
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Police Station", href: "/police-station" },
+  { label: "Magistrates Court", href: "/services/criminal-defence" },
   { label: "Fees", href: "/fees" },
   { label: "Reviews", href: "/reviews" },
   { label: "Resources", href: "/blog" },

@@ -199,7 +199,7 @@ export function Hero() {
             </div>
             <div className="experience-personal">
               <dd>You + John</dd>
-              <dt>Direct contact, from the start</dt>
+              <dt>No third parties</dt>
             </div>
           </dl>
         </Container>
