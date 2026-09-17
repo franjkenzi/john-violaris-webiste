@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Inbox } from "lucide-react";
 
-import { EnquiryRow } from "@/components/admin/enquiry-row";
+import { ClickableRow } from "@/components/admin/clickable-row";
 import { EnquiryStatusBadge } from "@/components/admin/enquiry-status-badge";
 import { cn } from "cn";
 import {
@@ -132,7 +132,7 @@ export default async function AdminEnquiriesPage({
             </thead>
             <tbody>
               {enquiries.map((enquiry) => (
-                <EnquiryRow
+                <ClickableRow
                   key={enquiry.id}
                   href={`/admin/enquiries/${enquiry.id}`}
                 >
@@ -167,7 +167,7 @@ export default async function AdminEnquiriesPage({
                       {formatUkShortDateTime(enquiry.created_at)}
                     </time>
                   </td>
-                </EnquiryRow>
+                </ClickableRow>
               ))}
             </tbody>
           </table>

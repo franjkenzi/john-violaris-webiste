@@ -23,6 +23,13 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M9 8h6M9 12h6" />
     </>
   ),
+  // Pound sign — fixed fees, agreed up front
+  pound: (
+    <>
+      <path d="M15.8 7.4a3.7 3.7 0 0 0-6.4 2.6v4.8c0 1.7-.9 2.9-2.2 3.8h10.6" />
+      <path d="M7.6 12.6h6.6" />
+    </>
+  ),
   // Clock with history arrow — years of experience
   history: (
     <>
@@ -90,6 +97,17 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M10 11.5c1.4-.9 2.6.9 4 0" />
     </>
   ),
+  // Cannabis leaf — drug driving
+  leaf: (
+    <>
+      <path d="M12 15c-1.6-3.4-1.6-7.6 0-12.5 1.6 4.9 1.6 9.1 0 12.5Z" />
+      <path d="M12 15C8.5 13.5 5.5 10.5 4 6c4.5 1.5 7.2 4.6 8 9Z" />
+      <path d="M12 15c3.5-1.5 6.5-4.5 8-9-4.5 1.5-7.2 4.6-8 9Z" />
+      <path d="M12 15c-3 .5-6.5 0-9.5-2.5 3.8-.6 7 .3 9.5 2.5Z" />
+      <path d="M12 15c3 .5 6.5 0 9.5-2.5-3.8-.6-7 .3-9.5 2.5Z" />
+      <path d="M12 15v6.5" />
+    </>
+  ),
   // Car — driving standards
   car: (
     <>
@@ -124,6 +142,17 @@ const paths: Record<string, React.ReactNode> = {
   call: (
     <path d="M6.5 3h3l1.5 4-2 1.5a12 12 0 0 0 6.5 6.5l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 4.5 5.2 2 2 0 0 1 6.5 3Z" />
   ),
+  // Light bulb — clear advice
+  bulb: (
+    <>
+      <path d="M12 2.5a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2v.5h5v-.5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 2.5Z" />
+      <path d="M10 19h4M10.5 21.5h3" />
+    </>
+  ),
+  // Heart — personal attention
+  heart: (
+    <path d="M12 20.5C6 16.8 3 13.6 3 9.9A4.6 4.6 0 0 1 7.6 5.3c1.8 0 3.3 1 4.4 2.6 1.1-1.6 2.6-2.6 4.4-2.6A4.6 4.6 0 0 1 21 9.9c0 3.7-3 6.9-9 10.6Z" />
+  ),
   // Envelope
   mail: (
     <>
@@ -136,6 +165,13 @@ const paths: Record<string, React.ReactNode> = {
     <>
       <rect x="3" y="5" width="18" height="16" rx="1.5" />
       <path d="M3 10h18M8 3v4M16 3v4" />
+    </>
+  ),
+  // Circular arrows — reload
+  refresh: (
+    <>
+      <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1" />
+      <path d="M20.5 4v5h-5" />
     </>
   ),
   check: <path d="m4.5 12.5 5 5 10-11" />,
@@ -151,6 +187,20 @@ const paths: Record<string, React.ReactNode> = {
 };
 
 export type IconName = keyof typeof paths;
+
+/**
+ * Every icon the set actually contains.
+ *
+ * `IconName` widens to `string` because `paths` is a `Record<string, …>`, so it
+ * cannot stop the CMS storing an icon that does not exist — a missing key
+ * renders an empty `<svg>` rather than failing. This list is what the admin
+ * offers and what a saved value is checked against.
+ */
+export const iconNames: IconName[] = Object.keys(paths);
+
+export function isIconName(value: unknown): value is IconName {
+  return typeof value === "string" && value in paths;
+}
 
 type IconProps = SVGProps<SVGSVGElement> & {
   name: IconName;

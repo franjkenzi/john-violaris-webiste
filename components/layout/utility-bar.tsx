@@ -22,6 +22,7 @@ import {
  */
 export function UtilityBar() {
   const { contact } = siteConfig;
+  const whatsapp = whatsappHref();
 
   return (
     <div className="utility-bar">
@@ -50,8 +51,8 @@ export function UtilityBar() {
             <Icon name="mail" size={13} />
             {contact.email}
           </a>
-          {contact.whatsappNumber ? (
-            <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+          {whatsapp ? (
+            <a href={whatsapp} target="_blank" rel="noopener noreferrer">
               <Icon name="whatsapp" size={13} />
               WhatsApp
             </a>

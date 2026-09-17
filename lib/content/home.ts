@@ -46,7 +46,7 @@ export type Milestone = {
 
 export const trustStats: TrustStat[] = [
   { value: "20+", label: "Years in criminal defence" },
-  { value: "10,000+", label: "Police station attendances" },
+  { value: "10,000+", label: "Clients represented" },
   { value: "2005", label: "Qualified as a solicitor" },
   { value: "Fixed", label: "Transparent, agreed fees" },
   { value: "Free", label: "Initial consultation" },
@@ -84,17 +84,17 @@ export const valueCards: ValueCard[] = [
   {
     icon: "scales",
     title: "One solicitor, start to finish",
-    body: "The solicitor you speak to on the phone is the one who reads your evidence and stands up in court. No hand-offs, no agents.",
+    body: "The solicitor you speak to on the phone is the one who presents your evidence and stands up for you in court. No hand-offs, no agents.",
   },
   {
-    icon: "receipt",
+    icon: "pound",
     title: "Fixed fees, agreed up front",
-    body: "You know exactly what your case costs before you instruct me. No hourly meter, no open-ended billing, no unexpected invoices.",
+    body: "You’ll know exactly what your case costs before you instruct me. No hourly meter, no open-ended billing, no unexpected invoices.",
   },
   {
     icon: "history",
-    title: "Two decades of court practice",
-    body: "Qualified in 2005 and in the magistrates' courts ever since. I know how these hearings run and how the bench thinks.",
+    title: "Two decades of criminal practice",
+    body: "Qualified in 2005 and have been representing clients ever since. I know how these hearings run and how the Court thinks.",
   },
   {
     icon: "target",

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cms:verify": "node --import ./scripts/alias-hook.mjs scripts/verify-cms-seed.mjs",
+    "cms:seed": "node --import ./scripts/alias-hook.mjs scripts/generate-cms-seed.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",

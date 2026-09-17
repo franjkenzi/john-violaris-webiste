@@ -763,13 +763,6 @@ body {
 .service-tab:hover:not(.active) {
   background: var(--color-off);
 }
-.tab-number {
-  font-size: 9px;
-  color: var(--color-gold-ink);
-}
-.service-tab.active .tab-number {
-  color: var(--color-gold);
-}
 .service-tab svg {
   margin-left: auto;
   flex-shrink: 0;
@@ -809,10 +802,6 @@ body {
   justify-content: space-between;
   align-items: center;
   color: var(--color-gold-ink);
-}
-.service-card-top > span {
-  font-size: 9px;
-  color: var(--color-quiet);
 }
 .service-card h3 {
   font: 400 23px/1.3 var(--font-display);
@@ -916,9 +905,9 @@ body {
   margin-top: 32px;
   padding-top: 20px;
 }
-.personal-promises span {
+.personal-promises svg {
+  display: block;
   color: var(--color-gold-ink);
-  font-size: 9px;
 }
 .personal-promises h3 {
   font-size: 12px;
@@ -1212,9 +1201,6 @@ body {
     border: 1px solid var(--color-line);
     font-size: 10px;
     gap: 8px;
-  }
-  .tab-number {
-    font-size: 8px;
   }
   .service-tab svg {
     width: 13px;
@@ -1555,6 +1541,32 @@ body {
   padding: 16px;
   margin-top: 25px;
   font-size: 11px;
+}
+/* Secondary route out of the service card; sits under the booking CTA. */
+.service-contact-whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px solid rgb(250 250 248 / 25%);
+  color: var(--color-cream);
+  font-size: 11px;
+  font-weight: 600;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.service-contact-whatsapp:hover {
+  background: rgb(250 250 248 / 8%);
+  border-color: rgb(250 250 248 / 45%);
+}
+.service-contact-whatsapp svg {
+  flex-shrink: 0;
+  color: var(--color-gold);
 }
 .service-contact-caption {
   display: block;
@@ -2097,6 +2109,26 @@ body {
   letter-spacing: 1.1px;
   text-transform: uppercase;
   color: rgb(250 250 248 / 60%);
+}
+
+/*
+ * Optional featured image, set per article in the CMS.
+ *
+ * Sits between the standfirst and the meta rule, inside the navy intro band, so
+ * an article with an image and one without still open the same way. The gold
+ * hairline echoes the portrait frame rather than introducing a new treatment.
+ */
+.article-hero-image {
+  position: relative;
+  margin-top: 34px;
+  aspect-ratio: 16 / 9;
+  max-width: 760px;
+  overflow: hidden;
+  border: 1px solid rgb(201 168 76 / 25%);
+  border-radius: 2px;
+}
+.article-hero-image img {
+  object-fit: cover;
 }
 
 /* Same proportions as the service pages, so the sticky card behaves alike. */

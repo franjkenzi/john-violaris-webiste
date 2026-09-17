@@ -1,47 +1,46 @@
 export const serviceDescriptions: Record<string, { intro: string }> = {
   "/services/drink-driving": {
     intro:
-      "Protect what matters with careful examination of the evidence and clear advice on your options.",
+      "Understand what your reading means and receive clear advice on your options.",
   },
   "/services/drug-driving": {
     intro:
-      "Understand the allegation, the testing evidence and the next steps in your case.",
+      "Understand the allegation, the test results and how to counter them.",
   },
   "/services/failing-to-provide": {
     intro:
-      "Advice on allegations of failing to provide a specimen, with attention to your circumstances.",
+      "Did you have a reasonable excuse? Receive advice on how to defend FTP cases.",
   },
   "/services/drunk-in-charge": {
     intro:
-      "A careful review of the circumstances, the evidence and the allegation you are facing.",
+      "Sleeping in your car? Zero likelihood of driving? Find out how to defend this allegation.",
   },
   "/services/totting-up": {
-    intro:
-      "If penalty points put your licence at risk, understand your position before your hearing.",
+    intro: "Facing a 6-month ban? Find out how this can be avoided.",
   },
   "/services/exceptional-hardship": {
     intro:
-      "Explore how a driving ban could affect you and the people who depend on you.",
+      "12 points need not mean a driving ban. Find out whether your case meets the threshold.",
   },
   "/services/special-reasons": {
     intro:
-      "Advice on whether the particular circumstances of your offence need closer examination.",
+      "There may be special circumstances that enable you to avoid a ban. Find out more!",
   },
   "/services/speeding": {
     intro:
-      "From a notice in the post to a court summons, get a clear view of what comes next.",
+      "Trigger-happy cameras or shoddy sign posting make these cases defensible. Find out more!",
   },
   "/services/careless-driving": {
     intro:
-      "A considered response to allegations about your standard of driving.",
+      "Did your driving really fall below the expected standard given the circumstances? Find out if you have a defence.",
   },
   "/services/dangerous-driving": {
     intro:
-      "Personal representation when a serious driving allegation puts your future in question.",
+      "Did the police exaggerate? Were you careless rather than dangerous? Serious allegations need not put your future in question.",
   },
   "/services/mobile-phone": {
     intro:
-      "Advice on mobile phone allegations and the possible implications for your licence.",
+      "Was it really in use? Find out how to defend these allegations and to avoid 6 points.",
   },
   "/services/failing-to-stop": {
     intro:
@@ -49,11 +48,7 @@ export const serviceDescriptions: Record<string, { intro: string }> = {
   },
   "/services/no-insurance": {
     intro:
-      "A review of your insurance circumstances and the evidence behind the allegation.",
-  },
-  "/services/no-licence": {
-    intro:
-      "Clear advice on licence-related allegations and the steps you may need to take.",
+      "Driving without insurance is a strict liability offence, but were you misled into believing that you were insured? Find out more.",
   },
   "/services/driver-details": {
     intro:

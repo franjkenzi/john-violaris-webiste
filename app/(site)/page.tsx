@@ -14,7 +14,7 @@ import { siteConfig } from "@/lib/site-config";
 export const metadata: Metadata = {
   title: "Criminal Defence & Motoring Offence Solicitor — England & Wales",
   description:
-    "Facing a driving ban, court hearing or police interview? John Violaris is a criminal defence solicitor with 20+ years' experience and 10,000+ police station attendances. Free initial consultation.",
+    "Facing a driving ban, court hearing or police interview? John Violaris is a criminal defence solicitor with 20+ years' experience and 10,000+ clients represented. Free initial consultation.",
   alternates: { canonical: "/" },
 };
 

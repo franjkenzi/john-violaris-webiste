@@ -1,16 +1,25 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { OnThisPage } from "@/components/ui/on-this-page";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
-import { articles, findArticle } from "@/lib/content/blog";
-import { allServices } from "@/lib/content/services";
+import { getArticle, getArticles, getServices } from "@/lib/cms/queries";
 import { siteConfig } from "@/lib/site-config";
 import { slugify } from "@/lib/slug";
 
-export function generateStaticParams() {
+/**
+ * Prerender every published article at build time.
+ *
+ * `dynamicParams` is left at its default, so an article published after the
+ * build renders on first request rather than 404ing while it waits for a
+ * deploy. The publish action revalidates its path either way.
+ */
+export async function generateStaticParams() {
+  const articles = await getArticles();
+
   return articles.map((article) => ({ slug: article.slug }));
 }
 
@@ -20,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = findArticle(slug);
+  const article = await getArticle(slug);
   if (!article) return {};
   return {
     title: article.title,
@@ -30,6 +39,10 @@ export async function generateMetadata({
       title: article.title,
       description: article.excerpt,
       type: "article",
+      ...(article.publishedAt ? { publishedTime: article.publishedAt } : {}),
+      ...(article.featuredImage
+        ? { images: [{ url: article.featuredImage, alt: article.featuredImageAlt }] }
+        : {}),
     },
   };
 }
@@ -40,10 +53,16 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = findArticle(slug);
+
+  const [article, articles, services] = await Promise.all([
+    getArticle(slug),
+    getArticles(),
+    getServices(),
+  ]);
+
   if (!article) notFound();
 
-  const related = allServices.find(
+  const related = services.find(
     (service) => service.href === article.relatedService,
   );
   const more = articles.filter((item) => item.slug !== article.slug).slice(0, 3);
@@ -64,6 +83,19 @@ export default async function ArticlePage({
           </p>
           <h1>{article.title}</h1>
           <p className="article-standfirst">{article.standfirst}</p>
+          {/* Only articles given an image in the CMS have one; the rest open
+              exactly as they did before. */}
+          {article.featuredImage && (
+            <div className="article-hero-image">
+              <Image
+                src={article.featuredImage}
+                alt={article.featuredImageAlt ?? ""}
+                fill
+                sizes="(max-width: 860px) 100vw, 760px"
+                priority
+              />
+            </div>
+          )}
           <div className="article-meta">
             <span>{siteConfig.name}</span>
             <span>{siteConfig.role}</span>

@@ -29,11 +29,6 @@ export function ServicesGrid() {
               <em>Whatever you’re facing.</em>
             </h2>
           </div>
-          <p className="section-intro">
-            You don’t need to know the legal terminology.
-            <br />
-            Start with what’s brought you here.
-          </p>
         </div>
         <div className="service-explorer">
           <div className="service-navigation">
@@ -78,7 +73,6 @@ export function ServicesGrid() {
                     active === index ? "service-tab active" : "service-tab"
                   }
                 >
-                  <span className="tab-number">0{index + 1}</span>
                   <span>{group.heading}</span>
                   <Icon name="arrowRight" size={17} />
                 </button>
@@ -99,7 +93,7 @@ export function ServicesGrid() {
               className="service-panel"
             >
               <div className="service-cards">
-                {group.services.map((service, serviceIndex) => (
+                {group.services.map((service) => (
                   <Link
                     href={service.href}
                     key={service.href}
@@ -107,7 +101,6 @@ export function ServicesGrid() {
                   >
                     <div className="service-card-top">
                       <Icon name={service.icon} size={25} />
-                      <span>0{serviceIndex + 1}</span>
                     </div>
                     <h3>{service.name.replace(" · ", " / ")}</h3>
                     <p>

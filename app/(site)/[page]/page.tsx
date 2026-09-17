@@ -92,6 +92,10 @@ export default async function InformationPage({
   const { page } = await params;
   const content = pages[page];
   if (!content) notFound();
+
+  // Null until a usable number is configured; the row is omitted rather than
+  // linking the visitor back to the page they are already reading.
+  const whatsapp = whatsappHref();
   return (
     <>
       <PageIntro {...content} />
@@ -198,15 +202,17 @@ export default async function InformationPage({
                       <strong>{siteConfig.contact.phoneDisplay}</strong>
                       <Icon name="call" size={20} />
                     </a>
-                    <a
-                      href={whatsappHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span>Prefer a message?</span>
-                      <strong>WhatsApp John</strong>
-                      <Icon name="whatsapp" size={20} />
-                    </a>
+                    {whatsapp ? (
+                      <a
+                        href={whatsapp}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span>Prefer a message?</span>
+                        <strong>WhatsApp John</strong>
+                        <Icon name="whatsapp" size={20} />
+                      </a>
+                    ) : null}
                   </div>
                   <p className="contact-disclaimer">
                     Getting in touch does not create a solicitor–client

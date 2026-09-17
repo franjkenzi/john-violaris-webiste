@@ -6,6 +6,7 @@ import {
   Playfair_Display,
 } from "next/font/google";
 
+import { VersionGuard } from "@/components/layout/version-guard";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
@@ -61,7 +62,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="en-GB"
       className={`${playfair.variable} ${dmSans.variable} ${signature.variable} h-full`}
     >
-      <body className="min-h-full bg-cream">{children}</body>
+      <body className="min-h-full bg-cream">
+        {children}
+        <VersionGuard />
+      </body>
     </html>
   );
 }

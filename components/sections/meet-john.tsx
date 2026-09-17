@@ -23,7 +23,7 @@ export function MeetJohn() {
             <p className="personal-aside">
               From our first conversation
               <br />
-              to the next step in your case.
+              to the conclusion of your case.
             </p>
             <span className="personal-signoff">
               John Violaris<span>.</span>
@@ -39,32 +39,34 @@ export function MeetJohn() {
               That’s where I start.
             </p>
             <p>
-              A letter arrives. A court date is set. The police ask to speak to
-              you. Suddenly, a situation you never expected is taking over your
-              life.
+              Everybody has their own story and no case is ever the same. When
+              the police accuse you of wrong it’s rattling. The best lawyers
+              aren’t just masters in advocacy. They’re stress relievers who are
+              excellent with people from all walks of life.
             </p>
             <p>
-              I qualified in 2005 and have spent more than twenty years in
-              criminal defence. My job is to help you understand where you
-              stand, prepare your case carefully, and represent you personally.
+              When you hire me you get me. No secretaries answering the phone or
+              strangers turning up at Court. I will know your background and
+              understand your best interests. I offer a personalised service
+              where you stay in the loop.
             </p>
             <p>
-              You’ll speak directly with me. I’ll listen, explain your options
-              in plain English, and be honest about what happens next.
+              Criminal proceedings are far less stressful when the process is
+              clear and you know what to expect at every given stage.
             </p>
             <div className="personal-promises">
               <div>
-                <span>01</span>
+                <Icon name="call" size={18} />
                 <h3>Direct access</h3>
-                <p>Speak to the solicitor handling your case.</p>
+                <p>I’ll be handling your case from start to finish.</p>
               </div>
               <div>
-                <span>02</span>
+                <Icon name="bulb" size={18} />
                 <h3>Clear advice</h3>
-                <p>Understand your options and your next step.</p>
+                <p>Understand your options and possible outcomes.</p>
               </div>
               <div>
-                <span>03</span>
+                <Icon name="heart" size={18} />
                 <h3>Personal attention</h3>
                 <p>Your circumstances shape the approach.</p>
               </div>

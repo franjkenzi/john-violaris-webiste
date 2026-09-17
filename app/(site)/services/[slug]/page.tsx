@@ -9,7 +9,7 @@ import { CtaBanner } from "@/components/layout/cta-banner";
 import { allServices, serviceGroups } from "@/lib/content/services";
 import { serviceDescriptions } from "@/lib/content/service-descriptions";
 import { serviceDetails } from "@/lib/content/service-detail";
-import { siteConfig } from "@/lib/site-config";
+import { siteConfig, whatsappHref } from "@/lib/site-config";
 
 function findService(slug: string) {
   return allServices.find((service) => service.href === `/services/${slug}`);
@@ -42,6 +42,11 @@ export default async function ServicePage({
   const { slug } = await params;
   const service = findService(slug);
   if (!service) notFound();
+
+  // The offence is prefilled into the chat, so a message arriving from this
+  // page already says what it is about. Null when no number is configured.
+  const whatsapp = whatsappHref(service.name);
+
   const detail = serviceDetails[service.href];
   const related =
     serviceGroups
@@ -259,6 +264,17 @@ export default async function ServicePage({
                 <Link href={siteConfig.bookingUrl} className="action-button">
                   Discuss your case <Icon name="arrowRight" size={17} />
                 </Link>
+                {whatsapp ? (
+                  <a
+                    href={whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="service-contact-whatsapp"
+                  >
+                    <Icon name="whatsapp" size={16} />
+                    Message John on WhatsApp
+                  </a>
+                ) : null}
                 <span className="service-contact-caption">
                   20+ years in criminal defence
                   <br />

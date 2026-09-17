@@ -441,6 +441,14 @@ export const articles: Article[] = [
   },
 ];
 
-export function findArticle(slug: string) {
-  return articles.find((article) => article.slug === slug);
-}
+/*
+ * `findArticle` used to live here and has been removed. The blog is served from
+ * the CMS now — `getArticle` in `lib/cms/queries.ts` is the lookup, and it
+ * reads Supabase.
+ *
+ * What is left in this file is the seed for `lib/cms/seed-data.ts` and the
+ * fallback the site serves if Supabase cannot be reached. Editing an article
+ * here changes neither the live site nor the database: edit it in the CMS.
+ * Once these six articles have been through the CMS in production, this file
+ * can go.
+ */

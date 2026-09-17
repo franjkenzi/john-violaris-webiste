@@ -26,7 +26,7 @@ export type ServiceGroup = {
 
 export const serviceGroups: ServiceGroup[] = [
   {
-    heading: "Alcohol & drugs",
+    heading: "Drugs & Alcohol",
     services: [
       {
         name: "Drink Driving",
@@ -39,7 +39,7 @@ export const serviceGroups: ServiceGroup[] = [
         name: "Drug Driving",
         href: "/services/drug-driving",
         statute: "s.5A RTA 1988",
-        icon: "vial",
+        icon: "leaf",
         featured: true,
       },
       {

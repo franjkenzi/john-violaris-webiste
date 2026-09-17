@@ -91,9 +91,7 @@ export function Hero() {
                 <span className="small-rule" /> John Violaris · Solicitor
               </p>
               <h1 id="hero-heading">
-                Your future.
-                <br />
-                Your defence.
+                Your defence…
                 <br />
                 <em>
                   My personal
@@ -101,9 +99,9 @@ export function Hero() {
                 </em>
               </h1>
               <p className="hero-description">
-                Your licence. Your livelihood. Your peace of mind.
-                <br className="hidden sm:block" /> When the stakes feel high,
-                speak directly to the solicitor who will stand beside you.
+                Whether you’re fighting for your licence or your freedom,
+                <br className="hidden sm:block" /> speak directly to the
+                solicitor who will stand beside you.
               </p>
               <Link href={siteConfig.bookingUrl} className="action-button">
                 Let’s talk about your case <Icon name="arrowRight" size={19} />
@@ -193,7 +191,7 @@ export function Hero() {
               <dd>
                 10,000<span>+</span>
               </dd>
-              <dt>Police station attendances</dt>
+              <dt>Clients represented</dt>
             </div>
             <div>
               <dd>2005</dd>

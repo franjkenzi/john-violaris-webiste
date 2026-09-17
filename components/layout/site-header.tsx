@@ -29,6 +29,10 @@ export function SiteHeader() {
   const open = openedOn === pathname;
   const setOpen = (next: boolean) => setOpenedOn(next ? pathname : null);
 
+  // Null unless a usable number is configured, so the drawer never offers a
+  // WhatsApp button that is not WhatsApp.
+  const whatsapp = whatsappHref();
+
   // Lock background scroll and wire up Escape while the drawer is open.
   useEffect(() => {
     if (!open) return;
@@ -204,7 +208,9 @@ export function SiteHeader() {
               <Icon name="calendar" size={16} />
               Book a free consultation
             </Link>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div
+              className={`grid gap-2.5 ${whatsapp ? "grid-cols-2" : "grid-cols-1"}`}
+            >
               <a
                 href={telHref}
                 className="flex items-center justify-center gap-2 rounded-sharp border border-cream/25 px-4 py-3 text-xs font-semibold uppercase tracking-[0.06em] text-cream"
@@ -212,15 +218,17 @@ export function SiteHeader() {
                 <Icon name="call" size={15} />
                 Call
               </a>
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-sharp border border-cream/25 px-4 py-3 text-xs font-semibold uppercase tracking-[0.06em] text-cream"
-              >
-                <Icon name="whatsapp" size={15} />
-                WhatsApp
-              </a>
+              {whatsapp ? (
+                <a
+                  href={whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 rounded-sharp border border-cream/25 px-4 py-3 text-xs font-semibold uppercase tracking-[0.06em] text-cream"
+                >
+                  <Icon name="whatsapp" size={15} />
+                  WhatsApp
+                </a>
+              ) : null}
             </div>
             <a
               href={mailtoHref}

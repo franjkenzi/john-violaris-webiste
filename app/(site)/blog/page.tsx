@@ -4,7 +4,7 @@ import { PageIntro } from "@/components/pages/page-intro";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
-import { articles } from "@/lib/content/blog";
+import { getArticles } from "@/lib/cms/queries";
 
 /**
  * The blog index lives here rather than in the `[page]` catch-all, so that the
@@ -25,12 +25,23 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
-export default function BlogIndexPage() {
+export default async function BlogIndexPage() {
+  const articles = await getArticles();
+
   return (
     <>
       <PageIntro {...intro} />
       <section className="section-space">
         <Container>
+          {/* An empty index is a real state, not a failure: every guide could
+              be unpublished at once. Saying so beats an empty grid. */}
+          {articles.length === 0 && (
+            <p className="section-intro">
+              There are no guides published at the moment. If you have a
+              question about your own case, speak to John directly — the first
+              conversation is free.
+            </p>
+          )}
           <div className="article-grid">
             {articles.map((article) => (
               <article key={article.slug} className="article-card">

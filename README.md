@@ -51,8 +51,9 @@ Optional public environment variables (read at build time):
 | ----------------------------- | ---------------------------------- |
 | `NEXT_PUBLIC_PHONE_NUMBER`    | Confirmed E.164 telephone number   |
 | `NEXT_PUBLIC_PHONE_DISPLAY`   | Human-readable telephone number    |
-| `NEXT_PUBLIC_WHATSAPP_NUMBER` | International digits for WhatsApp  |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | WhatsApp number, any usual format  |
 | `NEXT_PUBLIC_BOOKING_URL`     | Confirmed TidyCal consultation URL |
+| `NEXT_PUBLIC_APP_VERSION`     | Build identifier for stale-tab detection (see below). Only needed where the deploy exposes neither a Vercel deployment id nor a git checkout. |
 
 Server-side variables. These are never sent to the browser and must not be
 prefixed with `NEXT_PUBLIC_`:
@@ -69,17 +70,139 @@ Until `ENQUIRY_FROM_EMAIL` points at a verified domain, Resend's shared
 `onboarding@resend.dev` sender is used, which can only deliver to the Resend
 account owner — enough for testing, not for launch.
 
-Phone and WhatsApp links fall back to the contact page when unset; no fabricated
-number is dialled, and no view renders the placeholder string as if it were a
-number — the label changes instead ("Speak to John", "Urgent? Contact John"). The contact page explains the outstanding preview details.
+WhatsApp is click-to-chat only, per PRD §8 — no Business API. `whatsappHref()`
+in `lib/site-config.ts` returns `null` unless a usable number is configured, so
+every view omits the route entirely rather than offering a "WhatsApp" control
+that leads somewhere else. Set the number in whatever shape it is supplied
+(`+44 7700 900123`, `07700 900123`, `447700900123`): it is normalised to the
+digits `wa.me` expects, and a value that cannot be read as a phone number is
+treated as unset rather than rendered as a broken link.
+
+Chats opened from a service page prefill the offence — "Hello John, I’d like
+to speak to you about Drink Driving." — so a message arrives already saying
+what it concerns. Every other entry point opens an empty chat: nothing puts
+words in the visitor’s mouth unless the page genuinely knows what the matter
+is, and no prefill ever describes a case more broadly than the page it came
+from.
+
+Phone links still fall back to the contact page when unset and no fabricated
+number is dialled. Note that the contact page does currently render the
+`phoneDisplay` placeholder as though it were a number; that belongs with the
+telephone work rather than the WhatsApp integration. The contact page
+explains the outstanding preview details.
 Confirm the existing email address (`contact@johnviolaris.com`) before launch.
 Set the verified SRA number in central configuration when supplied.
+
+## The CMS content layer
+
+`lib/cms/` is the path between the Supabase content tables and the site. It is
+in place; the admin sections that write through it are not yet, so every public
+page still renders from `lib/content/`. Sections are migrated one at a time.
+
+| Module            | Role                                                          |
+| ----------------- | ------------------------------------------------------------- |
+| `types.ts`        | What goes in each table's `content` jsonb column               |
+| `seed-data.ts`    | Today's static content, expressed as rows                      |
+| `mappers.ts`      | Row → the shape the components already render                  |
+| `queries.ts`      | Public reads (anon, no cookies, published rows only)           |
+| `admin-queries.ts`| Admin reads (cookie session, drafts included)                  |
+| `write.ts`        | The one wrapper every mutation goes through                    |
+| `revalidate.ts`   | Which routes to rebuild after a change                         |
+| `form.ts`         | Shared form state and validation for the admin forms           |
+
+Public reads go through `utils/supabase/public.ts` — the publishable key and no
+cookies, because a page that reads `cookies()` cannot be statically rendered and
+every public page here is static. RLS is what limits those reads to published
+rows, rather than a `.eq("published", true)` a later refactor could drop.
+
+A read falls back to the static seed when Supabase **errors**, and never when it
+simply returns no rows. An empty answer is the truthful one — nothing is
+published — and treating it as a failure would make it impossible for John to
+unpublish the last testimonial. Fallbacks log loudly.
+
+Writes call `revalidatePath` through `revalidateFor()`. Not `revalidateTag`:
+tagging non-`fetch` reads needs either `unstable_cache`, deprecated in Next 16,
+or the Cache Components model, which changes rendering for the entire app.
+Because the header carries the services menu and the footer the contact details,
+a change to either really does invalidate every page, and the map says so.
+
+### The seed
+
+`supabase/migrations/*_seed_cms_content.sql` loads the current static content
+into the tables, so switching a section to the CMS changes nothing a visitor
+sees. It is generated, not written:
+
+```bash
+npm run cms:verify
+```
+
+```bash
+npm run cms:seed
+```
+
+`cms:verify` puts every seeded row through the same mapper the site uses and
+compares the result against the static module rendered today; `cms:seed`
+regenerates the migration in place. Run the verifier after editing anything in
+`lib/content/` or `lib/cms/` — a failure means a page would change when it
+switched over.
+
+Every statement in the seed is guarded by `where not exists (select 1 from
+<table>)`, so applying it to a database that already holds content does nothing.
+That guard is not politeness: a seed that overwrote on conflict would delete
+John's edits the next time anyone reset the database.
+
+The scripts run under plain `node` with `scripts/alias-hook.mjs`, which teaches
+it the `@/*` path alias so the generator can import exactly what the app imports.
 
 `lib/content/services.ts` remains the service catalogue. Concise service summaries
 live in `lib/content/service-descriptions.ts`. Check all professional claims,
 statute references and marketing copy with John before publication. The older
 `lib/content/home.ts` retains previous draft content for reference; its placeholder
 reviews and career history are not rendered by the redesigned pages.
+
+## The blog
+
+The blog is the first section served from the CMS. `/blog` and `/blog/[slug]`
+read from Supabase; `lib/content/blog.ts` is now only the seed and the fallback.
+
+Admin routes:
+
+| Route                     | What it does                                      |
+| ------------------------- | ------------------------------------------------- |
+| `/admin/blog-posts`       | Every article, drafts included; publish in one click |
+| `/admin/blog-posts/new`   | Write a new one                                   |
+| `/admin/blog-posts/[id]`  | Edit, publish, delete                             |
+| `/admin/blog-categories`  | Add, rename and remove categories                 |
+
+An article body is a list of **sections** — a heading, paragraphs, and an
+optional bulleted list — not markdown or HTML. That is the shape the article
+page already renders and the shape its "on this page" rail is built from, so the
+CMS stores structure and the page keeps its own typography. Sections can be
+added, reordered and removed in the editor.
+
+Drafts are invisible to visitors: the `blog_posts` read policy is
+`using (published)`, so an unpublished article is not merely hidden by the UI —
+it is not readable with the publishable key at all. Publishing an article for
+the first time dates it; unpublishing keeps that date, so republishing later
+does not present an old article as new. Deleting a category leaves its articles
+published without one, and the admin says so before you confirm.
+
+Articles prerender at build time, and `dynamicParams` is left at its default so
+an article published after a deploy renders on first request instead of 404ing
+until the next build.
+
+### Images
+
+`blog-images` is a public Supabase Storage bucket: public read, admin-only
+write, 5 MB per file, JPEG/PNG/WebP/AVIF only, enforced both on the bucket and
+in `uploadBlogImage` so a rejection is a sentence rather than an error code.
+Filenames are generated rather than taken from the upload.
+
+An image is uploaded as soon as it is chosen, not on save, so the editor
+previews the real stored object. Alt text is required whenever an image is set.
+The article page renders the image only when one exists, so the six existing
+articles look exactly as they did. `next.config.ts` derives the allowed image
+host from `NEXT_PUBLIC_SUPABASE_URL` rather than hardcoding the project ref.
 
 ## Enquiries
 
@@ -99,12 +222,50 @@ Rows hold a named person's account of an allegation against them. Treat them as
 sensitive: the inbox is admin-only, no enquiry is ever rendered on the public
 site, and deletion from the detail page is how an erasure request is honoured.
 
+## Deploys and stale tabs
+
+A tab left open across a deploy keeps running the previous build. Its chunks may
+no longer be served, its prefetched routes no longer match, and the enquiry
+form's server action carries an id the new server does not recognise — failures
+that are silent and baffling from the visitor's side.
+
+Two things address it. `deploymentId` in `next.config.ts` turns on Next's own
+skew protection, so assets are deployment-keyed and a mismatched navigation
+becomes a full page load rather than a broken one. `VersionGuard`, mounted in
+the root layout, polls `/api/version` while the tab is in the foreground and,
+when the server reports a different build, shows a branded notice asking for a
+refresh. `app/error.tsx` and `app/global-error.tsx` make the same request when a
+stale chunk fails outright.
+
+The notice can be dismissed, and nothing reloads on its own: someone part-way
+through the enquiry form should not lose what they have written. The build
+identifier is resolved once, at build time, from `NEXT_PUBLIC_APP_VERSION`, then
+Vercel's `VERCEL_DEPLOYMENT_ID` or `VERCEL_GIT_COMMIT_SHA`, then `GIT_SHA`, then
+the commit SHA of the checkout. If none resolve, the value is `dev` and the
+check is switched off rather than guessing at an identifier that could differ
+between the build and the running server.
+
+Rebuilding from a dirty tree produces the same commit SHA as the previous build,
+so set `NEXT_PUBLIC_APP_VERSION` explicitly if you deploy uncommitted work.
+
 ## Scope still outstanding
 
-This is the public frontend plus enquiry capture, not the complete production
-system in `prd.md`. The CMS sections behind `/admin` are still placeholders, and
-a managed blog, analytics, sitemap/robots, domain configuration and production
-launch remain separate work.
+This is the public frontend, enquiry capture and a CMS-managed blog — not the
+complete production system in `prd.md`.
+
+The blog is done. The other seven sections behind `/admin` are still
+placeholders: `app/admin/[section]/page.tsx` validates the slug and renders
+nothing, so services, service pages, fees, testimonials, website content, SEO
+metadata and site settings are not editable, and every public page except the
+blog still renders from `lib/content/`.
+
+The order the rest are planned in: testimonials and fees next, both small and
+both currently shipping content marked unconfirmed; then site settings; then
+services and the offence pages; then per-route SEO metadata.
+
+Analytics, Search Console, sitemap/robots, the remaining Schema.org types,
+Open Graph images, domain configuration and production launch remain separate
+work after that.
 
 The existing Next.js/Vercel architecture is retained. No deployment or changes to
 external services are part of this local redesign.

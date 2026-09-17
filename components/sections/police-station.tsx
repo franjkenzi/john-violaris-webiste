@@ -20,8 +20,9 @@ export function PoliceStation() {
               <em>can matter most.</em>
             </h2>
             <p>
-              Arrested or invited for a police interview? Get personal legal
-              support from the outset, with an experienced solicitor who takes
+              Arrested or invited for a police interview? Then we may be able
+              to get the police to take no further action. Get personal legal
+              support from the outset… with an experienced solicitor who takes
               the time to understand your situation.
             </p>
             <Link href="/police-station" className="action-button">
@@ -36,7 +37,7 @@ export function PoliceStation() {
             <p className="police-number">
               10,000<span>+</span>
             </p>
-            <p className="police-number-label">police station attendances</p>
+            <p className="police-number-label">clients represented</p>
             <div className="police-experience-rule" />
             <p>
               Calm advice.

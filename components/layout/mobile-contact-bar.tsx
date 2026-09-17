@@ -42,15 +42,16 @@ export function MobileContactBar() {
   }, []);
 
   const { contact } = siteConfig;
+  const whatsapp = whatsappHref();
 
   const actions: Action[] = [];
   if (contact.phoneE164) {
     actions.push({ label: "Call", href: telHref, icon: "call" });
   }
-  if (contact.whatsappNumber) {
+  if (whatsapp) {
     actions.push({
       label: "WhatsApp",
-      href: whatsappHref,
+      href: whatsapp,
       icon: "whatsapp",
       external: true,
     });
