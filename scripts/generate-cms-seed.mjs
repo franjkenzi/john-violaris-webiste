@@ -142,7 +142,7 @@ const statements = [
   },
   {
     comment:
-      "PLACEHOLDER reviews, seeded published because they are on the site today\n-- behind a visible notice saying so. `content.source` is unset on every one:\n-- PRD §17 forbids presenting an invented review as a verified one, and the\n-- absent source is what keeps that notice truthful. Replace these with real\n-- reviews, or unpublish them, before launch.",
+      "The verified reviews from John's ReviewSolicitors profile, seeded published\n-- because they are what the homepage shows today. `content.source` names the\n-- platform they were collected on: PRD §17 forbids presenting an invented\n-- review as a verified one, and that field is what tells the two apart. Only\n-- set it on a review that can be pointed at.",
     sql: seedInto({
       table: "testimonials",
       columns: ["author", "quote", "rating", "published", "sort_order", "content"],

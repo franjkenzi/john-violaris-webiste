@@ -119,8 +119,12 @@ export type FeeRow = Timestamps & {
  * one rather than quietly becoming one.
  */
 export type TestimonialContent = {
-  /** The matter it concerned, e.g. "Totting up — exceptional hardship". */
-  matter: string;
+  /**
+   * The matter it concerned, e.g. "Driving offences". Optional: ReviewSolicitors
+   * lets a reviewer leave the area of law off, and a card shows no line at all
+   * rather than one guessed from the review text.
+   */
+  matter?: string;
   source?: string;
 };
 

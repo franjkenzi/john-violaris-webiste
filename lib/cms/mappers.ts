@@ -117,7 +117,9 @@ export function toTestimonial(row: TestimonialLike): Testimonial {
   return {
     quote: row.quote,
     name: row.author,
-    matter: row.content.matter,
+    // Spread rather than assigned, so an untagged review carries no `matter`
+    // key at all instead of one set to undefined.
+    ...(row.content.matter ? { matter: row.content.matter } : {}),
     // The stars component takes a number. An unrated review shows five stars
     // nowhere — it shows none, which is the honest rendering of "not rated".
     rating: row.rating ?? 0,

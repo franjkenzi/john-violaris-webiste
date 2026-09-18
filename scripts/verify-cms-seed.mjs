@@ -115,8 +115,11 @@ expect(
   testimonials.map((testimonial) => ({
     quote: testimonial.quote,
     name: testimonial.name,
-    matter: testimonial.matter,
+    // Spread, to match the mapper: an absent field is absent on both sides
+    // rather than present and undefined on one of them.
+    ...(testimonial.matter ? { matter: testimonial.matter } : {}),
     rating: testimonial.rating,
+    ...(testimonial.source ? { source: testimonial.source } : {}),
   })),
 );
 

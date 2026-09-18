@@ -34,9 +34,13 @@ export type ProcessStep = {
 
 export type Testimonial = {
   quote: string;
+  /** As the reviewer published it on ReviewSolicitors, not as John records it. */
   name: string;
-  matter: string;
+  /** The area of law the platform tagged. Absent on a review it left untagged. */
+  matter?: string;
   rating: number;
+  /** Where the review was collected. Set only where a real one can be pointed at. */
+  source?: string;
 };
 
 export type Milestone = {
@@ -168,72 +172,36 @@ export const processSteps: ProcessStep[] = [
 ];
 
 /**
- * PLACEHOLDER testimonials carried over from the demo. These must be replaced
- * with verified reviews (ReviewSolicitors / Trustpilot / CMS-managed) before
- * launch — never publish invented reviews.
+ * The reviews on John's ReviewSolicitors profile, transcribed from it.
+ *
+ * There are two of them, both verified and both five stars, and `/reviews`
+ * serves the same two in full straight from ReviewSolicitors — so what the
+ * homepage says and what the visitor finds on clicking through are the same
+ * reviews. The section repeats them rather than padding the gap with writing,
+ * and fills out on its own as real ones are added here.
+ *
+ * Every word is the reviewer's. Henry's is quoted from the middle of a longer
+ * review — the whole of it is on the profile — and Joanna's is her review
+ * entire. PRD §17: nothing invented, and nothing presented as verified that
+ * cannot be pointed at.
+ *
+ * Source: https://www.reviewsolicitors.co.uk/london/london/ioannis-violaris
  */
 export const testimonials: Testimonial[] = [
   {
     quote:
-      "John kept my licence when I genuinely thought it was gone. He dealt with the case personally from the first call to the court hearing.",
-    name: "T.B., London",
-    matter: "Totting up — exceptional hardship",
+      "John explained the situation clearly, identified that the prosecution’s evidence had weaknesses, and negotiated a resolution that kept me on the road. He was the only solicitor I called who actually listened to the details before quoting me.",
+    name: "Henry Parsons",
+    matter: "Driving offences",
     rating: 5,
+    source: "ReviewSolicitors",
   },
   {
+    // Left untagged on the platform, so it carries no area of law here either.
     quote:
-      "Calm, thorough, and completely honest from day one. He told me exactly what to expect at every stage and never oversold it.",
-    name: "R.M., Essex",
-    matter: "Drink driving",
+      "Fantastic service and excellent communication. Very reasonably priced and would highly recommend. Thank you!",
+    name: "Joanna",
     rating: 5,
-  },
-  {
-    quote:
-      "He was the only solicitor who actually listened carefully before quoting me. When you're facing a ban, that attention to detail matters enormously.",
-    name: "S.A., Kent",
-    matter: "Speeding — NIP defence",
-    rating: 5,
-  },
-  {
-    quote:
-      "I was arrested on a Sunday evening and John was at the station that night. Having someone there who explained the process changed everything for me.",
-    name: "D.O., Surrey",
-    matter: "Police station representation",
-    rating: 5,
-  },
-  {
-    quote:
-      "He found a problem with how the sample had been handled that nobody else had spotted. The charge did not go anywhere after that.",
-    name: "K.W., Hertfordshire",
-    matter: "Drug driving",
-    rating: 5,
-  },
-  {
-    quote:
-      "My drink had been spiked and I assumed nobody would believe me. John built the special reasons argument properly and I avoided disqualification.",
-    name: "L.J., Berkshire",
-    matter: "Special reasons — laced drink",
-    rating: 5,
-  },
-  {
-    quote:
-      "Straight answers, no jargon, and he never once made me feel judged. He replied to emails himself, usually the same day.",
-    name: "P.N., Sussex",
-    matter: "Mobile phone offence",
-    rating: 5,
-  },
-  {
-    quote:
-      "The outcome was not everything I hoped for, but John was realistic with me from the start and worked hard on the mitigation. I would still recommend him.",
-    name: "A.C., Buckinghamshire",
-    matter: "No insurance",
-    rating: 4,
-  },
-  {
-    quote:
-      "Twelve points and a family that depends on me driving. He prepared the hardship evidence meticulously and I kept my licence.",
-    name: "M.F., Middlesex",
-    matter: "Careless driving — totting up",
-    rating: 5,
+    source: "ReviewSolicitors",
   },
 ];

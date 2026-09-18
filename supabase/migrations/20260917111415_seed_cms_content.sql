@@ -82,23 +82,16 @@ from (values
 
 where not exists (select 1 from public.fees);
 
--- PLACEHOLDER reviews, seeded published because they are on the site today
--- behind a visible notice saying so. `content.source` is unset on every one:
--- PRD §17 forbids presenting an invented review as a verified one, and the
--- absent source is what keeps that notice truthful. Replace these with real
--- reviews, or unpublish them, before launch.
+-- The verified reviews from John's ReviewSolicitors profile, seeded published
+-- because they are what the homepage shows today. `content.source` names the
+-- platform they were collected on: PRD §17 forbids presenting an invented
+-- review as a verified one, and that field is what tells the two apart. Only
+-- set it on a review that can be pointed at.
 insert into public.testimonials (author, quote, rating, published, sort_order, content)
 select v.author, v.quote, v.rating, v.published, v.sort_order, v.content
 from (values
-    ('T.B., London'::text, 'John kept my licence when I genuinely thought it was gone. He dealt with the case personally from the first call to the court hearing.'::text, 5::smallint, true, 0::integer, '{"matter":"Totting up — exceptional hardship"}'::jsonb),
-    ('R.M., Essex'::text, 'Calm, thorough, and completely honest from day one. He told me exactly what to expect at every stage and never oversold it.'::text, 5::smallint, true, 10::integer, '{"matter":"Drink driving"}'::jsonb),
-    ('S.A., Kent'::text, 'He was the only solicitor who actually listened carefully before quoting me. When you''re facing a ban, that attention to detail matters enormously.'::text, 5::smallint, true, 20::integer, '{"matter":"Speeding — NIP defence"}'::jsonb),
-    ('D.O., Surrey'::text, 'I was arrested on a Sunday evening and John was at the station that night. Having someone there who explained the process changed everything for me.'::text, 5::smallint, true, 30::integer, '{"matter":"Police station representation"}'::jsonb),
-    ('K.W., Hertfordshire'::text, 'He found a problem with how the sample had been handled that nobody else had spotted. The charge did not go anywhere after that.'::text, 5::smallint, true, 40::integer, '{"matter":"Drug driving"}'::jsonb),
-    ('L.J., Berkshire'::text, 'My drink had been spiked and I assumed nobody would believe me. John built the special reasons argument properly and I avoided disqualification.'::text, 5::smallint, true, 50::integer, '{"matter":"Special reasons — laced drink"}'::jsonb),
-    ('P.N., Sussex'::text, 'Straight answers, no jargon, and he never once made me feel judged. He replied to emails himself, usually the same day.'::text, 5::smallint, true, 60::integer, '{"matter":"Mobile phone offence"}'::jsonb),
-    ('A.C., Buckinghamshire'::text, 'The outcome was not everything I hoped for, but John was realistic with me from the start and worked hard on the mitigation. I would still recommend him.'::text, 4::smallint, true, 70::integer, '{"matter":"No insurance"}'::jsonb),
-    ('M.F., Middlesex'::text, 'Twelve points and a family that depends on me driving. He prepared the hardship evidence meticulously and I kept my licence.'::text, 5::smallint, true, 80::integer, '{"matter":"Careless driving — totting up"}'::jsonb)
+    ('Henry Parsons'::text, 'John explained the situation clearly, identified that the prosecution’s evidence had weaknesses, and negotiated a resolution that kept me on the road. He was the only solicitor I called who actually listened to the details before quoting me.'::text, 5::smallint, true, 0::integer, '{"matter":"Driving offences","source":"ReviewSolicitors"}'::jsonb),
+    ('Joanna'::text, 'Fantastic service and excellent communication. Very reasonably priced and would highly recommend. Thank you!'::text, 5::smallint, true, 10::integer, '{"source":"ReviewSolicitors"}'::jsonb)
   ) as v (author, quote, rating, published, sort_order, content)
 
 where not exists (select 1 from public.testimonials);

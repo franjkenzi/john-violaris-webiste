@@ -158,12 +158,12 @@ export const seedFees: SeedFee[] = draftFees.map(
 );
 
 /**
- * PLACEHOLDER reviews, seeded published because they are on the site today
- * behind a visible "placeholder" notice.
+ * The verified reviews from John's ReviewSolicitors profile, seeded published
+ * because they are what the homepage shows today.
  *
- * `source` is deliberately unset on every one. PRD §17 forbids publishing an
- * invented review as a verified one, and an absent source is what keeps the
- * notice truthful. Do not set it until a real review exists to point at.
+ * `source` is set now, which it was not while these were placeholders: PRD §17
+ * forbids publishing an invented review as a verified one, and the field is
+ * what tells the two apart. Only set it on a review that can be pointed at.
  */
 export const seedTestimonials: SeedTestimonial[] = testimonials.map(
   (testimonial, index): SeedTestimonial => ({
@@ -172,7 +172,10 @@ export const seedTestimonials: SeedTestimonial[] = testimonials.map(
     rating: testimonial.rating,
     published: true,
     sort_order: index * 10,
-    content: { matter: testimonial.matter },
+    content: {
+      ...(testimonial.matter ? { matter: testimonial.matter } : {}),
+      ...(testimonial.source ? { source: testimonial.source } : {}),
+    },
   }),
 );
 
