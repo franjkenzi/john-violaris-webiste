@@ -108,7 +108,7 @@ const statements = [
   },
   {
     comment:
-      "Long-form offence pages, joined to their service by slug. Fifteen of the\n-- sixteen services have one; police station representation is served by its\n-- own route instead.",
+      "Long-form offence pages, joined to their service by slug. Sixteen of the\n-- seventeen services have one; police station representation is served by its\n-- own route instead.",
     sql: seedInto({
       table: "service_pages",
       columns: ["service_id", "published", "content"],

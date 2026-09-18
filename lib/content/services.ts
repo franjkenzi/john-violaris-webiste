@@ -157,6 +157,15 @@ export const serviceGroups: ServiceGroup[] = [
         statute: "Criminal defence",
         icon: "scales",
       },
+      {
+        // Deliberately not `featured`: the rail beneath the hero is the
+        // motoring practice, and non-motoring work sits behind it rather
+        // than alongside it.
+        name: "All Crime",
+        href: "/services/all-crime",
+        statute: "Non-motoring offences",
+        icon: "document",
+      },
     ],
   },
 ];

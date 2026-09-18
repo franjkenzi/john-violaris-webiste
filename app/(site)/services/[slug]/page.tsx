@@ -48,12 +48,17 @@ export default async function ServicePage({
   const whatsapp = whatsappHref(service.name);
 
   const detail = serviceDetails[service.href];
+  const group = serviceGroups.find((candidate) =>
+    candidate.services.some((item) => item.href === service.href),
+  );
   const related =
-    serviceGroups
-      .find((group) =>
-        group.services.some((item) => item.href === service.href),
-      )
-      ?.services.filter((item) => item.href !== service.href) ?? [];
+    group?.services.filter((item) => item.href !== service.href) ?? [];
+  /*
+   * Every group but this one is a motoring offence, so the checklist below can
+   * ask for a driving record. On a representation page it cannot: the client
+   * may never have been accused of a motoring offence at all.
+   */
+  const isMotoringOffence = group?.heading !== "Representation";
   /* Mirrors the headings rendered below, in document order. */
   const sections = [
     ...(detail ? [{ id: "at-a-glance", label: "At a glance" }] : []),
@@ -197,10 +202,17 @@ export default async function ServicePage({
                       Photographs, messages, receipts, witness details or other
                       material that may support your account
                     </li>
-                    <li>
-                      Details of your driving record and how a conviction or
-                      disqualification would affect other people
-                    </li>
+                    {isMotoringOffence ? (
+                      <li>
+                        Details of your driving record and how a conviction or
+                        disqualification would affect other people
+                      </li>
+                    ) : (
+                      <li>
+                        How a conviction would affect your work, your family and
+                        anyone who depends on you
+                      </li>
+                    )}
                     <li>
                       Your main concerns and the questions you want answered
                     </li>

@@ -126,7 +126,7 @@ export const seedServices: SeedService[] = serviceGroups.flatMap(
 );
 
 /**
- * Long-form offence pages. Fifteen of the sixteen services have one; police
+ * Long-form offence pages. Sixteen of the seventeen services have one; police
  * station representation is served by its own page at `/police-station`.
  */
 export const seedServicePages: SeedServicePage[] = Object.entries(

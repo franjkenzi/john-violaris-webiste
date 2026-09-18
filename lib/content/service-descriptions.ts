@@ -62,4 +62,8 @@ export const serviceDescriptions: Record<string, { intro: string }> = {
     intro:
       "Experienced support through a criminal investigation or court proceedings.",
   },
+  "/services/all-crime": {
+    intro:
+      "Charged with something other than a motoring offence? Find out where legal aid applies and when instructing privately is worth it.",
+  },
 };
