@@ -44,7 +44,7 @@ export const serviceDescriptions: Record<string, { intro: string }> = {
   },
   "/services/failing-to-stop": {
     intro:
-      "Understand allegations of failing to stop or report an accident, and how to respond.",
+      "Did you not realise that there had been an accident? Too afraid to engage with the driver? Find out how we defend these cases.",
   },
   "/services/no-insurance": {
     intro:
@@ -52,11 +52,11 @@ export const serviceDescriptions: Record<string, { intro: string }> = {
   },
   "/services/driver-details": {
     intro:
-      "Help understanding a request for driver details or an allegation of failing to respond.",
+      "Convicted in absence because you never received the paperwork? Find out how to re-open these cases in order to set the record straight.",
   },
   "/police-station": {
     intro:
-      "Personal advice and representation when you have been arrested or invited for interview.",
+      "Cases can make or break at the Police Station. Find out how I can help you avoid ever having to go to Court.",
   },
   "/services/criminal-defence": {
     intro:
