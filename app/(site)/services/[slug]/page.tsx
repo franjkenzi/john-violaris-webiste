@@ -125,7 +125,18 @@ export default async function ServicePage({
                     The legal framework
                   </h2>
                   <p>
-                    The headline reference for this service is {service.statute}.
+                    {/*
+                     * The sentence only holds where `statute` is a citation.
+                     * On a representation page it is a plain descriptor
+                     * ("Where most cases are heard"), so it is left out
+                     * rather than read back as a legal reference.
+                     */}
+                    {isMotoringOffence && service.statute && (
+                      <>
+                        The headline reference for this service is{" "}
+                        {service.statute}.{" "}
+                      </>
+                    )}
                     John will identify the precise charge, statutory provisions
                     and legal authorities that apply after reviewing the facts
                     and procedural history of your case.

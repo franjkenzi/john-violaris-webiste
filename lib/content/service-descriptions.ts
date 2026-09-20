@@ -58,9 +58,12 @@ export const serviceDescriptions: Record<string, { intro: string }> = {
     intro:
       "Cases can make or break at the Police Station. Find out how I can help you avoid ever having to go to Court.",
   },
+  "/services/magistrates-court": {
+    intro: "Expert representation whatever the reason you’re there for.",
+  },
   "/services/criminal-defence": {
     intro:
-      "Experienced support through a criminal investigation or court proceedings.",
+      "There is no crime that I haven’t dealt with before. Find out how I can help with all criminal allegations being made against you.",
   },
   "/services/all-crime": {
     intro:

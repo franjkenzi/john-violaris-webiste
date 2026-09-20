@@ -153,17 +153,25 @@ export const serviceGroups: ServiceGroup[] = [
       },
       {
         name: "Magistrates Court",
-        href: "/services/criminal-defence",
-        statute: "Criminal defence",
+        href: "/services/magistrates-court",
+        statute: "Where most cases are heard",
         icon: "scales",
       },
       {
         // Deliberately not `featured`: the rail beneath the hero is the
-        // motoring practice, and non-motoring work sits behind it rather
-        // than alongside it.
+        // motoring practice, and the general crime work sits behind it
+        // rather than alongside it. The slug stays `criminal-defence`:
+        // it is the page's canonical URL and renaming the card is not a
+        // reason to break a link that is already out there.
         name: "All Crime",
+        href: "/services/criminal-defence",
+        statute: "Every allegation, not just motoring",
+        icon: "alert",
+      },
+      {
+        name: "Non-Motoring Crime",
         href: "/services/all-crime",
-        statute: "Non-motoring offences",
+        statute: "Legal aid and private instruction",
         icon: "document",
       },
     ],

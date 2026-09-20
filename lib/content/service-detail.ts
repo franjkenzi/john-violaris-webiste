@@ -970,11 +970,82 @@ export const serviceDetails: Record<string, ServiceDetail> = {
     ],
   },
 
+  "/services/magistrates-court": {
+    headline: "The magistrates’ court.",
+    emphasis: "Where most of it happens.",
+    intro:
+      "Whatever has brought you there — a motoring allegation, a first arrest, or something that has been hanging over you for months — the magistrates’ court is where it will be dealt with. John appears in these courts across England and Wales, and the solicitor who reads your papers is the one who stands up on the day.",
+    penalties: [
+      {
+        label: "Where your case begins",
+        note: "Every criminal case starts here",
+        tone: "note",
+      },
+      {
+        label: "First hearing to trial",
+        note: "The same solicitor throughout",
+        tone: "note",
+      },
+      {
+        label: "Sent to the Crown Court?",
+        note: "Allocation is explained before it happens",
+        tone: "note",
+      },
+    ],
+    issuesHeading: "What happens in the magistrates’ court",
+    issuesIntro:
+      "Most people see the inside of a courtroom once. Knowing the shape of the day removes a good deal of what makes it frightening.",
+    defenceIssues: [
+      {
+        title: "The first hearing",
+        body: "The charge is put and a plea is taken. Little else is decided that day — but you should not arrive without knowing what the evidence against you actually says.",
+      },
+      {
+        title: "Plea, and the credit for it",
+        body: "A guilty plea attracts a reduction in sentence, and the reduction is at its largest at the first hearing. That is a reason to decide early. It is not a reason to decide quickly.",
+      },
+      {
+        title: "Bail and conditions",
+        body: "Where bail is opposed, or the conditions attached to it are unworkable, they are argued. Conditions can also be varied later if your circumstances change.",
+      },
+      {
+        title: "Staying here or going up",
+        body: "An either-way offence can stay in the magistrates’ court or be sent to the Crown Court. There are real advantages both ways, and the decision is taken with advice rather than on the day.",
+      },
+      {
+        title: "Trial before the bench",
+        body: "Magistrates and district judges decide the facts as well as the law. Cross-examination and the order of the evidence are prepared with that in mind.",
+      },
+      {
+        title: "Sentence and mitigation",
+        body: "Where sentence follows, the guidelines set the range and the mitigation moves you within it. The supporting material is gathered beforehand, not mentioned in passing at the hearing.",
+      },
+    ],
+    process: [
+      {
+        title: "The first conversation",
+        body: "Tell me what you are charged with and when you are due at court. There is no charge for that conversation.",
+      },
+      {
+        title: "Before the hearing",
+        body: "The prosecution papers are obtained and gone through with you, so you arrive knowing what is being said and what is likely to happen.",
+      },
+      {
+        title: "On the day",
+        body: "I meet you before you go in, and I am the person who stands up for you — not a duty solicitor introduced to you in the corridor.",
+      },
+      {
+        title: "After the hearing",
+        body: "Whatever the outcome, you leave understanding what it means and what the next step is, including any appeal.",
+      },
+    ],
+  },
+
   "/services/criminal-defence": {
-    headline: "General criminal defence.",
+    headline: "All crime.",
     emphasis: "Twenty years of it.",
     intro:
-      "Alongside motoring work, John represents people facing criminal allegations in the magistrates’ court — from first arrest through to trial. The approach is the same: understand the case fully, explain it plainly, and prepare properly.",
+      "There is no crime John has not dealt with before. Alongside the motoring work, he represents people facing criminal allegations of every kind — from first arrest through to trial. The approach does not change: understand the case fully, explain it plainly, and prepare properly.",
     penalties: [
       {
         label: "Free at the police station",
