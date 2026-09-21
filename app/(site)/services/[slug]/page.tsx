@@ -51,8 +51,16 @@ export default async function ServicePage({
   const group = serviceGroups.find((candidate) =>
     candidate.services.some((item) => item.href === service.href),
   );
+  /*
+   * `Non-Motoring Crime` is kept out of the related list: it covers the same
+   * ground as `All Crime` above it, so offering both reads as a duplicate.
+   * The service itself still has its page and its place in the nav.
+   */
   const related =
-    group?.services.filter((item) => item.href !== service.href) ?? [];
+    group?.services.filter(
+      (item) =>
+        item.href !== service.href && item.href !== "/services/all-crime",
+    ) ?? [];
   /*
    * Every group but this one is a motoring offence, so the checklist below can
    * ask for a driving record. On a representation page it cannot: the client
@@ -70,7 +78,7 @@ export default async function ServicePage({
     ...(detail?.ancillaryOrders
       ? [{ id: "ancillary-orders", label: "Ancillary orders" }]
       : []),
-    { id: "what-to-share", label: "What to share with John" },
+    { id: "what-to-share", label: "What to share with me" },
     { id: "personal-representation", label: "Personal representation" },
   ];
   return (
@@ -216,7 +224,7 @@ export default async function ServicePage({
                       </div>
                     </>
                   )}
-                  <h3 id="what-to-share">What to share with John</h3>
+                  <h3 id="what-to-share">What to share with me</h3>
                   <ul>
                     <li>
                       Any notice, letter or charge paperwork you have received
@@ -261,7 +269,7 @@ export default async function ServicePage({
                     time to understand what has happened, review the material
                     available and explain how he can assist.
                   </p>
-                  <h3 id="what-to-share">What to share with John</h3>
+                  <h3 id="what-to-share">What to share with me</h3>
                   <ul>
                     <li>
                       Any notice, letter or charge paperwork you have received
@@ -278,9 +286,9 @@ export default async function ServicePage({
               )}
               <h3 id="personal-representation">Personal representation</h3>
               <p>
-                You will discuss your case directly with John. Before you decide
-                to instruct him, he will explain the proposed work and discuss
-                fees with you.
+                When you instruct me, you deal directly with me. I will ensure
+                that you clearly understand the proposed work and what it will
+                cost.
               </p>
               <Link href="/services" className="text-link">
                 Explore all areas of practice{" "}
