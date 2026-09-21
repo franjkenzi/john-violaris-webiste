@@ -10,6 +10,8 @@
  * is the contract the rest of the app codes against.
  */
 
+import { allServices } from "@/lib/content/services";
+
 export type NavLink = {
   label: string;
   href: string;
@@ -123,18 +125,31 @@ export const mainNav: NavLink[] = [
   { label: "Contact", href: "/contact" },
 ];
 
-/** Footer link columns. */
-export const footerNav: { heading: string; links: NavLink[] }[] = [
+/**
+ * The general crime page leads the footer services column: it is the widest
+ * entry point of the catalogue, and the motoring work follows behind it.
+ */
+const allCrimeHref = "/services/criminal-defence";
+
+/**
+ * Footer link columns.
+ *
+ * The services column is derived from the catalogue rather than kept by hand,
+ * so a service added to `serviceGroups` appears here without a second edit.
+ * `wide` marks the column that runs in two tracks rather than one long list.
+ */
+export const footerNav: {
+  heading: string;
+  links: NavLink[];
+  wide?: boolean;
+}[] = [
   {
     heading: "Services",
+    wide: true,
     links: [
-      { label: "Drink & Drug Driving", href: "/services/drink-driving" },
-      { label: "Totting Up & 12 Points", href: "/services/totting-up" },
-      { label: "Special Reasons", href: "/services/special-reasons" },
-      { label: "Speeding", href: "/services/speeding" },
-      { label: "Police Station", href: "/police-station" },
-      { label: "All Services", href: "/services" },
-    ],
+      ...allServices.filter((service) => service.href === allCrimeHref),
+      ...allServices.filter((service) => service.href !== allCrimeHref),
+    ].map((service) => ({ label: service.name, href: service.href })),
   },
   {
     heading: "Information",
@@ -142,7 +157,7 @@ export const footerNav: { heading: string; links: NavLink[] }[] = [
       { label: "About John", href: "/about" },
       { label: "Fees & Pricing", href: "/fees" },
       { label: "Client Reviews", href: "/reviews" },
-      { label: "Useful Information", href: "/blog" },
+      { label: "Resources", href: "/blog" },
       { label: "Contact", href: "/contact" },
     ],
   },

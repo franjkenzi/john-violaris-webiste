@@ -22,7 +22,11 @@ export function SiteFooter() {
             </span>
           </div>
           {footerNav.map((column) => (
-            <nav key={column.heading} aria-label={`Footer ${column.heading}`}>
+            <nav
+              key={column.heading}
+              className={column.wide ? "footer-services" : undefined}
+              aria-label={`Footer ${column.heading}`}
+            >
               <p className="eyebrow">{column.heading}</p>
               <ul>
                 {column.links.map((link) => (
@@ -38,7 +42,7 @@ export function SiteFooter() {
             <p>
               A conversation with John.
               <br />
-              Free, and without obligation.
+              Free, confidential and without obligation.
             </p>
             <Link href={siteConfig.bookingUrl}>
               Arrange a consultation <span>↗</span>

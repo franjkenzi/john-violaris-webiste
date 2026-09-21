@@ -79,8 +79,9 @@ export const credentials: string[] = [
 export const milestones: Milestone[] = [
   { year: "2001", title: "LLB (Hons), University of Bristol" },
   { year: "2002", title: "Legal Practice Course, UWE Bristol" },
-  { year: "2003", title: "First police station representations" },
+  { year: "2003", title: "Training contract" },
   { year: "2005", title: "Admitted as a solicitor" },
+  { year: "2014", title: "Qualified as a duty solicitor" },
   { year: "Today", title: "Motoring & criminal defence practice" },
 ];
 

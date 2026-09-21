@@ -52,9 +52,9 @@ export default async function AdminBlogPostsPage({
         <div>
           <h1 className="font-display text-2xl font-semibold">Blog posts</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            The guides published under Useful Information. A draft is invisible
-            to visitors — write it here, publish it when it is ready, and
-            unpublish it again at any time.
+            The guides published under Resources. A draft is invisible to
+            visitors — write it here, publish it when it is ready, and unpublish
+            it again at any time.
           </p>
         </div>
         <Link
@@ -108,7 +108,7 @@ export default async function AdminBlogPostsPage({
           </p>
           <p className="max-w-sm text-sm text-muted-foreground">
             {filter === "all"
-              ? "Write the first one and it will appear under Useful Information once published."
+              ? "Write the first one and it will appear under Resources once published."
               : "Try another filter to see the rest."}
           </p>
         </div>

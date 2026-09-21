@@ -1631,8 +1631,16 @@ body {
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr 1.2fr;
+  /* The services column is wider: it carries the catalogue in two tracks. */
+  grid-template-columns: 1.2fr 1.9fr 1fr 1.2fr;
   gap: 45px;
+}
+.footer-services ul {
+  columns: 2;
+  column-gap: 22px;
+}
+.footer-services li {
+  break-inside: avoid;
 }
 .footer-identity > p {
   margin: 25px 0 16px;
@@ -1701,7 +1709,8 @@ body {
   .footer-grid {
     gap: 30px 23px;
   }
-  .footer-identity {
+  .footer-identity,
+  .footer-services {
     grid-column: 1/-1;
   }
   .footer-contact {
@@ -2429,7 +2438,7 @@ body {
 }
 .career-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 18px;
   margin-top: 28px;
 }

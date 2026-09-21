@@ -476,7 +476,7 @@ export function BlogPostForm({ post, categories, services }: BlogPostFormProps) 
             <span className="font-medium">Published</span>
             <span className="mt-0.5 block text-muted-foreground">
               A published article is visible to everyone at its URL and listed
-              under Useful Information.
+              under Resources.
             </span>
           </span>
         </label>

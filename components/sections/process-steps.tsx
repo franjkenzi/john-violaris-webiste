@@ -3,19 +3,19 @@ import { Container } from "@/components/ui/container";
 const steps = [
   {
     title: "We talk.",
-    body: "Tell me what’s happened and what’s worrying you. The first conversation is free, with no obligation.",
+    body: "Start by telling me what’s happened and what’s worrying you. The first conversation is free, confidential and comes with no obligation.",
   },
   {
     title: "We make a plan.",
-    body: "I review your situation, explain the options and agree the scope of work and fees with you.",
+    body: "I’ll explain where you stand, talk you through your options and agree a clear strategy with you.",
   },
   {
     title: "I prepare.",
-    body: "I examine the evidence and prepare your case, keeping you informed and ready for the next step.",
+    body: "I examine the evidence, identify the issues and prepare your case thoroughly, keeping you informed and ready at every stage.",
   },
   {
     title: "I stand beside you.",
-    body: "Personal representation from a solicitor who knows you and understands your case.",
+    body: "The solicitor who advises you is the solicitor who prepares your case and represents you in court. One point of contact. Personal representation from start to finish.",
   },
 ];
 export function ProcessSteps() {
@@ -33,7 +33,7 @@ export function ProcessSteps() {
             <h2 id="process-heading" className="display-heading">
               Less uncertainty.
               <br />
-              <em>One step at a time.</em>
+              <em>Less stress</em>
             </h2>
           </div>
           <p className="section-intro">
