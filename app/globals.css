@@ -1501,6 +1501,11 @@ body {
   line-height: 1.9;
   margin-top: 25px;
 }
+/* The eyebrow opens a new section of the column, so it needs a clear break
+   from the paragraph above it rather than the 25px of ordinary copy flow. */
+.service-detail-copy > p.eyebrow {
+  margin-top: 60px;
+}
 .service-detail-copy h3 {
   font: 400 27px/1.3 var(--font-display);
   margin: 35px 0 18px;

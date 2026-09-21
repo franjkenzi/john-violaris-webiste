@@ -30,6 +30,14 @@ export type PenaltyCard = {
   tone: "risk" | "note";
 };
 
+/** A two-column row in one of the outcome tables. */
+export type TableRow = {
+  /** Left column: the outcome or order itself. */
+  label: string;
+  /** Right column: what it means for the client. */
+  note: string;
+};
+
 export type ServiceDetail = {
   /** Hero heading; rendered before the italic `emphasis`. */
   headline: string;
@@ -45,6 +53,17 @@ export type ServiceDetail = {
   defenceIssues: { title: string; body: string }[];
   /** What happens, in order, from the client's point of view. */
   process: { title: string; body: string }[];
+  /**
+   * Rows for the outcomes table. Where an offence supplies these, the table
+   * lists the court's disposal options; where it does not, the table falls
+   * back to the three `penalties` cards as before.
+   */
+  outcomes?: TableRow[];
+  /**
+   * Orders the court can impose alongside the sentence. The section is only
+   * rendered for offences that supply them.
+   */
+  ancillaryOrders?: TableRow[];
 };
 
 export const serviceDetails: Record<string, ServiceDetail> = {
@@ -972,53 +991,53 @@ export const serviceDetails: Record<string, ServiceDetail> = {
 
   "/services/magistrates-court": {
     headline: "The magistrates’ court.",
-    emphasis: "Where most of it happens.",
+    emphasis: "Need not be daunting.",
     intro:
-      "Whatever has brought you there — a motoring allegation, a first arrest, or something that has been hanging over you for months — the magistrates’ court is where it will be dealt with. John appears in these courts across England and Wales, and the solicitor who reads your papers is the one who stands up on the day.",
+      "Whether you’re suddenly produced there or have had things hanging over you for months, allow me to come and support you. I know how the court operates and how to influence proceedings in your favour.",
     penalties: [
       {
-        label: "Where your case begins",
-        note: "Every criminal case starts here",
+        label: "I analyse your case papers",
+        note: "To help you determine your plea",
         tone: "note",
       },
       {
-        label: "First hearing to trial",
-        note: "The same solicitor throughout",
+        label: "First appearance, trial or sentence?",
+        note: "I’ll represent you throughout",
         tone: "note",
       },
       {
-        label: "Sent to the Crown Court?",
-        note: "Allocation is explained before it happens",
+        label: "Case conclusion",
+        note: "I’ll do everything in my power to influence your acquittal or professionally mitigate on your behalf.",
         tone: "note",
       },
     ],
     issuesHeading: "What happens in the magistrates’ court",
     issuesIntro:
-      "Most people see the inside of a courtroom once. Knowing the shape of the day removes a good deal of what makes it frightening.",
+      "Most people have never seen the inside of a courtroom. Walking in with an accustomed professional can take away what makes it frightening.",
     defenceIssues: [
       {
-        title: "The first hearing",
-        body: "The charge is put and a plea is taken. Little else is decided that day — but you should not arrive without knowing what the evidence against you actually says.",
+        title: "Your first appearance",
+        body: "I’ll assess whether it’s possible to adjourn your case for the CPS to consider an out of court disposal. If this isn’t an option, the charge is put and a plea is taken.",
       },
       {
         title: "Plea, and the credit for it",
-        body: "A guilty plea attracts a reduction in sentence, and the reduction is at its largest at the first hearing. That is a reason to decide early. It is not a reason to decide quickly.",
+        body: "If you’re pleading Not Guilty, I’ll complete your pre-trial preparation form, highlighting the reasons for your plea and the witnesses required for your trial. If you are pleading Guilty, you may want to do so on your basis (facts), which is a way of preserving full credit whilst avoiding incrimination to the full facts of the prosecution’s case.",
       },
       {
         title: "Bail and conditions",
-        body: "Where bail is opposed, or the conditions attached to it are unworkable, they are argued. Conditions can also be varied later if your circumstances change.",
+        body: "The court may impose bail conditions on you when you’re released. I can help you challenge these conditions or to vary them so that they’re no longer excessive or unworkable.",
       },
       {
         title: "Staying here or going up",
-        body: "An either-way offence can stay in the magistrates’ court or be sent to the Crown Court. There are real advantages both ways, and the decision is taken with advice rather than on the day.",
+        body: "If you’re charged with an ‘either-way’ offence, it means that your trial could be heard either at the Magistrates Court or the Crown Court. I can help you decide to elect the trial venue that suits your best interests.",
       },
       {
-        title: "Trial before the bench",
-        body: "Magistrates and district judges decide the facts as well as the law. Cross-examination and the order of the evidence are prepared with that in mind.",
+        title: "Representation at trial",
+        body: "I will expertly represent you at trial and present your defence to an excellent standard.",
       },
       {
         title: "Sentence and mitigation",
-        body: "Where sentence follows, the guidelines set the range and the mitigation moves you within it. The supporting material is gathered beforehand, not mentioned in passing at the hearing.",
+        body: "Whether you need me to mitigate on your behalf following conviction, or to argue special reasons/exceptional hardship (not to be disqualified from driving), you can rest assured that I will fight your corner for the best possible outcome.",
       },
     ],
     process: [
@@ -1037,6 +1056,98 @@ export const serviceDetails: Record<string, ServiceDetail> = {
       {
         title: "After the hearing",
         body: "Whatever the outcome, you leave understanding what it means and what the next step is, including any appeal.",
+      },
+    ],
+    outcomes: [
+      {
+        label: "Discontinuance",
+        note: "The CPS have dropped the case against you.",
+      },
+      {
+        label: "Case dismissed",
+        note: "The Court has decided to dismiss the case against you.",
+      },
+      {
+        label: "Conditional Discharge",
+        note: "The Court has decided not to punish you unless you commit a further offence within a specified time.",
+      },
+      {
+        label: "Band A fine",
+        note: "A fine of half a week’s wages.",
+      },
+      {
+        label: "Band B fine",
+        note: "A fine of one week’s wages.",
+      },
+      {
+        label: "Band C fine",
+        note: "A fine of one and a half week’s wages.",
+      },
+      {
+        label: "Band D fine",
+        note: "A fine of two weeks wages.",
+      },
+      {
+        label: "Adjournment for a Pre-Sentence Report",
+        note: "The court wants to know more about you before sentencing because they’re considering imposing a community order and/or a prison sentence.",
+      },
+      {
+        label: "Low-level Community Order",
+        note: "Examples being 40-100 hours unpaid work, 1 month curfew and/or 10 rehabilitation/activity days.",
+      },
+      {
+        label: "Medium-Level Community Order",
+        note: "Examples being 100-200 hours unpaid work, 2 months curfew and/or 20 rehabilitation/activity days.",
+      },
+      {
+        label: "High-Level Community Order",
+        note: "Examples being 200-300 hours unpaid work, 3 months curfew and/or 30 rehabilitation/activity days.",
+      },
+      {
+        label: "Suspended Sentence",
+        note: "A prison sentence for a specified length that you only have to serve if convicted of another offence within a specified time.",
+      },
+      {
+        label: "Immediate Custody",
+        note: "A prison sentence that’s immediate. The length being limited to a maximum of 12 months if sentenced at the Magistrates Court.",
+      },
+      {
+        label: "Committal for Sentence",
+        note: "Your case is too serious to be sentenced at the Magistrates Court and needs to be adjourned for sentence at the Crown Court.",
+      },
+    ],
+    ancillaryOrders: [
+      {
+        label: "Victim Surcharge",
+        note: "45% of the fine you receive. Payable in addition to the fine. Community orders and prison sentences also attract a victim surcharge.",
+      },
+      {
+        label: "Interim Driving Disqualification",
+        note: "A driving ban until your next hearing.",
+      },
+      {
+        label: "Driving Disqualification",
+        note: "A driving ban for a specified time.",
+      },
+      {
+        label: "Restraining Order",
+        note: "An order that protects someone from specified behaviour, making it a criminal offence to breach the terms of the order.",
+      },
+      {
+        label: "Criminal Behaviour Order (CBO)",
+        note: "Replacing the ASBO, an order that prohibits you from behaving in a specified way.",
+      },
+      {
+        label: "Sexual Harm Prevention Order (SHPO)",
+        note: "An order that is made following conviction for a sexual offence.",
+      },
+      {
+        label: "Stalking Protection Order (SPO)",
+        note: "An order that goes further than a restraining order following conviction for a stalking related offence.",
+      },
+      {
+        label: "Domestic Violence Protection Order",
+        note: "Usually imposed by the police when they can’t prosecute someone for a domestic violence offence.",
       },
     ],
   },

@@ -65,10 +65,10 @@ export default async function ServicePage({
     ...(detail ? [{ id: "legal-framework", label: "Legal framework" }] : []),
     { id: "your-options", label: "Clarity first" },
     ...(detail
-      ? [{ id: "how-the-case-proceeds", label: "How the case proceeds" }]
-      : []),
-    ...(detail
       ? [{ id: "sentencing-and-outcomes", label: "Sentencing and outcomes" }]
+      : []),
+    ...(detail?.ancillaryOrders
+      ? [{ id: "ancillary-orders", label: "Ancillary orders" }]
       : []),
     { id: "what-to-share", label: "What to share with John" },
     { id: "personal-representation", label: "Personal representation" },
@@ -108,10 +108,6 @@ export default async function ServicePage({
                 </div>
               ))}
             </div>
-            <p className="penalty-caveat">
-              A general guide only. What applies in your case depends on its own
-              facts — John will explain where you stand.
-            </p>
           </Container>
         </section>
       )}
@@ -137,9 +133,9 @@ export default async function ServicePage({
                         {service.statute}.{" "}
                       </>
                     )}
-                    John will identify the precise charge, statutory provisions
-                    and legal authorities that apply after reviewing the facts
-                    and procedural history of your case.
+                    After reviewing the facts and the procedural history of your
+                    case, I will identify the legislation and caselaw that apply
+                    to your case.
                   </p>
                   <p className="eyebrow">
                     <span className="small-rule" /> {detail.issuesHeading}
@@ -147,7 +143,7 @@ export default async function ServicePage({
                   <h2 id="your-options" className="display-heading">
                     Clarity first.
                     <br />
-                    <em>Then a way forward.</em>
+                    <em>Then light at the end of the tunnel</em>
                   </h2>
                   <p>{detail.issuesIntro}</p>
                   <dl className="issue-list">
@@ -158,48 +154,68 @@ export default async function ServicePage({
                       </div>
                     ))}
                   </dl>
-                  <h3 id="how-the-case-proceeds">How the case proceeds</h3>
-                  <ol className="detail-process">
-                    {detail.process.map((step, index) => (
-                      <li key={step.title}>
-                        <span className="detail-process-number">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <div>
-                          <strong>{step.title}</strong>
-                          <p>{step.body}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
                   <h3 id="sentencing-and-outcomes">
                     Sentencing and possible outcomes
                   </h3>
                   <p>
-                    The court considers the offence, its seriousness, any
-                    aggravating or mitigating features, your plea and your
-                    circumstances. These headline consequences are an
-                    orientation only, not a prediction of sentence.
+                    The court has the power to dispose of cases in multiple
+                    ways. The following are a breakdown of most disposal options
+                    and what they mean.
                   </p>
                   <div className="service-outcomes-table-wrap">
                     <table className="service-outcomes-table">
-                      <caption>Headline consequences for {service.name}</caption>
+                      <caption>
+                        {detail.outcomes
+                          ? "Disposal options at the Magistrates Court"
+                          : `Headline consequences for ${service.name}`}
+                      </caption>
                       <thead>
                         <tr>
-                          <th scope="col">Potential consequence</th>
-                          <th scope="col">When it may apply</th>
+                          <th scope="col">Potential outcome</th>
+                          <th scope="col">What this means</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {detail.penalties.map((penalty) => (
-                          <tr key={penalty.label}>
-                            <th scope="row">{penalty.label}</th>
-                            <td>{penalty.note}</td>
+                        {(detail.outcomes ?? detail.penalties).map((row) => (
+                          <tr key={row.label}>
+                            <th scope="row">{row.label}</th>
+                            <td>{row.note}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
+                  {detail.ancillaryOrders && (
+                    <>
+                      <h3 id="ancillary-orders">Ancillary orders</h3>
+                      <p>
+                        The Court can impose additional orders against you that
+                        compel you to behave in a certain way or to prevent you
+                        from doing something.
+                      </p>
+                      <div className="service-outcomes-table-wrap">
+                        <table className="service-outcomes-table">
+                          <caption>
+                            Ancillary orders the court can impose
+                          </caption>
+                          <thead>
+                            <tr>
+                              <th scope="col">Ancillary order</th>
+                              <th scope="col">What this means</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {detail.ancillaryOrders.map((row) => (
+                              <tr key={row.label}>
+                                <th scope="row">{row.label}</th>
+                                <td>{row.note}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  )}
                   <h3 id="what-to-share">What to share with John</h3>
                   <ul>
                     <li>
@@ -238,7 +254,7 @@ export default async function ServicePage({
                   <h2 id="your-options" className="display-heading">
                     Clarity first.
                     <br />
-                    <em>Then a way forward.</em>
+                    <em>Then light at the end of the tunnel</em>
                   </h2>
                   <p>
                     Every case has its own circumstances. John will take the

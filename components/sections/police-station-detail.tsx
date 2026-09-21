@@ -5,11 +5,11 @@ import { Icon } from "@/components/ui/icons";
 import { mailtoHref, siteConfig, telHref } from "@/lib/site-config";
 
 const interviewSupport = [
-  "Speak to the investigating officer and obtain available disclosure before interview",
-  "Advise you privately about the allegation, your rights and your options",
-  "Discuss whether to answer questions, provide a prepared statement or exercise your right to silence",
-  "Attend the interview and intervene where questions or procedure require it",
-  "Explain bail, release under investigation and what is likely to happen next",
+  "Receive disclosure before the interview and ask further questions about any missing detail",
+  "Advise you privately and confidentially about the allegation and your options",
+  "Discuss whether it’s in your best interests to give an account or to exercise your right to silence",
+  "Represent you during the interview and intervene when necessary",
+  "Explain the various case disposal options and advise you about what’s likely to happen next",
 ];
 
 export function PoliceStationDetail() {
@@ -30,15 +30,17 @@ export function PoliceStationDetail() {
             <section>
               <h3>Why the police station stage matters</h3>
               <p>
-                What you say—and what you choose not to say—can affect the
-                whole course of an investigation. Early advice means you can
-                make that decision after understanding the allegation and the
-                information the police have disclosed.
+                What you choose to say (or not to say) can affect the whole
+                course of an investigation. Even if you’re desperate to give
+                your account and dispute the allegation, sometimes it’s better
+                to submit a carefully drafted prepared statement than to answer
+                all questions openly. Early legal advice can influence whether
+                you end up being charged in the first place.
               </p>
             </section>
 
             <section>
-              <h3>What John does at the police station</h3>
+              <h3>What I can do for you at the police station</h3>
               <ul>
                 {interviewSupport.map((item) => (
                   <li key={item}>{item}</li>
@@ -49,10 +51,10 @@ export function PoliceStationDetail() {
             <section>
               <h3>The advantage of continuity</h3>
               <p>
-                If the matter proceeds to court, John already knows your
-                account, the interview and the investigation from the start.
-                You do not need to explain everything again to a new
-                representative at each stage.
+                If you’re charged and given a court date, I’ll already know
+                what’s been said and the extent of the evidence against you.
+                There will be no need to explain everything again to somebody
+                new.
               </p>
             </section>
           </div>
@@ -63,16 +65,16 @@ export function PoliceStationDetail() {
               <h3>Usually available free of charge.</h3>
               <p>
                 Legal advice at a police station is normally funded through
-                legal aid and is not generally means tested. John will confirm
-                the position for your circumstances before attending.
+                legal aid and is not means tested. I will confirm the position
+                for your particular circumstances before attending.
               </p>
             </aside>
             <aside className="police-urgent-card">
               <p className="eyebrow">Interview today?</p>
-              <h3>Contact John as soon as you can.</h3>
+              <h3>Contact me as soon as you can.</h3>
               <p>
-                Share the station, interview time and anything you have been
-                told about the allegation.
+                Even if you’re clueless about the allegation, I can help you
+                find out more before we attend the interview together.
               </p>
               <div>
                 <a href={telHref} className="action-button">

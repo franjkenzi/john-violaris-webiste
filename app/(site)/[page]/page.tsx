@@ -143,15 +143,15 @@ export default async function InformationPage({
                 {[
                   {
                     title: "Before the interview",
-                    body: "Let John know the station, the interview time and anything you have been told about the allegation. Share any paperwork you have received.",
+                    body: "Call me to discuss the time, date and location of the interview. Even if you haven’t been told anything about the allegation, I can contact the investigating officer on your behalf to find out more.",
                   },
                   {
                     title: "Personal support",
-                    body: "John will discuss your circumstances, help you understand the situation and explain how he can assist with your interview.",
+                    body: "I will discuss your circumstances and help you to understand the situation. I can professionally support you before, during and after the interview takes place.",
                   },
                   {
                     title: "After the interview",
-                    body: "Understand what you have been told about the next steps and discuss any further representation you may need.",
+                    body: "I will help you understand the next steps and discuss whether you are likely to need any further representation.",
                   },
                 ].map((item) => (
                   <article key={item.title}>
