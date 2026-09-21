@@ -43,10 +43,10 @@ const pages: Record<
   },
   "police-station": {
     eyebrow: "Police station representation",
-    title: "At the very beginning.",
-    emphasis: "By your side.",
+    title: "The first conversation",
+    emphasis: "can matter the most.",
     description:
-      "Personal representation when you have been arrested or asked to attend a police interview.",
+      "Allow me to assist before fatal errors irreparably damage your case.",
   },
   fees: {
     eyebrow: "Fees & consultation",

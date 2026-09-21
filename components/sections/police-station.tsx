@@ -15,15 +15,20 @@ export function PoliceStation() {
               <span className="urgent-dot" /> Police station representation
             </p>
             <h2 id="police-station-heading" className="display-heading">
-              The first conversation
+              Interview under caution?
               <br />
-              <em>can matter most.</em>
+              <em>Allow me to help.</em>
             </h2>
             <p>
-              Arrested or invited for a police interview? Then we may be able
-              to get the police to take no further action. Get personal legal
-              support from the outset… with an experienced solicitor who takes
-              the time to understand your situation.
+              Whether you’ve been arrested or invited to attend a voluntary
+              interview, it can be a harrowing experience. Some cases are made
+              or broken at the interview stage. Having someone there who
+              understands this well can put you at a significant advantage.
+              When your police interview representative has practical
+              experience in dealing with cases that go all the way to trial,
+              they have the foresight to advise you comprehensively. When your
+              ‘solicitor’ is unclear about how things could pan out, they could
+              give you the wrong advice.
             </p>
             <Link href="/police-station" className="action-button">
               Help at the police station <Icon name="arrowRight" size={18} />
