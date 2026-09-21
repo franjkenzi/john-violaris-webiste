@@ -4,29 +4,28 @@ const background = [
   {
     title: "Education",
     paragraphs: [
-      "John graduated from the University of Bristol in 2001 with an LLB Honours degree in Law with European Legal Studies, before completing the Legal Practice Course at UWE Bristol in 2002.",
-      "He served his training contract at Galbraith Branley Solicitors from 2003 to 2005, where he began representing clients at police stations.",
+      "John graduated from the University of Bristol in 2001 with a 2:1 degree in LLB Law (European Legal Studies), before completing the Legal Practice Course at UWE Bristol in 2002.",
+      "He went on to complete his training contract at Galbraith Branley Solicitors in North London between 2003 to 2005, where he began representing clients at police stations.",
     ],
   },
   {
     title: "Practice",
     paragraphs: [
-      "John qualified in 2005 and has specialised in criminal defence at the police station and in the magistrates’ court ever since.",
-      "His experience spans criminal offences, youth court representation and road traffic law, with his current practice focused on motoring defence and personal representation.",
+      "John qualified in 2005 and has specialised in criminal defence at the police station and magistrates’ court ever since.",
+      "John currently practices at Darryl Ingram Solicitors and is a Duty Solicitor serving local courts and police stations in the Greater London area. His experience spans all crime representing people from all backgrounds. His current practice is focused on motoring defences and trial representation.",
     ],
   },
   {
     title: "What drives him",
     paragraphs: [
-      "For more than two decades John represented clients through legal-aid practice, without allowing the fee structure to determine the quality of service they received.",
-      "That same belief still shapes the practice: the result for the client matters, and every case deserves careful preparation.",
+      "Throughout more than 20 years in legal-aid practice, John worked on a simple principle: the value of a case should never be measured by the fee attached to it. What mattered was the person relying on him and the outcome they faced. That same commitment continues today — every client matters, every case deserves careful preparation, and every result is worth fighting for.",
     ],
   },
   {
     title: "His approach",
     paragraphs: [
-      "John gives honest advice at every stage. He explains what to expect, prepares the case thoroughly and advocates personally in court.",
-      "The solicitor you first speak to is the solicitor who learns your case and stands beside you at the hearing.",
+      "Thorough preparation. Clear advice. Personal representation.",
+      "John handles your case from beginning to end, explaining what to expect, preparing every detail and advocating for you personally in court. The solicitor you instruct is the solicitor who knows your case — and the one standing beside you when it matters most.",
     ],
   },
 ];
