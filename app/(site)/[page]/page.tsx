@@ -109,7 +109,8 @@ export default async function InformationPage({
       <PageIntro {...content} />
       {page === "about" && (
         <>
-          <MeetJohn />
+          {/* The link back to /about belongs on the home page, not here. */}
+          <MeetJohn showAboutLink={false} />
           <AboutBackground />
           <CareerBand />
           <ProcessSteps />

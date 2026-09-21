@@ -2,7 +2,13 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 
-export function MeetJohn() {
+/**
+ * John's personal introduction. The home page and the about page render the
+ * same copy from here, so the two stay in step by construction. The one
+ * difference is `showAboutLink`: on /about the link would point at the page
+ * already being read.
+ */
+export function MeetJohn({ showAboutLink = true }: { showAboutLink?: boolean }) {
   return (
     <section
       id="john"
@@ -28,9 +34,11 @@ export function MeetJohn() {
             <span className="personal-signoff">
               John Violaris<span>.</span>
             </span>
-            <Link className="text-link" href="/about">
-              A little more about me <Icon name="arrowRight" size={17} />
-            </Link>
+            {showAboutLink && (
+              <Link className="text-link" href="/about">
+                A little more about me <Icon name="arrowRight" size={17} />
+              </Link>
+            )}
           </div>
           <div className="personal-story">
             <p className="story-lead">
