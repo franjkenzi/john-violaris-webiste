@@ -32,7 +32,7 @@ const pages: Record<
     title: "Serious experience.",
     emphasis: "A personal approach.",
     description:
-      "John Violaris. Criminal defence solicitor since 2005, representing people across England and Wales.",
+      "“Work doesn’t feel like work when you’re doing what you love.” — John Violaris",
   },
   services: {
     eyebrow: "Areas of practice",
