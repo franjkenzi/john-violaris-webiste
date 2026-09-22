@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { offenceStripDefaults } from "@/lib/content/pages";
 import { featuredServices } from "@/lib/content/services";
 
 /**
@@ -7,12 +8,16 @@ import { featuredServices } from "@/lib/content/services";
  * who arrived with one specific charge in mind an immediate route to it — the
  * full catalogue lives in the header's services menu.
  */
-export function OffenceStrip() {
+export function OffenceStrip({
+  content = offenceStripDefaults,
+}: {
+  content?: { eyebrow: string };
+}) {
   return (
     <nav aria-label="Common charges" className="offence-strip">
       <div className="offence-strip-inner">
         <p className="eyebrow">
-          <span className="small-rule" /> What I defend
+          <span className="small-rule" /> {content.eyebrow}
         </p>
         <ul>
           {featuredServices.map((service) => (

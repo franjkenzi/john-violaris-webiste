@@ -4,6 +4,9 @@ import { useState } from "react";
 
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
+import { Lines } from "@/components/ui/lines";
+import { feesScopeDefaults } from "@/lib/content/pages";
+import type { SectionHeading } from "@/lib/content/pages";
 import {
   feeInclusions,
   feeStages,
@@ -18,7 +21,11 @@ import {
  * the table collapses to the selected stage alone — a three-column comparison
  * at phone width is unreadable, and the selector is what makes that work.
  */
-export function FeesMatrix() {
+export function FeesMatrix({
+  content = feesScopeDefaults,
+}: {
+  content?: SectionHeading;
+}) {
   const [stage, setStage] = useState<FeeStageKey>("review");
 
   return (
@@ -30,19 +37,21 @@ export function FeesMatrix() {
         <div className="section-heading-row">
           <div>
             <p className="eyebrow">
-              <span className="small-rule" /> What is covered
+              <span className="small-rule" /> {content.eyebrow}
             </p>
             <h2 id="fee-scope-heading" className="display-heading">
-              Know what you are
+              <Lines values={content.headline} />
               <br />
-              <em>paying for.</em>
+              <em>
+                <Lines values={content.headlineEmphasis} />
+              </em>
             </h2>
           </div>
-          <p className="section-intro">
-            Three stages, and what each one includes.
-            <br />
-            Choose a stage to compare.
-          </p>
+          {content.intro.length > 0 ? (
+            <p className="section-intro">
+              <Lines values={content.intro} />
+            </p>
+          ) : null}
         </div>
 
         <div className="scope-stages" role="group" aria-label="Stage of instruction">

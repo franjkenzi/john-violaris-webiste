@@ -46,6 +46,15 @@ type NavItem = {
    * on a count query.
    */
   badge?: ReactNode;
+  /**
+   * Set while the section has no page yet. The item renders as disabled text
+   * rather than a link.
+   *
+   * A link to a route that renders nothing is worse than no link: it reads as
+   * a broken page rather than an unbuilt one. Marking it says which is which,
+   * and the marker comes off with the same commit that adds the page.
+   */
+  comingSoon?: boolean;
 };
 
 const overviewItems: NavItem[] = [
@@ -54,15 +63,26 @@ const overviewItems: NavItem[] = [
 
 const contentItems: NavItem[] = [
   { title: "Website Content", href: "/admin/website-content", icon: FileText },
-  { title: "Services", href: "/admin/services", icon: BriefcaseBusiness },
+  {
+    title: "Services",
+    href: "/admin/services",
+    icon: BriefcaseBusiness,
+    comingSoon: true,
+  },
   {
     title: "Service Pages",
     href: "/admin/service-pages",
     icon: FolderTree,
+    comingSoon: true,
   },
-  { title: "Fees", href: "/admin/fees", icon: BadgePoundSterling },
   {
-    title: "Testimonials",
+    title: "Fees",
+    href: "/admin/fees",
+    icon: BadgePoundSterling,
+    comingSoon: true,
+  },
+  {
+    title: "Reviews",
     href: "/admin/testimonials",
     icon: MessageSquareQuote,
   },
@@ -75,11 +95,17 @@ const contentItems: NavItem[] = [
 ];
 
 const configurationItems: NavItem[] = [
-  { title: "SEO Metadata", href: "/admin/seo-metadata", icon: Search },
+  {
+    title: "SEO Metadata",
+    href: "/admin/seo-metadata",
+    icon: Search,
+    comingSoon: true,
+  },
   {
     title: "Site Settings",
     href: "/admin/site-settings",
     icon: Settings2,
+    comingSoon: true,
   },
 ];
 
@@ -187,16 +213,29 @@ function NavGroup({
 
             return (
               <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive}
-                  tooltip={item.title}
-                >
-                  <Link href={item.href}>
+                {item.comingSoon ? (
+                  /* `disabled` already dims it and removes pointer events,
+                     which is also why it carries no tooltip: nothing would
+                     ever trigger one. The "Soon" label says it instead. */
+                  <SidebarMenuButton disabled className="cursor-default">
                     <item.icon aria-hidden="true" />
                     <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
+                    <span className="ml-auto text-[10px] tracking-wider uppercase">
+                      Soon
+                    </span>
+                  </SidebarMenuButton>
+                ) : (
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive}
+                    tooltip={item.title}
+                  >
+                    <Link href={item.href}>
+                      <item.icon aria-hidden="true" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                )}
                 {item.badge}
               </SidebarMenuItem>
             );

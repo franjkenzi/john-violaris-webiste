@@ -16,6 +16,27 @@ import { ServicesGrid } from "@/components/sections/services-grid";
 import { Container } from "@/components/ui/container";
 import { ReviewSolicitorsWidget } from "@/components/ui/review-solicitors";
 import { Icon } from "@/components/ui/icons";
+import { Lines, Paragraphs } from "@/components/ui/lines";
+import { getPagesContent } from "@/lib/cms/queries";
+import { resolveFrom } from "@/lib/cms/sections/resolve";
+import {
+  aboutBackgroundDefaults,
+  careerBandDefaults,
+  contactDetailsDefaults,
+  contactPrepareDefaults,
+  ctaDefaults,
+  feesPreviewDefaults,
+  feesScheduleDefaults,
+  feesScopeDefaults,
+  feesStagesDefaults,
+  meetJohnDefaults,
+  pageIntroDefaults,
+  policeStationDefaults,
+  policeStationDetailDefaults,
+  policeStationStagesDefaults,
+  processDefaults,
+  servicesIntroDefaults,
+} from "@/lib/content/pages";
 import {
   mailtoHref,
   siteConfig,
@@ -23,58 +44,17 @@ import {
   whatsappHref,
 } from "@/lib/site-config";
 
-const pages: Record<
-  string,
-  { eyebrow: string; title: string; emphasis: string; description: string }
-> = {
-  about: {
-    eyebrow: "About John",
-    title: "Serious experience.",
-    emphasis: "A personal approach.",
-    description:
-      "“Work doesn’t feel like work when you’re doing what you love.” — John Violaris",
-  },
-  services: {
-    eyebrow: "Areas of practice",
-    title: "Your situation.",
-    emphasis: "A considered response.",
-    description:
-      "Motoring offences, police interviews and criminal defence. Find the support that fits what you’re facing.",
-  },
-  "police-station": {
-    eyebrow: "Police station representation",
-    title: "The first conversation",
-    emphasis: "can matter the most.",
-    description:
-      "Allow me to assist before fatal errors irreparably damage your case.",
-  },
-  fees: {
-    eyebrow: "Fees & consultation",
-    title: "Clarity from",
-    emphasis: "the first conversation.",
-    description:
-      "Understand the work involved and discuss the fees before deciding whether to instruct John.",
-  },
-  reviews: {
-    eyebrow: "Client reviews",
-    title: "Verified reviews.",
-    emphasis: "Independently collected.",
-    description:
-      "Reviews left by John’s clients on ReviewSolicitors, the independent review site for the legal profession. Collected and published by them, not by this website.",
-  },
-  contact: {
-    eyebrow: "Speak to John",
-    title: "Tell me what’s happened.",
-    emphasis: "We’ll start there.",
-    description:
-      "A free initial conversation, directly with John. Share your situation, your concerns and any important dates.",
-  },
-  /*
-   * `blog` is deliberately absent: it has its own route at `app/blog/page.tsx`
-   * so that the index and the article pages under `/blog/[slug]` sit in one
-   * tree. Adding it back here would create two candidates for `/blog`.
-   */
-};
+/**
+ * The six pages this route renders.
+ *
+ * The opening copy comes from `lib/content/pages.ts`, which is also what the
+ * CMS falls back to, so the heading here and the heading in the editor cannot
+ * drift apart. `blog` is deliberately absent: it has its own route at
+ * `app/(site)/blog/page.tsx` so that the index and the article pages sit in
+ * one tree, and adding it back here would create two candidates for `/blog`.
+ */
+const pages = pageIntroDefaults;
+
 export function generateStaticParams() {
   return Object.keys(pages).map((page) => ({ page }));
 }
@@ -98,25 +78,45 @@ export default async function InformationPage({
   params: Promise<{ page: string }>;
 }) {
   const { page } = await params;
-  const content = pages[page];
-  if (!content) notFound();
+  if (!pages[page]) notFound();
+
+  /*
+   * This page's own group, plus the two that hold sections it shares. `shared`
+   * carries the process steps and the closing call to action; `about` carries
+   * Meet John, which /about renders and the home page renders too. Fetching
+   * all three together costs one round trip rather than three.
+   */
+  const groups = await getPagesContent(page, "about", "shared");
+  const own = resolveFrom(groups[page]);
+  const about = resolveFrom(groups.about);
+  const shared = resolveFrom(groups.shared);
+
+  const intro = own("intro", pageIntroDefaults[page]);
 
   // Null until a usable number is configured; the row is omitted rather than
   // linking the visitor back to the page they are already reading.
   const whatsapp = whatsappHref();
+  const contact = own("details", contactDetailsDefaults);
+  const prepare = own("prepare", contactPrepareDefaults);
+
   return (
     <>
-      <PageIntro {...content} />
+      <PageIntro {...intro} />
       {page === "about" && (
         <>
           {/* The link back to /about belongs on the home page, not here. */}
-          <MeetJohn showAboutLink={false} />
-          <AboutBackground />
-          <CareerBand />
-          <ProcessSteps />
+          <MeetJohn
+            showAboutLink={false}
+            content={about("meet-john", meetJohnDefaults)}
+          />
+          <AboutBackground content={own("background", aboutBackgroundDefaults)} />
+          <CareerBand content={own("career", careerBandDefaults)} />
+          <ProcessSteps content={shared("process", processDefaults)} />
         </>
       )}
-      {page === "services" && <ServicesGrid />}
+      {page === "services" && (
+        <ServicesGrid content={own("explorer", servicesIntroDefaults)} />
+      )}
       {page === "reviews" && (
         <section className="section-space reviews-page">
           <Container>
@@ -135,25 +135,14 @@ export default async function InformationPage({
       )}
       {page === "police-station" && (
         <>
-          <PoliceStation />
-          <PoliceStationDetail />
+          <PoliceStation content={own("feature", policeStationDefaults)} />
+          <PoliceStationDetail
+            content={own("detail", policeStationDetailDefaults)}
+          />
           <section className="section-space">
             <Container>
               <div className="information-grid">
-                {[
-                  {
-                    title: "Before the interview",
-                    body: "Call me to discuss the time, date and location of the interview. Even if you haven’t been told anything about the allegation, I can contact the investigating officer on your behalf to find out more.",
-                  },
-                  {
-                    title: "Personal support",
-                    body: "I will discuss your circumstances and help you to understand the situation. I can professionally support you before, during and after the interview takes place.",
-                  },
-                  {
-                    title: "After the interview",
-                    body: "I will help you understand the next steps and discuss whether you are likely to need any further representation.",
-                  },
-                ].map((item) => (
+                {own("stages", policeStationStagesDefaults).cards.map((item) => (
                   <article key={item.title}>
                     <h2>{item.title}</h2>
                     <p>{item.body}</p>
@@ -169,38 +158,19 @@ export default async function InformationPage({
           <section className="section-space">
             <Container>
               <div className="information-grid">
-                <article>
-                  <span className="eyebrow">01 / Initial consultation</span>
-                  <h2>A conversation. Free.</h2>
-                  <p>
-                    Talk through what has happened and find out how John can
-                    help. There is no obligation to instruct him.
-                  </p>
-                </article>
-                <article>
-                  <span className="eyebrow">02 / Your case</span>
-                  <h2>A clear scope of work.</h2>
-                  <p>
-                    The work required depends on the allegation, the evidence
-                    and the stage of the case. John will discuss your individual
-                    requirements.
-                  </p>
-                </article>
-                <article>
-                  <span className="eyebrow">03 / Before you instruct</span>
-                  <h2>Fees discussed with you.</h2>
-                  <p>
-                    Ask what is included and whether further work or hearings
-                    could affect the cost. You can make your decision with that
-                    information to hand.
-                  </p>
-                </article>
+                {own("stages", feesStagesDefaults).cards.map((card) => (
+                  <article key={card.title}>
+                    <span className="eyebrow">{card.eyebrow}</span>
+                    <h2>{card.title}</h2>
+                    <p>{card.body}</p>
+                  </article>
+                ))}
               </div>
             </Container>
           </section>
-          <FeesMatrix />
-          <FeesSchedule />
-          <FeesPreview />
+          <FeesMatrix content={own("scope", feesScopeDefaults)} />
+          <FeesSchedule content={own("schedule", feesScheduleDefaults)} />
+          <FeesPreview content={own("preview", feesPreviewDefaults)} />
         </>
       )}
       {page === "contact" && (
@@ -210,20 +180,22 @@ export default async function InformationPage({
             <Container>
               <div className="contact-grid">
                 <div>
-                  <p className="eyebrow">Start a conversation</p>
+                  <p className="eyebrow">{contact.eyebrow}</p>
                   <h2 className="display-heading">
-                    A direct line.
+                    <Lines values={contact.headline} />
                     <br />
-                    <em>A personal response.</em>
+                    <em>
+                      <Lines values={contact.headlineEmphasis} />
+                    </em>
                   </h2>
                   <div className="contact-methods">
                     <a href={mailtoHref}>
-                      <span>Email John</span>
+                      <span>{contact.emailLabel}</span>
                       <strong>{siteConfig.contact.email}</strong>
                       <Icon name="arrowRight" size={20} />
                     </a>
                     <a href={telHref}>
-                      <span>Call John</span>
+                      <span>{contact.callLabel}</span>
                       <strong>{siteConfig.contact.phoneDisplay}</strong>
                       <Icon name="call" size={20} />
                     </a>
@@ -233,48 +205,39 @@ export default async function InformationPage({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <span>Prefer a message?</span>
-                        <strong>WhatsApp John</strong>
+                        <span>{contact.whatsappLabel}</span>
+                        <strong>{contact.whatsappValue}</strong>
                         <Icon name="whatsapp" size={20} />
                       </a>
                     ) : null}
                   </div>
-                  <p className="contact-disclaimer">
-                    Getting in touch does not create a solicitor–client
-                    relationship, and no relationship exists until John has
-                    confirmed he is able to act and the terms of business are
-                    agreed. Please do not send confidential details of your
-                    case until then.
-                  </p>
+                  <Paragraphs
+                    values={contact.disclaimer}
+                    className="contact-disclaimer"
+                  />
                 </div>
                 <aside className="contact-note">
-                  <p className="eyebrow">Your first conversation</p>
+                  <p className="eyebrow">{prepare.eyebrow}</p>
                   <h2>
-                    We’ll take it
+                    <Lines values={prepare.headline} />
                     <br />
-                    <em>one step at a time.</em>
+                    <em>
+                      <Lines values={prepare.headlineEmphasis} />
+                    </em>
                   </h2>
-                  <p>It helps to have:</p>
+                  <p>{prepare.listIntro}</p>
                   <ul>
-                    <li>A brief outline of what happened</li>
-                    <li>Any letters or court papers</li>
-                    <li>Your hearing or interview date</li>
-                    <li>The location of your case</li>
+                    {prepare.list.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
                   </ul>
-                  <p>
-                    You can still get in touch if you don’t have everything
-                    yet.
-                  </p>
+                  <Paragraphs values={prepare.listNote} />
                   <a href={mailtoHref} className="action-button">
-                    Arrange a free consultation{" "}
-                    <Icon name="arrowRight" size={17} />
+                    {prepare.ctaLabel} <Icon name="arrowRight" size={17} />
                   </a>
                   <div className="contact-urgent" id="urgent">
-                    <strong>Court tomorrow? Interview today?</strong>
-                    <p>
-                      Please call rather than email. Make the date and urgency
-                      clear when you get in touch.
-                    </p>
+                    <strong>{prepare.urgentHeading}</strong>
+                    <Paragraphs values={prepare.urgentBody} />
                   </div>
                   <p className="contact-preview-note">
                     Preview: John’s phone, WhatsApp, booking URL, SRA number,
@@ -289,7 +252,7 @@ export default async function InformationPage({
         </>
       )}
       {page !== "contact" && (
-        <CtaBanner heading="Let’s take the" emphasis="next step. Together." />
+        <CtaBanner content={shared("cta", ctaDefaults)} />
       )}
     </>
   );

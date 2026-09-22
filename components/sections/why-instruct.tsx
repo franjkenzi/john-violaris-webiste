@@ -1,12 +1,18 @@
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
-import { valueCards } from "@/lib/content/home";
+import { Lines } from "@/components/ui/lines";
+import { whyInstructDefaults } from "@/lib/content/pages";
+import type { WhyInstructContent } from "@/lib/content/pages";
 
 /**
  * The concrete case for a one-solicitor practice. Sits after `MeetJohn`, which
  * makes the personal argument; this one makes the practical one.
  */
-export function WhyInstruct() {
+export function WhyInstruct({
+  content = whyInstructDefaults,
+}: {
+  content?: WhyInstructContent;
+}) {
   return (
     <section
       className="reasons-section section-space"
@@ -16,23 +22,25 @@ export function WhyInstruct() {
         <div className="section-heading-row">
           <div>
             <p className="eyebrow">
-              <span className="small-rule" /> Why instruct me
+              <span className="small-rule" /> {content.eyebrow}
             </p>
             <h2 id="why-instruct-heading" className="display-heading">
-              You hire a solicitor.
+              <Lines values={content.headline} />
               <br />
-              <em>You should get one.</em>
+              <em>
+                <Lines values={content.headlineEmphasis} />
+              </em>
             </h2>
           </div>
-          <p className="section-intro">
-            Large firms sell you a brand,
-            <br />
-            then hand you to whoever is free.
-          </p>
+          {content.intro.length > 0 ? (
+            <p className="section-intro">
+              <Lines values={content.intro} />
+            </p>
+          ) : null}
         </div>
 
         <ul className="reasons-grid">
-          {valueCards.map((card, index) => (
+          {content.cards.map((card, index) => (
             <li key={card.title} className="reveal">
               <div className="reason-top">
                 <Icon name={card.icon} size={24} />

@@ -30,6 +30,7 @@ import type {
   ServicePageContent,
   Testimonial,
 } from "@/lib/cms/types";
+import type { SectionContent } from "@/lib/cms/sections/schema";
 import { publicClient } from "@/utils/supabase/public";
 
 /**
@@ -423,3 +424,80 @@ export const getSiteSettings = cache(
     );
   },
 );
+
+// ---------------------------------------------------------------------------
+// Page sections
+// ---------------------------------------------------------------------------
+
+/**
+ * The edited copy for one page, keyed by section.
+ *
+ * Note the third rule at the top of this file is applied differently here, and
+ * the difference is the point. Elsewhere "no rows" is a truthful answer that
+ * must be rendered — nothing is published. `page_sections` has no publish flag,
+ * so a missing row does not mean "this section is hidden", it means "nobody has
+ * edited this section". The caller resolves what comes back over the defaults
+ * in `lib/content/pages.ts`, so an absent section renders the copy the page was
+ * written with. That is why this returns only what exists rather than falling
+ * back to a seeded copy of the whole page.
+ *
+ * A failure still falls back, to an empty map — which is to say, to the static
+ * defaults for every section. A page whose copy has never been edited and a
+ * page whose database is unreachable render identically, and only the second
+ * one logs.
+ */
+export const getPageContent = cache(async function getPageContent(
+  page: string,
+): Promise<Record<string, SectionContent>> {
+  return safely(
+    `Page content for "${page}"`,
+    async () => {
+      const { data, error } = await publicClient()
+        .from("page_sections")
+        .select("section, content")
+        .eq("page", page)
+        .returns<{ section: string; content: SectionContent }[]>();
+
+      if (error) throw error;
+
+      return Object.fromEntries(
+        (data ?? []).map(({ section, content }) => [section, content]),
+      );
+    },
+    () => ({}),
+  );
+});
+
+/**
+ * The same, for several pages at once.
+ *
+ * The home page draws on four groups — `home`, `about`, `fees` and `shared` —
+ * because the sections it shares with other pages are edited where they belong
+ * rather than duplicated. One round trip covers them.
+ */
+export const getPagesContent = cache(async function getPagesContent(
+  ...pages: string[]
+): Promise<Record<string, Record<string, SectionContent>>> {
+  return safely(
+    `Page content for ${pages.join(", ")}`,
+    async () => {
+      const { data, error } = await publicClient()
+        .from("page_sections")
+        .select("page, section, content")
+        .in("page", pages)
+        .returns<{ page: string; section: string; content: SectionContent }[]>();
+
+      if (error) throw error;
+
+      const grouped: Record<string, Record<string, SectionContent>> =
+        Object.fromEntries(pages.map((page) => [page, {}]));
+
+      for (const row of data ?? []) {
+        (grouped[row.page] ??= {})[row.section] = row.content;
+      }
+
+      return grouped;
+    },
+    () => Object.fromEntries(pages.map((page) => [page, {}])),
+  );
+});

@@ -9,6 +9,20 @@ import { ProcessSteps } from "@/components/sections/process-steps";
 import { ServicesGrid } from "@/components/sections/services-grid";
 import { Testimonials } from "@/components/sections/testimonials";
 import { WhyInstruct } from "@/components/sections/why-instruct";
+import { getPagesContent } from "@/lib/cms/queries";
+import { resolveFrom } from "@/lib/cms/sections/resolve";
+import {
+  ctaDefaults,
+  feesPreviewDefaults,
+  heroDefaults,
+  meetJohnDefaults,
+  offenceStripDefaults,
+  policeStationDefaults,
+  processDefaults,
+  servicesIntroDefaults,
+  testimonialsIntroDefaults,
+  whyInstructDefaults,
+} from "@/lib/content/pages";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -53,7 +67,32 @@ const jsonLd = {
   ],
 };
 
-export default function HomePage() {
+/**
+ * The home page draws on five section groups, not one.
+ *
+ * Four of its bands also appear elsewhere — Meet John on /about, the police
+ * station feature on /police-station, the questions on /fees, the process on
+ * both — and each is edited where it belongs rather than duplicated per page.
+ * `getPagesContent` fetches the lot in one round trip, and `resolveFrom` lays
+ * whatever has been edited over the copy the page was written with.
+ */
+export default async function HomePage() {
+  const content = await getPagesContent(
+    "home",
+    "about",
+    "fees",
+    "police-station",
+    "services",
+    "shared",
+  );
+
+  const home = resolveFrom(content.home);
+  const about = resolveFrom(content.about);
+  const fees = resolveFrom(content.fees);
+  const police = resolveFrom(content["police-station"]);
+  const services = resolveFrom(content.services);
+  const shared = resolveFrom(content.shared);
+
   return (
     <>
       <script
@@ -62,15 +101,18 @@ export default function HomePage() {
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <Hero />
-      <ServicesGrid />
-      <MeetJohn />
-      <WhyInstruct />
-      <PoliceStation />
-      <ProcessSteps />
-      <Testimonials />
-      <FeesPreview />
-      <CtaBanner heading="Let’s take the" emphasis="next step. Together." />
+      <Hero
+        content={home("hero", heroDefaults)}
+        strip={home("offence-strip", offenceStripDefaults)}
+      />
+      <ServicesGrid content={services("explorer", servicesIntroDefaults)} />
+      <MeetJohn content={about("meet-john", meetJohnDefaults)} />
+      <WhyInstruct content={home("why-instruct", whyInstructDefaults)} />
+      <PoliceStation content={police("feature", policeStationDefaults)} />
+      <ProcessSteps content={shared("process", processDefaults)} />
+      <Testimonials content={home("testimonials", testimonialsIntroDefaults)} />
+      <FeesPreview content={fees("preview", feesPreviewDefaults)} />
+      <CtaBanner content={shared("cta", ctaDefaults)} />
     </>
   );
 }

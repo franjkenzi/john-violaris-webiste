@@ -9,11 +9,9 @@ import { notFound } from "next/navigation";
  * hide a routing mistake.
  */
 const sections = new Set([
-  "website-content",
   "services",
   "service-pages",
   "fees",
-  "testimonials",
   "seo-metadata",
   "site-settings",
 ]);

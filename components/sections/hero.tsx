@@ -8,6 +8,9 @@ import { useEffect, useRef, useState } from "react";
 import { OffenceStrip } from "@/components/sections/offence-strip";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
+import { Lines } from "@/components/ui/lines";
+import { heroDefaults, offenceStripDefaults } from "@/lib/content/pages";
+import type { HeroContent } from "@/lib/content/pages";
 import { siteConfig } from "@/lib/site-config";
 
 function useMediaQuery(query: string) {
@@ -25,7 +28,25 @@ function useMediaQuery(query: string) {
   return matches;
 }
 
-export function Hero() {
+/**
+ * The opening screen.
+ *
+ * Copy arrives as a prop rather than being read here: this is a client
+ * component — it needs `useScroll` for the card that slides in over the
+ * portrait — and a client component cannot read from Supabase. The home page
+ * resolves the section and passes it down, which is the pattern every editable
+ * client section follows.
+ *
+ * The defaults are the fallback of last resort, for a caller that has not been
+ * given content yet. In practice the page always passes it.
+ */
+export function Hero({
+  content = heroDefaults,
+  strip = offenceStripDefaults,
+}: {
+  content?: HeroContent;
+  strip?: { eyebrow: string };
+}) {
   const scrollStageRef = useRef<HTMLDivElement>(null);
   const mobileScrollStageRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery("(max-width: 639px)");
@@ -81,33 +102,37 @@ export function Hero() {
     <section className="hero-editorial" aria-labelledby="hero-heading">
       <Container>
         <div className="hero-topline">
-          <span>Independent criminal defence</span>
-          <span>England & Wales</span>
+          <span>{content.toplineLeft}</span>
+          <span>{content.toplineRight}</span>
         </div>
         <div ref={scrollStageRef} className="hero-scroll-stage">
           <div className="hero-composition">
             <div className="hero-copy">
               <p className="eyebrow">
-                <span className="small-rule" /> John Violaris · Solicitor
+                <span className="small-rule" /> {content.eyebrow}
               </p>
               <h1 id="hero-heading">
-                Your defence…
+                <Lines values={content.headline} />
                 <br />
                 <em>
-                  My personal
-                  <br className="mobile-break" /> attention.
+                  <Lines
+                    values={content.headlineEmphasis}
+                    separator={<br className="mobile-break" />}
+                  />
                 </em>
               </h1>
               <p className="hero-description">
-                Whether you’re fighting for your licence or your freedom,
-                <br className="hidden sm:block" /> speak directly to the
-                solicitor who will stand beside you.
+                <Lines
+                  values={content.description}
+                  separator={<br className="hidden sm:block" />}
+                />
               </p>
               <Link href={siteConfig.bookingUrl} className="action-button">
-                Let’s talk about your case <Icon name="arrowRight" size={19} />
+                {content.ctaLabel} <Icon name="arrowRight" size={19} />
               </Link>
               <p className="hero-reassurance">
-                Free initial consultation <span>·</span> No obligation
+                {content.reassuranceLeft} <span>·</span>{" "}
+                {content.reassuranceRight}
               </p>
             </div>
             <div ref={mobileScrollStageRef} className="hero-profile-stage">
@@ -128,8 +153,8 @@ export function Hero() {
                       className="hero-portrait-image hero-portrait-image-primary"
                     />
                     <figcaption className="portrait-caption">
-                      <span>John Violaris</span>
-                      <small>Criminal Defence Solicitor</small>
+                      <span>{siteConfig.name}</span>
+                      <small>{siteConfig.role}</small>
                     </figcaption>
                   </motion.div>
                   <motion.aside
@@ -141,28 +166,26 @@ export function Hero() {
                     }}
                   >
                     <div className="letter-top">
-                      <span>A personal commitment</span>
-                      <span>01 / JV</span>
+                      <span>{content.cardLabel}</span>
+                      <span>01 / {siteConfig.initials}</span>
                     </div>
                     <div className="letter-monogram" aria-hidden="true">
                       J<span>V</span>
                       <i>.</i>
                     </div>
                     <div className="letter-body">
-                      <span className="eyebrow">One solicitor. Throughout.</span>
+                      <span className="eyebrow">{content.cardEyebrow}</span>
                       <p>
-                        When you instruct me,
-                        <br />
-                        you deal with <em>me.</em>
+                        <Lines values={content.cardBody} />{" "}
+                        <em>{content.cardBodyEmphasis}</em>
                       </p>
                       <div className="letter-rule" />
-                      <span className="letter-name">John Violaris</span>
-                      <span className="letter-role">
-                        Criminal Defence & Motoring Solicitor
-                      </span>
+                      <span className="letter-name">{siteConfig.name}</span>
+                      <span className="letter-role">{content.cardRole}</span>
                     </div>
                     <Link href="/about" className="letter-footer">
-                      Meet your solicitor <Icon name="arrowRight" size={18} />
+                      {content.cardFooterLabel}{" "}
+                      <Icon name="arrowRight" size={18} />
                     </Link>
                   </motion.aside>
                 </figure>
@@ -172,35 +195,32 @@ export function Hero() {
         </div>
         <div className="hero-bottom">
           <a href="#expertise" className="explore-link">
-            Explore how I can help <span aria-hidden="true">↓</span>
+            {content.exploreLabel} <span aria-hidden="true">↓</span>
           </a>
-          <span>Personal representation. Serious experience.</span>
+          <span>{content.bottomTagline}</span>
         </div>
       </Container>
-      <OffenceStrip />
+      <OffenceStrip content={strip} />
       <div className="experience-band">
         <Container>
           <dl className="experience-grid">
-            <div>
-              <dd>
-                20<span>+</span>
-              </dd>
-              <dt>Years in criminal defence</dt>
-            </div>
-            <div>
-              <dd>
-                10,000<span>+</span>
-              </dd>
-              <dt>Clients represented</dt>
-            </div>
-            <div>
-              <dd>2005</dd>
-              <dt>Qualified as a solicitor</dt>
-            </div>
-            <div className="experience-personal">
-              <dd>You + John</dd>
-              <dt>No third parties</dt>
-            </div>
+            {content.stats.map((stat, index) => (
+              <div
+                key={`${stat.value}-${stat.label}`}
+                /* The last figure is the personal one and is set apart. */
+                className={
+                  index === content.stats.length - 1
+                    ? "experience-personal"
+                    : undefined
+                }
+              >
+                <dd>
+                  {stat.value}
+                  {stat.suffix ? <span>{stat.suffix}</span> : null}
+                </dd>
+                <dt>{stat.label}</dt>
+              </div>
+            ))}
           </dl>
         </Container>
       </div>

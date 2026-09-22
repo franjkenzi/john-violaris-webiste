@@ -39,6 +39,10 @@ without stock portraits or invented client reviews.
 - Expanded professional background, police-station guidance, service evidence
   checklists, sentencing summaries and fee guidance.
 - Six complete legal-guide article pages based on the reference index cards.
+- Editable page copy: the hero, section headings, process steps, FAQ and the
+  rest of the core-page wording, managed at `/admin/website-content`.
+- A read-only view of the imported ReviewSolicitors reviews, with no edit path,
+  so an independently collected review stays one.
 - Page-specific titles, descriptions and canonical URLs; existing homepage structured data.
 - Consultation links route to the contact page until a real booking URL is configured.
 
@@ -95,9 +99,10 @@ Set the verified SRA number in central configuration when supplied.
 
 ## The CMS content layer
 
-`lib/cms/` is the path between the Supabase content tables and the site. It is
-in place; the admin sections that write through it are not yet, so every public
-page still renders from `lib/content/`. Sections are migrated one at a time.
+`lib/cms/` is the path between the Supabase content tables and the site. The
+blog and the page copy are served through it; the remaining admin sections are
+not built yet, so services, fees and the offence pages still render from
+`lib/content/`. Sections are migrated one at a time.
 
 | Module            | Role                                                          |
 | ----------------- | ------------------------------------------------------------- |
@@ -109,6 +114,7 @@ page still renders from `lib/content/`. Sections are migrated one at a time.
 | `write.ts`        | The one wrapper every mutation goes through                    |
 | `revalidate.ts`   | Which routes to rebuild after a change                         |
 | `form.ts`         | Shared form state and validation for the admin forms           |
+| `sections/`       | The editable page copy — registry, values, save action         |
 
 Public reads go through `utils/supabase/public.ts` — the publishable key and no
 cookies, because a page that reads `cookies()` cannot be statically rendered and
@@ -204,6 +210,80 @@ The article page renders the image only when one exists, so the six existing
 articles look exactly as they did. `next.config.ts` derives the allowed image
 host from `NEXT_PUBLIC_SUPABASE_URL` rather than hardcoding the project ref.
 
+## Website content
+
+The editorial copy on the core pages — the hero, the section headings, the
+standfirsts, the process steps, the FAQ — is editable at
+`/admin/website-content`. It is the second section served from the CMS, after
+the blog.
+
+Three files carry it:
+
+| File                          | Role                                                  |
+| ----------------------------- | ----------------------------------------------------- |
+| `lib/content/pages.ts`        | The copy as written: the default, and the fallback     |
+| `lib/cms/sections/schema.ts`  | Which sections are editable and what fields each has   |
+| `lib/cms/sections/values.ts`  | Stored data ↔ form text, shared by editor and action   |
+
+The registry is the whole feature. A section is a list of fields, the copy
+those fields hold by default, and the routes it renders on, so the editor, the
+action that receives it and the revalidation after a save are all written once
+against that description. Making another piece of copy editable is an entry in
+`schema.ts` and a prop on the component — not a new form, a new action or a
+migration.
+
+### No seed, and why
+
+Unlike the other content tables, `page_sections` is not seeded and has no
+`published` column. A section John has never edited simply has no row, and the
+read falls back to `lib/content/pages.ts`. That keeps the defaults the single
+definition of what a section says out of the box: nothing in the database is a
+copy of them, so nothing can drift from them, and "revert to original" is a
+`delete` rather than a write of today's wording.
+
+It also means the third rule in `lib/cms/queries.ts` — fall back on failure,
+never on emptiness — reads differently here, deliberately. Elsewhere no rows is
+a truthful answer that must be rendered: nothing is published. Here there is no
+publish flag, so no row means nobody has edited the section, not that it is
+hidden.
+
+### Line breaks
+
+Several headings break at a chosen point — "Your defence…" above "My personal
+attention." — and that break is a design decision, not the browser wrapping
+text. Those fields are stored as a list of lines and rendered by `Lines` in
+`components/ui/lines.tsx`. An editor types lines; nobody types markup. Prose
+fields are lists too, but of paragraphs, split on blank lines rather than
+single ones, for the same reason `readParagraphs` gives.
+
+### Sections on more than one page
+
+Four sections appear on two routes — Meet John on `/` and `/about`, the police
+station feature on `/` and `/police-station`, the questions on `/` and `/fees`,
+the process on `/` and `/about`. Each is edited in one place, under the page it
+belongs to, and every page that renders it reads it from there. `appearsOn` in
+the registry is what the editor shows and what the save revalidates, so the
+routes a change reaches are declared once rather than remembered.
+
+The closing call to action is the exception that proves it: `appearsOn: ["*"]`,
+because it really is in the body of every page, and it revalidates `("/",
+"layout")` rather than a hand-written list that would be wrong the next time a
+route is added. The article and offence pages pass their own heading to it,
+which stays with those sections rather than here.
+
+## Reviews
+
+The reviews at `/admin/testimonials` are read only, and that is the point.
+Every one was left by a client on ReviewSolicitors and collected by them; the
+site presents them as independently verified, which is true only while nobody
+on this side can alter the wording. So there is no edit form — correcting a
+review means taking it up with ReviewSolicitors.
+
+The page exists because "what is the site showing?" is a fair question that
+should not be answered by reading the public page. The copy framing the
+section — the heading, the button, the note — is ordinary page content and is
+editable under Website Content.
+
 ## Enquiries
 
 An enquiry is written to `public.enquiries` first, and the visitor is told it
@@ -250,18 +330,19 @@ so set `NEXT_PUBLIC_APP_VERSION` explicitly if you deploy uncommitted work.
 
 ## Scope still outstanding
 
-This is the public frontend, enquiry capture and a CMS-managed blog — not the
-complete production system in `prd.md`.
+This is the public frontend, enquiry capture, a CMS-managed blog and editable
+page copy — not the complete production system in `prd.md`.
 
-The blog is done. The other seven sections behind `/admin` are still
-placeholders: `app/admin/[section]/page.tsx` validates the slug and renders
-nothing, so services, service pages, fees, testimonials, website content, SEO
-metadata and site settings are not editable, and every public page except the
-blog still renders from `lib/content/`.
+Four sections behind `/admin` are still placeholders:
+`app/admin/[section]/page.tsx` validates the slug and renders nothing, so
+services, service pages, fees and per-route SEO metadata are not editable, and
+those parts of the site still render from `lib/content/`. The sidebar marks
+them "Soon" and does not link to them — a link to a route that renders nothing
+reads as a broken page rather than an unbuilt one.
 
-The order the rest are planned in: testimonials and fees next, both small and
-both currently shipping content marked unconfirmed; then site settings; then
-services and the offence pages; then per-route SEO metadata.
+The order the rest are planned in: fees next, which currently ships figures
+marked unconfirmed; then site settings; then services and the offence pages;
+then per-route SEO metadata.
 
 Analytics, Search Console, sitemap/robots, the remaining Schema.org types,
 Open Graph images, domain configuration and production launch remain separate

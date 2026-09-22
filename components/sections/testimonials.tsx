@@ -2,8 +2,11 @@ import Link from "next/link";
 
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
+import { Lines } from "@/components/ui/lines";
 import { TestimonialColumn } from "@/components/ui/testimonial-column";
 import { testimonials } from "@/lib/content/home";
+import { testimonialsIntroDefaults } from "@/lib/content/pages";
+import type { TestimonialsIntroContent } from "@/lib/content/pages";
 
 const COLUMNS = 3;
 
@@ -44,7 +47,11 @@ const starts = [0, 0.38, 0.71];
  * them today, so they come round repeatedly; the alternative was writing copy
  * to fill the gap, which is the one thing this section must not do.
  */
-export function Testimonials() {
+export function Testimonials({
+  content = testimonialsIntroDefaults,
+}: {
+  content?: TestimonialsIntroContent;
+}) {
   return (
     <section
       className="voices-section section-space"
@@ -54,19 +61,21 @@ export function Testimonials() {
         <div className="section-heading-row">
           <div>
             <p className="eyebrow">
-              <span className="small-rule" /> In their words
+              <span className="small-rule" /> {content.eyebrow}
             </p>
             <h2 id="testimonials-heading" className="display-heading">
-              People who were
+              <Lines values={content.headline} />
               <br />
-              <em>where you are now.</em>
+              <em>
+                <Lines values={content.headlineEmphasis} />
+              </em>
             </h2>
           </div>
-          <p className="section-intro">
-            Every case is different.
-            <br />
-            What stays the same is who handles it.
-          </p>
+          {content.intro.length > 0 ? (
+            <p className="section-intro">
+              <Lines values={content.intro} />
+            </p>
+          ) : null}
         </div>
 
         <div className="voices-marquee">
@@ -88,11 +97,9 @@ export function Testimonials() {
 
         <div className="voices-action">
           <Link href="/reviews" className="action-button">
-            View all verified reviews <Icon name="arrowRight" size={17} />
+            {content.linkLabel} <Icon name="arrowRight" size={17} />
           </Link>
-          <p className="voices-note">
-            Independently collected and published by ReviewSolicitors.
-          </p>
+          <p className="voices-note">{content.note}</p>
         </div>
       </Container>
     </section>

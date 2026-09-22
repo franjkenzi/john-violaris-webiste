@@ -1,8 +1,15 @@
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
+import { Lines } from "@/components/ui/lines";
 import { additionalDraftFee, draftFees } from "@/lib/content/fees";
+import { feesScheduleDefaults } from "@/lib/content/pages";
+import type { SectionHeading } from "@/lib/content/pages";
 
-export function FeesSchedule() {
+export function FeesSchedule({
+  content = feesScheduleDefaults,
+}: {
+  content?: SectionHeading;
+}) {
   const rows = [
     ...draftFees.map(({ name, description, price }) => ({
       name,
@@ -18,18 +25,21 @@ export function FeesSchedule() {
         <div className="section-heading-row">
           <div>
             <p className="eyebrow">
-              <span className="small-rule" /> Draft fixed fees
+              <span className="small-rule" /> {content.eyebrow}
             </p>
             <h2 id="draft-fees-heading" className="display-heading">
-              A clear figure.
+              <Lines values={content.headline} />
               <br />
-              <em>Before you commit.</em>
+              <em>
+                <Lines values={content.headlineEmphasis} />
+              </em>
             </h2>
           </div>
-          <p className="section-intro">
-            The figures below come from the supplied reference and remain
-            subject to John’s confirmation before launch.
-          </p>
+          {content.intro.length > 0 ? (
+            <p className="section-intro">
+              <Lines values={content.intro} />
+            </p>
+          ) : null}
         </div>
 
         <div className="draft-fee-grid">

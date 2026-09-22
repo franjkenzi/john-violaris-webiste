@@ -4,10 +4,17 @@ import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
+import { Lines } from "@/components/ui/lines";
+import { servicesIntroDefaults } from "@/lib/content/pages";
+import type { ServicesIntroContent } from "@/lib/content/pages";
 import { serviceGroups } from "@/lib/content/services";
 import { serviceDescriptions } from "@/lib/content/service-descriptions";
 
-export function ServicesGrid() {
+export function ServicesGrid({
+  content = servicesIntroDefaults,
+}: {
+  content?: ServicesIntroContent;
+}) {
   const [active, setActive] = useState(0);
   const id = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -21,12 +28,14 @@ export function ServicesGrid() {
         <div className="section-heading-row">
           <div>
             <p className="eyebrow">
-              <span className="small-rule" /> How I can help
+              <span className="small-rule" /> {content.eyebrow}
             </p>
             <h2 id="expertise-heading" className="display-heading">
-              A clear way forward.
+              <Lines values={content.headline} />
               <br />
-              <em>Whatever you’re facing.</em>
+              <em>
+                <Lines values={content.headlineEmphasis} />
+              </em>
             </h2>
           </div>
         </div>
@@ -79,7 +88,7 @@ export function ServicesGrid() {
               ))}
             </div>
             <Link href="/services" className="all-services-link">
-              View all services <span>↗</span>
+              {content.allServicesLabel} <span>↗</span>
             </Link>
           </div>
           {serviceGroups.map((group, index) => (
@@ -117,10 +126,9 @@ export function ServicesGrid() {
           ))}
         </div>
         <div className="expertise-note">
-          <span>Not sure where your situation fits?</span>
+          <span>{content.noteQuestion}</span>
           <Link href="/contact">
-            Tell me what’s happened. We’ll take it from there.{" "}
-            <Icon name="arrowRight" size={15} />
+            {content.noteLinkLabel} <Icon name="arrowRight" size={15} />
           </Link>
         </div>
       </Container>

@@ -24,6 +24,7 @@ import { revalidatePath } from "next/cache";
 
 /** Content areas a write can belong to. */
 export type ContentEntity =
+  | "page-sections"
   | "services"
   | "service-pages"
   | "fees"
@@ -40,12 +41,23 @@ export type ContentEntity =
 type Target = { path: string; type?: "page" | "layout" };
 
 /**
+ * What a caller may pass as an affected route: a path, or a path and how to
+ * treat it. A bare string means that one route, which is what nearly every
+ * caller wants; the object form is for a change that really does reach every
+ * page, such as the closing call to action.
+ */
+export type RevalidateTarget = string | Target;
+
+/**
  * Routes each entity appears on, before the row's own path is added.
  *
  * `[]` means the entity has no fixed routes — every affected route depends on
  * the row, and `extraPaths` supplies them.
  */
 const targets: Record<ContentEntity, Target[]> = {
+  // Keyed by section, and a section knows the routes it renders on — several
+  // appear on more than one. The caller passes them, from `appearsOn`.
+  "page-sections": [],
   // In the header mega-menu, so on every page.
   services: [{ path: "/", type: "layout" }],
   // The catalogue index plus the page itself, which the caller adds.
@@ -63,6 +75,7 @@ const targets: Record<ContentEntity, Target[]> = {
 
 /** The admin list a section's own writes should refresh. */
 const adminSection: Record<ContentEntity, string> = {
+  "page-sections": "/admin/website-content",
   services: "/admin/services",
   "service-pages": "/admin/service-pages",
   fees: "/admin/fees",
@@ -85,14 +98,18 @@ const adminSection: Record<ContentEntity, string> = {
  */
 export function revalidateFor(
   entity: ContentEntity,
-  extraPaths: string[] = [],
+  extraPaths: RevalidateTarget[] = [],
 ): void {
   for (const target of targets[entity]) {
     revalidatePath(target.path, target.type);
   }
 
-  for (const path of extraPaths) {
-    revalidatePath(path);
+  for (const extra of extraPaths) {
+    if (typeof extra === "string") {
+      revalidatePath(extra);
+    } else {
+      revalidatePath(extra.path, extra.type);
+    }
   }
 
   revalidatePath(adminSection[entity]);

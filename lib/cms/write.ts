@@ -9,7 +9,11 @@ import {
   formSuccess,
   type CmsFormState,
 } from "@/lib/cms/form";
-import { revalidateFor, type ContentEntity } from "@/lib/cms/revalidate";
+import {
+  revalidateFor,
+  type ContentEntity,
+  type RevalidateTarget,
+} from "@/lib/cms/revalidate";
 import { createClient } from "@/utils/supabase/server";
 
 /**
@@ -44,7 +48,7 @@ type CmsWriteOptions<F extends string, T> = {
    * how a newly inserted row contributes its own slug. On a rename, include the
    * previous path too: the old URL stays cached and serving otherwise.
    */
-  paths?: string[] | ((result: T) => string[]);
+  paths?: RevalidateTarget[] | ((result: T) => RevalidateTarget[]);
   run: (
     supabase: SupabaseServerClient,
   ) => Promise<{ data: T; error: PostgrestError | null }>;

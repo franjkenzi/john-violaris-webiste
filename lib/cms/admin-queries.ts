@@ -12,6 +12,7 @@ import type {
   SiteSettingRow,
   TestimonialRow,
 } from "@/lib/cms/types";
+import type { SectionContent } from "@/lib/cms/sections/schema";
 import { createClient } from "@/utils/supabase/server";
 
 /**
@@ -356,3 +357,66 @@ export const listSiteSettings = cache(async function listSiteSettings(): Promise
 
   return data ?? [];
 });
+
+// ---------------------------------------------------------------------------
+// Page sections
+// ---------------------------------------------------------------------------
+
+/**
+ * The saved copy for one page's sections, keyed by section.
+ *
+ * Only sections that have been edited have rows. The editor fills the rest from
+ * the defaults in `lib/content/pages.ts`, which is also what the site renders,
+ * so an untouched section shows John exactly what a visitor sees rather than an
+ * empty form.
+ */
+export const getPageSections = cache(async function getPageSections(
+  page: string,
+): Promise<Record<string, SectionContent>> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("page_sections")
+    .select("section, content")
+    .eq("page", page)
+    .returns<{ section: string; content: SectionContent }[]>();
+
+  if (error) {
+    logFailure(`page sections for "${page}"`, error);
+
+    return {};
+  }
+
+  return Object.fromEntries(
+    (data ?? []).map(({ section, content }) => [section, content]),
+  );
+});
+
+/**
+ * Which sections have been edited, across every page.
+ *
+ * Drives the "edited" markers on the Website Content index. A count would not
+ * do: the index lists sections from the registry, not from the table, so what
+ * it needs is which of those have a row.
+ */
+export const listEditedSections = cache(
+  async function listEditedSections(): Promise<
+    { page: string; section: string; updated_at: string }[]
+  > {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("page_sections")
+      .select("page, section, updated_at")
+      .limit(listLimit)
+      .returns<{ page: string; section: string; updated_at: string }[]>();
+
+    if (error) {
+      logFailure("edited page sections", error);
+
+      return [];
+    }
+
+    return data ?? [];
+  },
+);
