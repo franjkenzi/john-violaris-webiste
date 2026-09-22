@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FileText, Plus } from "lucide-react";
 
-import { BlogPublishToggle } from "@/components/admin/blog-publish-toggle";
+import { PublishToggle } from "@/components/admin/publish-toggle";
 import { ClickableRow } from "@/components/admin/clickable-row";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "cn";
 import { listBlogPosts } from "@/lib/cms/admin-queries";
+import { setBlogPostPublished } from "@/lib/cms/blog/actions";
 import { formatUkShortDateTime } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -138,10 +139,11 @@ export default async function AdminBlogPostsPage({
               {posts.map((post) => (
                 <ClickableRow key={post.id} href={`/admin/blog-posts/${post.id}`}>
                   <td className="px-4 py-3 align-top">
-                    <BlogPublishToggle
+                    <PublishToggle
                       id={post.id}
-                      title={post.title}
+                      label={post.title}
                       published={post.published}
+                      action={setBlogPostPublished}
                     />
                   </td>
                   <td className="px-4 py-3 align-top">

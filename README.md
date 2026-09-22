@@ -41,6 +41,8 @@ without stock portraits or invented client reviews.
 - Six complete legal-guide article pages based on the reference index cards.
 - Editable page copy: the hero, section headings, process steps, FAQ and the
   rest of the core-page wording, managed at `/admin/website-content`.
+- A CMS-managed fee schedule at `/admin/fees`, with drafts, reordering and
+  fees that appear in the table but get no card.
 - A read-only view of the imported ReviewSolicitors reviews, with no edit path,
   so an independently collected review stays one.
 - Page-specific titles, descriptions and canonical URLs; existing homepage structured data.
@@ -100,9 +102,9 @@ Set the verified SRA number in central configuration when supplied.
 ## The CMS content layer
 
 `lib/cms/` is the path between the Supabase content tables and the site. The
-blog and the page copy are served through it; the remaining admin sections are
-not built yet, so services, fees and the offence pages still render from
-`lib/content/`. Sections are migrated one at a time.
+blog, the page copy and the fee schedule are served through it; the remaining
+admin sections are not built yet, so services and the offence pages still
+render from `lib/content/`. Sections are migrated one at a time.
 
 | Module            | Role                                                          |
 | ----------------- | ------------------------------------------------------------- |
@@ -115,6 +117,7 @@ not built yet, so services, fees and the offence pages still render from
 | `revalidate.ts`   | Which routes to rebuild after a change                         |
 | `form.ts`         | Shared form state and validation for the admin forms           |
 | `sections/`       | The editable page copy — registry, values, save action         |
+| `fees/`           | The fee schedule — field rules and mutations                   |
 
 Public reads go through `utils/supabase/public.ts` — the publishable key and no
 cookies, because a page that reads `cookies()` cannot be statically rendered and
@@ -271,6 +274,40 @@ because it really is in the body of every page, and it revalidates `("/",
 route is added. The article and offence pages pass their own heading to it,
 which stays with those sections rather than here.
 
+## Fees
+
+The fee schedule is managed at `/admin/fees`: add, edit, reorder, publish and
+unpublish. `FeesSchedule` reads it through `getFees()`, and
+`lib/content/fees.ts` is now the seed and the fallback.
+
+`price` is text and optional, and both matter. Text because real entries read
+"£400", "£750 / £1,100" or "From £X" — a numeric column would force every one
+of those into a shape it does not have and then the page would have to put the
+shape back. Optional because a fee whose figure is not settled should be
+publishable as "On enquiry" rather than held back or given an invented number;
+`toFee` supplies that wording, and the admin list prints the same thing so the
+list and the site never disagree.
+
+`content.tableOnly` marks a fee that belongs in the full table but gets no card
+of its own. There is one: the adjourned-hearing fee, which is an add-on to an
+instruction rather than a way to instruct John, so a card offering it beside
+the six real ones would misrepresent what it is. It used to live outside the
+CMS entirely, as `additionalDraftFee` in `lib/content/fees.ts`, which made it
+the one figure on the page no admin screen could reach;
+`20260922160000_add_adjourned_hearing_fee.sql` gives it a row.
+
+Reordering swaps two rows' `sort_order` rather than renumbering the list, so
+the gaps the seed left between them survive. The two updates are not in one
+transaction: a half-applied swap leaves two rows sharing a `sort_order`, which
+is untidy but not broken — nothing depends on the values being distinct and
+moving the fee again fixes it.
+
+The headings, the table caption and the notes beneath the schedule are page
+copy, edited under Website Content. That includes the note saying the figures
+are still to be confirmed, which is the point: taking it down is part of
+launching, so it has to be something John can delete rather than a paragraph
+in a component.
+
 ## Reviews
 
 The reviews at `/admin/testimonials` are read only, and that is the point.
@@ -335,14 +372,21 @@ page copy — not the complete production system in `prd.md`.
 
 Four sections behind `/admin` are still placeholders:
 `app/admin/[section]/page.tsx` validates the slug and renders nothing, so
-services, service pages, fees and per-route SEO metadata are not editable, and
-those parts of the site still render from `lib/content/`. The sidebar marks
-them "Soon" and does not link to them — a link to a route that renders nothing
-reads as a broken page rather than an unbuilt one.
+services, service pages, site settings and per-route SEO metadata are not
+editable, and those parts of the site still render from `lib/content/`. The
+sidebar marks them "Soon" and does not link to them — a link to a route that
+renders nothing reads as a broken page rather than an unbuilt one.
 
-The order the rest are planned in: fees next, which currently ships figures
-marked unconfirmed; then site settings; then services and the offence pages;
-then per-route SEO metadata.
+The order the rest are planned in: site settings next, which is small and is
+where the SRA number and the confirmed email address belong; then services and
+the offence pages; then per-route SEO metadata.
+
+One part of the fees page is still static: the three-stage scope comparison in
+`FeesMatrix`, which reads `feeStages`, `feeInclusions` and `stageIncludes` from
+`lib/content/fees.ts`. Only its heading is editable. Making the stages editable
+means the stage key stops being a union type and `stageIncludes` stops being a
+lookup against a fixed order, so it is a change to the component rather than
+another registry entry.
 
 Analytics, Search Console, sitemap/robots, the remaining Schema.org types,
 Open Graph images, domain configuration and production launch remain separate

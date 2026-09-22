@@ -3,10 +3,9 @@
 import { useOptimistic, useTransition } from "react";
 
 import { cn } from "cn";
-import { setBlogPostPublished } from "@/lib/cms/blog/actions";
 
 /**
- * Publish or unpublish an article from the list, painted optimistically.
+ * Publish or unpublish a row from a list, painted optimistically.
  *
  * Same reasoning as the enquiry status switch: the write, the revalidation and
  * the re-render take long enough to notice, and nothing about that wait tells
@@ -14,16 +13,24 @@ import { setBlogPostPublished } from "@/lib/cms/blog/actions";
  * up behind it; React reverts if the write fails.
  *
  * A button rather than a checkbox. Publishing is an action with a consequence —
- * the article appears on a public website — not a preference being set.
+ * the row appears on a public website — not a preference being set.
+ *
+ * `action` is the entity's own Server Action, passed in rather than imported,
+ * so one toggle serves articles, fees and whatever gets an admin list next.
+ * It stays a server action across that boundary: what crosses is a reference
+ * React can call, not the function body.
  */
-export function BlogPublishToggle({
+export function PublishToggle({
   id,
-  title,
+  label,
   published,
+  action,
 }: {
   id: string;
-  title: string;
+  /** Names the row in the button's accessible description, e.g. the title. */
+  label: string;
   published: boolean;
+  action: (id: string, published: boolean) => Promise<void>;
 }) {
   const [optimistic, setOptimistic] = useOptimistic(published);
   const [, startTransition] = useTransition();
@@ -31,7 +38,7 @@ export function BlogPublishToggle({
   function toggle() {
     startTransition(async () => {
       setOptimistic(!optimistic);
-      await setBlogPostPublished(id, !optimistic);
+      await action(id, !optimistic);
     });
   }
 
@@ -58,7 +65,7 @@ export function BlogPublishToggle({
       <span className="sr-only">
         {/* The button's job, not its state — a screen reader already has the
             state from aria-pressed. */}
-        {optimistic ? ` — unpublish ${title}` : ` — publish ${title}`}
+        {optimistic ? ` — unpublish ${label}` : ` — publish ${label}`}
       </span>
     </button>
   );

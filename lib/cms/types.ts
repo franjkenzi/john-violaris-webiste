@@ -95,6 +95,12 @@ export type ServicePageRow = Timestamps & {
 export type FeeContent = {
   description: string;
   included: string[];
+  /**
+   * Listed in the full table but given no card of its own — the adjourned
+   * hearing fee, which is an add-on to an instruction rather than a way to
+   * instruct John.
+   */
+  tableOnly?: boolean;
 };
 
 export type FeeRow = Timestamps & {

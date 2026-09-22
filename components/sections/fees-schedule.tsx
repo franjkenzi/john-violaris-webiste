@@ -1,23 +1,31 @@
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { Lines } from "@/components/ui/lines";
-import { additionalDraftFee, draftFees } from "@/lib/content/fees";
+import type { Fee } from "@/lib/cms/types";
+import { allDraftFees } from "@/lib/content/fees";
 import { feesScheduleDefaults } from "@/lib/content/pages";
-import type { SectionHeading } from "@/lib/content/pages";
+import type { FeesScheduleContent } from "@/lib/content/pages";
 
+/**
+ * The fee schedule: a card for each way to instruct John, then every fee in
+ * one table.
+ *
+ * `fees` comes from the CMS. A fee marked `tableOnly` is listed in the table
+ * but given no card — the adjourned-hearing fee is an add-on to an instruction
+ * rather than a way to instruct, and a card offering it beside the six real
+ * ones would misrepresent what it is.
+ *
+ * The default is the static schedule, so a caller that has not been given fees
+ * still renders the page as written. In practice `/fees` always passes them.
+ */
 export function FeesSchedule({
   content = feesScheduleDefaults,
+  fees = fallbackFees,
 }: {
-  content?: SectionHeading;
+  content?: FeesScheduleContent;
+  fees?: Fee[];
 }) {
-  const rows = [
-    ...draftFees.map(({ name, description, price }) => ({
-      name,
-      description,
-      price,
-    })),
-    additionalDraftFee,
-  ];
+  const cards = fees.filter((fee) => !fee.tableOnly);
 
   return (
     <section className="draft-fees-section section-space" aria-labelledby="draft-fees-heading">
@@ -43,7 +51,7 @@ export function FeesSchedule({
         </div>
 
         <div className="draft-fee-grid">
-          {draftFees.map((fee) => (
+          {cards.map((fee) => (
             <article key={fee.name} className="draft-fee-card">
               <div className="draft-fee-card-head">
                 <div>
@@ -66,7 +74,7 @@ export function FeesSchedule({
 
         <div className="draft-fee-table-wrap">
           <table className="draft-fee-table">
-            <caption>Complete draft fee schedule from the supplied reference</caption>
+            <caption>{content.tableCaption}</caption>
             <thead>
               <tr>
                 <th scope="col">Service</th>
@@ -75,33 +83,42 @@ export function FeesSchedule({
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
-                <tr key={row.name}>
-                  <th scope="row">{row.name}</th>
-                  <td>{row.description}</td>
-                  <td>{row.price}</td>
+              {fees.map((fee) => (
+                <tr key={fee.name}>
+                  <th scope="row">{fee.name}</th>
+                  <td>{fee.description}</td>
+                  <td>{fee.price}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <div className="draft-fee-notes">
-          <p>
-            <strong>Included work:</strong> The reference states that fixed
-            fees include preparatory work and an inter-hearing consultation
-            where relevant.
-          </p>
-          <p>
-            <strong>Travel:</strong> Any travel or accommodation needed for a
-            case outside London should be discussed and agreed in advance.
-          </p>
-          <p>
-            <strong>Before publication:</strong> John must confirm every fee,
-            what it includes, his VAT status and the applicable travel terms.
-          </p>
-        </div>
+        {content.notes.length > 0 ? (
+          <div className="draft-fee-notes">
+            {content.notes.map((note) => (
+              <p key={note.label + note.body}>
+                {note.label ? <strong>{note.label}</strong> : null}{" "}
+                {note.body}
+              </p>
+            ))}
+          </div>
+        ) : null}
       </Container>
     </section>
   );
 }
+
+/**
+ * The static schedule, in the shape the CMS hands over.
+ *
+ * Built from `allDraftFees` rather than written out again, so the fallback and
+ * the seed cannot disagree about what a fee says.
+ */
+const fallbackFees: Fee[] = allDraftFees.map((fee) => ({
+  name: fee.name,
+  price: fee.price,
+  description: fee.description,
+  included: fee.included,
+  ...(fee.tableOnly ? { tableOnly: true } : {}),
+}));

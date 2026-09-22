@@ -2,11 +2,7 @@
 
 import { isIconName } from "@/components/ui/icons";
 import { requireAdmin } from "@/lib/auth";
-import {
-  formError,
-  initialCmsFormState,
-  type CmsFormState,
-} from "@/lib/cms/form";
+import { formError, type CmsFormState } from "@/lib/cms/form";
 import { revalidateFor, type RevalidateTarget } from "@/lib/cms/revalidate";
 import {
   fieldName,
@@ -42,8 +38,6 @@ import { createClient } from "@/utils/supabase/server";
  * written — that check is what stops arbitrary rows being inserted into the
  * table by a hand-made request.
  */
-
-export const initialSectionFormState: CmsFormState = initialCmsFormState({});
 
 /** A ceiling on the item scan, so a forged count cannot spin the loop. */
 const maxItems = 60;

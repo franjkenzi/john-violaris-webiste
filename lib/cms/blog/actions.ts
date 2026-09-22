@@ -6,7 +6,6 @@ import { isIconName } from "@/components/ui/icons";
 import { requireAdmin } from "@/lib/auth";
 import {
   formError,
-  initialCmsFormState,
   readCheckbox,
   readFields,
   validateFields,
@@ -20,12 +19,12 @@ import {
   blogPostFields,
   blogPostRules,
   emptyBlogCategoryValues,
-  emptyBlogPostValues,
   estimateReadTime,
   readSections,
   validateSections,
   type BlogCategoryField,
   type BlogPostField,
+  type BlogPostFormState,
 } from "@/lib/cms/blog/schema";
 import type { BlogPostContent } from "@/lib/cms/types";
 import { createClient } from "@/utils/supabase/server";
@@ -38,16 +37,6 @@ import { createClient } from "@/utils/supabase/server";
  * routes and hands back a form state. What is left in each action is its field
  * list and its query — which is the whole point of the wrapper.
  */
-
-export type BlogPostFormState = CmsFormState<BlogPostField> & {
-  /** Keyed by section index, because the fields are positional. */
-  sectionErrors: Record<number, string>;
-};
-
-export const initialBlogPostFormState: BlogPostFormState = {
-  ...initialCmsFormState(emptyBlogPostValues),
-  sectionErrors: {},
-};
 
 /** The public URL of an article, for revalidation. */
 function articlePath(slug: string): string {
@@ -257,10 +246,6 @@ export async function deleteBlogPost(formData: FormData) {
 // ---------------------------------------------------------------------------
 // Categories
 // ---------------------------------------------------------------------------
-
-export const initialBlogCategoryFormState = initialCmsFormState(
-  emptyBlogCategoryValues,
-);
 
 export async function saveBlogCategory(
   _previous: CmsFormState<BlogCategoryField>,

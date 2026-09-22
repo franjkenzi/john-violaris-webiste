@@ -1,3 +1,4 @@
+import { initialCmsFormState, type CmsFormState } from "@/lib/cms/form";
 import {
   aboutBackgroundDefaults,
   careerBandDefaults,
@@ -770,10 +771,40 @@ export const pageGroups: PageGroup[] = [
       },
       {
         key: "schedule",
-        label: "Fee schedule — heading",
-        description: "The heading above the fixed fee cards.",
+        label: "Fee schedule — heading and notes",
+        description:
+          "The heading above the fee cards, the table caption, and the notes underneath — including the line saying the figures are still to be confirmed. The fees themselves are managed under Fees.",
         appearsOn: ["/fees"],
-        fields: headingFields,
+        fields: [
+          ...headingFields,
+          {
+            key: "tableCaption",
+            label: "Table caption",
+            kind: "text",
+            hint: "Above the full schedule table.",
+            maxLength: 200,
+          },
+          {
+            key: "notes",
+            label: "Notes",
+            kind: "items",
+            hint: "Beneath the table. Delete the “Before publication” note once John has confirmed the figures.",
+            item: {
+              label: "Note",
+              fields: [
+                {
+                  key: "label",
+                  label: "Lead-in",
+                  kind: "text",
+                  hint: "Set in bold at the start, e.g. “Travel:”.",
+                  maxLength: 60,
+                },
+                { key: "body", label: "Text", kind: "textarea", maxLength: 600, rows: 3 },
+              ],
+              max: 8,
+            },
+          },
+        ],
         defaults: { ...feesScheduleDefaults },
       },
       {
@@ -973,6 +1004,15 @@ export const pageGroups: PageGroup[] = [
     ],
   },
 ];
+
+/**
+ * The editor's starting state.
+ *
+ * Here rather than beside the action that consumes it: every export of a
+ * `"use server"` module has to be an async function, so a plain constant in
+ * `actions.ts` fails the build the moment a Server Component imports from it.
+ */
+export const initialSectionFormState: CmsFormState = initialCmsFormState({});
 
 // ---------------------------------------------------------------------------
 // Lookups

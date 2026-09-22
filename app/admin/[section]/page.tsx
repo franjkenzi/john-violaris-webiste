@@ -11,7 +11,6 @@ import { notFound } from "next/navigation";
 const sections = new Set([
   "services",
   "service-pages",
-  "fees",
   "seo-metadata",
   "site-settings",
 ]);

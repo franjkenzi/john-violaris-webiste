@@ -33,7 +33,7 @@ import {
   seedTestimonials,
 } from "@/lib/cms/seed-data.ts";
 import { articles } from "@/lib/content/blog.ts";
-import { draftFees } from "@/lib/content/fees.ts";
+import { allDraftFees } from "@/lib/content/fees.ts";
 import { testimonials } from "@/lib/content/home.ts";
 import { serviceDescriptions } from "@/lib/content/service-descriptions.ts";
 import { serviceDetails } from "@/lib/content/service-detail.ts";
@@ -101,11 +101,14 @@ expect(
 expect(
   "fee schedule",
   seedFees.map(toFee),
-  draftFees.map((fee) => ({
+  allDraftFees.map((fee) => ({
     name: fee.name,
     price: fee.price,
     description: fee.description,
     included: fee.included,
+    // Spread, to match the mapper: an absent flag is absent on both sides
+    // rather than present and undefined on one of them.
+    ...(fee.tableOnly ? { tableOnly: true } : {}),
   })),
 );
 

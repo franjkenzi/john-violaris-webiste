@@ -103,6 +103,10 @@ export function toFee(row: FeeLike): Fee {
     price: row.price ?? "On enquiry",
     description: row.content.description,
     included: row.content.included,
+    // Spread rather than set: an absent flag stays absent on both sides, so
+    // `cms:verify` compares a row against the static fee it came from without
+    // one of them carrying a `tableOnly: undefined` the other lacks.
+    ...(row.content.tableOnly ? { tableOnly: true } : {}),
   };
 }
 

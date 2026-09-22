@@ -75,12 +75,7 @@ const contentItems: NavItem[] = [
     icon: FolderTree,
     comingSoon: true,
   },
-  {
-    title: "Fees",
-    href: "/admin/fees",
-    icon: BadgePoundSterling,
-    comingSoon: true,
-  },
+  { title: "Fees", href: "/admin/fees", icon: BadgePoundSterling },
   {
     title: "Reviews",
     href: "/admin/testimonials",

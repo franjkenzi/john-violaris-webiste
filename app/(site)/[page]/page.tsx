@@ -17,7 +17,7 @@ import { Container } from "@/components/ui/container";
 import { ReviewSolicitorsWidget } from "@/components/ui/review-solicitors";
 import { Icon } from "@/components/ui/icons";
 import { Lines, Paragraphs } from "@/components/ui/lines";
-import { getPagesContent } from "@/lib/cms/queries";
+import { getFees, getPagesContent } from "@/lib/cms/queries";
 import { resolveFrom } from "@/lib/cms/sections/resolve";
 import {
   aboutBackgroundDefaults,
@@ -99,6 +99,9 @@ export default async function InformationPage({
   const contact = own("details", contactDetailsDefaults);
   const prepare = own("prepare", contactPrepareDefaults);
 
+  // Only the fees page needs the schedule, so only it pays for the read.
+  const fees = page === "fees" ? await getFees() : [];
+
   return (
     <>
       <PageIntro {...intro} />
@@ -169,7 +172,10 @@ export default async function InformationPage({
             </Container>
           </section>
           <FeesMatrix content={own("scope", feesScopeDefaults)} />
-          <FeesSchedule content={own("schedule", feesScheduleDefaults)} />
+          <FeesSchedule
+            content={own("schedule", feesScheduleDefaults)}
+            fees={fees}
+          />
           <FeesPreview content={own("preview", feesPreviewDefaults)} />
         </>
       )}

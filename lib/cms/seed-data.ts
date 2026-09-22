@@ -1,5 +1,5 @@
 import { articles } from "@/lib/content/blog";
-import { draftFees } from "@/lib/content/fees";
+import { allDraftFees } from "@/lib/content/fees";
 import { testimonials } from "@/lib/content/home";
 import { serviceDescriptions } from "@/lib/content/service-descriptions";
 import { serviceDetails } from "@/lib/content/service-detail";
@@ -144,15 +144,18 @@ export const seedServicePages: SeedServicePage[] = Object.entries(
  * job is to change nothing visible. The figures are still unconfirmed and the
  * UI still says so — see PRD §25. Confirm them with John before launch.
  */
-export const seedFees: SeedFee[] = draftFees.map(
+export const seedFees: SeedFee[] = allDraftFees.map(
   (fee, index): SeedFee => ({
     title: fee.name,
     price: fee.price,
     published: true,
+    // Tens, so a fee can be slotted between two others without renumbering
+    // every row after it.
     sort_order: index * 10,
     content: {
       description: fee.description,
       included: fee.included,
+      ...(fee.tableOnly ? { tableOnly: true } : {}),
     },
   }),
 );

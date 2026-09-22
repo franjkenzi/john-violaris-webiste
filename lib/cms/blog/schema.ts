@@ -1,9 +1,11 @@
 import { isIconName } from "@/components/ui/icons";
 import {
+  initialCmsFormState,
   readLines,
   readParagraphs,
   writeLines,
   writeParagraphs,
+  type CmsFormState,
   type FieldRule,
 } from "@/lib/cms/form";
 import type { BlogPostRow } from "@/lib/cms/types";
@@ -72,6 +74,23 @@ export const blogPostRules: Record<BlogPostField, FieldRule> = {
   featuredImage: { label: "Featured image", maxLength: 400 },
   featuredImageAlt: { label: "Image description", maxLength: 200 },
   publishedAt: { label: "Publication date", format: "date" },
+};
+
+/**
+ * The editor's state, and its starting value.
+ *
+ * Here rather than beside the actions that consume them: every export of a
+ * `"use server"` module has to be an async function, so a plain constant in
+ * `actions.ts` fails the build the moment a Server Component imports from it.
+ */
+export type BlogPostFormState = CmsFormState<BlogPostField> & {
+  /** Keyed by section index, because the fields are positional. */
+  sectionErrors: Record<number, string>;
+};
+
+export const initialBlogPostFormState: BlogPostFormState = {
+  ...initialCmsFormState(emptyBlogPostValues),
+  sectionErrors: {},
 };
 
 // ---------------------------------------------------------------------------
@@ -248,3 +267,7 @@ export const blogCategoryRules: Record<BlogCategoryField, FieldRule> = {
   name: { label: "Name", required: true, maxLength: 80 },
   slug: { label: "URL slug", required: true, maxLength: 80, format: "slug" },
 };
+
+export const initialBlogCategoryFormState = initialCmsFormState(
+  emptyBlogCategoryValues,
+);

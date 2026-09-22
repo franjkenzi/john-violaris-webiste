@@ -8,11 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "cn";
-import {
-  deleteBlogCategory,
-  initialBlogCategoryFormState,
-  saveBlogCategory,
-} from "@/lib/cms/blog/actions";
+import { deleteBlogCategory, saveBlogCategory } from "@/lib/cms/blog/actions";
+import { initialBlogCategoryFormState } from "@/lib/cms/blog/schema";
 import { slugify } from "@/lib/slug";
 
 /**

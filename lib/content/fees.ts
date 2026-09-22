@@ -27,6 +27,14 @@ export type DraftFee = {
   description: string;
   price: string;
   included: string[];
+  /**
+   * Listed in the full table but given no card of its own.
+   *
+   * The adjourned-hearing fee is an add-on to another instruction rather than
+   * a way to instruct John, so a card offering it alongside the six real ones
+   * would misrepresent what it is.
+   */
+  tableOnly?: boolean;
 };
 
 /**
@@ -106,11 +114,23 @@ export const draftFees: DraftFee[] = [
   },
 ];
 
-export const additionalDraftFee = {
+/**
+ * The adjourned-hearing fee: in the table, not on a card.
+ *
+ * A full `DraftFee` rather than the bare three fields it used to be, so that it
+ * goes through the same seed, the same mapper and the same editor as the rest.
+ * It was the one figure on the fees page that no admin screen could reach.
+ */
+export const additionalDraftFee: DraftFee = {
   name: "Additional or adjourned hearing",
   description: "Case management or an adjourned hearing",
   price: "£500",
+  included: [],
+  tableOnly: true,
 };
+
+/** Every fee, in the order the table lists them. */
+export const allDraftFees: DraftFee[] = [...draftFees, additionalDraftFee];
 
 export const feeStages: FeeStage[] = [
   {
