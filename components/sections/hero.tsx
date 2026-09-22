@@ -120,7 +120,7 @@ export function Hero() {
                     }}
                   >
                     <Image
-                      src="/Profile 4.png"
+                      src="/Profile 7.png"
                       alt="Portrait of John Violaris, criminal defence solicitor"
                       fill
                       preload
