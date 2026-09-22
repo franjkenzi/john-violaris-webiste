@@ -1,76 +1,130 @@
-/**
- * Central site configuration.
- *
- * Every phone number, address, email and external URL used anywhere on the
- * site is defined here once. Nothing contact-related should be hardcoded in a
- * component. Values marked PLACEHOLDER are deliberately obvious and must be
- * replaced with John's real details before launch — see `docs` note in README.
- *
- * Later these values move behind the CMS (Site Settings table); the shape below
- * is the contract the rest of the app codes against.
- */
-
 import { allServices } from "@/lib/content/services";
 
-export type NavLink = {
-  label: string;
-  href: string;
+/**
+ * Site-wide settings: the shape, the defaults, and how the derived links are
+ * worked out.
+ *
+ * Every phone number, address, email and external URL used anywhere on the site
+ * comes from here. Nothing contact-related is hardcoded in a component.
+ *
+ * Two layers, and the split is the point:
+ *
+ *  - `SiteSettings` is what John can edit under Site Settings. The values below
+ *    are the defaults, read from the environment, and they are what the site
+ *    uses until a row exists in `site_settings`.
+ *  - `deployment` is configuration, not content. The canonical domain decides
+ *    every canonical URL and `metadataBase`; changing it from a CMS would break
+ *    them silently, and it belongs with the deploy that serves it.
+ *
+ * `resolveSiteConfig` lays stored values over the defaults and derives the
+ * links. Server components read it through `getSiteConfig()`; client components
+ * take it from `useSiteConfig()`, which the site layout provides. It is plain
+ * data on purpose — a function cannot cross the server/client boundary as a
+ * prop, so `whatsappHref` below takes the config rather than living on it.
+ */
+
+// ---------------------------------------------------------------------------
+// What is editable
+// ---------------------------------------------------------------------------
+
+export type SiteSettings = {
+  name: string;
+  role: string;
+  roleLong: string;
+  initials: string;
+  jurisdiction: string;
+  email: string;
+  /** Human-readable, e.g. "07427 260293". */
+  phoneDisplay: string;
+  /** E.164, used for `tel:` links. Empty means no number is confirmed. */
+  phoneE164: string;
+  /** Any usual shape; normalised for `wa.me` by `resolveSiteConfig`. */
+  whatsappNumber: string;
+  /** The TidyCal consultation URL. Empty routes to the contact page instead. */
+  bookingUrl: string;
+  responseTime: string;
+  /** Empty until John supplies it; no number is ever invented. */
+  sraNumber: string;
 };
 
-export const siteConfig = {
+export const siteSettingKeys = [
+  "name",
+  "role",
+  "roleLong",
+  "initials",
+  "jurisdiction",
+  "email",
+  "phoneDisplay",
+  "phoneE164",
+  "whatsappNumber",
+  "bookingUrl",
+  "responseTime",
+  "sraNumber",
+] as const satisfies readonly (keyof SiteSettings)[];
+
+/**
+ * The defaults, and the fallback whenever a setting has no row.
+ *
+ * Still read from the environment rather than being written out here, so an
+ * existing deploy keeps working exactly as it did until someone edits a
+ * setting. The environment variables stay supported for that reason; a stored
+ * value simply wins over one.
+ */
+export const siteSettingsDefaults: SiteSettings = {
   name: "John Violaris",
   role: "Criminal Defence Solicitor",
   roleLong: "Criminal Defence Solicitor & Motoring Specialist",
   initials: "JV",
   jurisdiction: "England & Wales",
+  email: "contact@johnviolaris.com",
+  phoneDisplay:
+    process.env.NEXT_PUBLIC_PHONE_DISPLAY || "Phone details pending",
+  phoneE164: process.env.NEXT_PUBLIC_PHONE_NUMBER || "",
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
+  bookingUrl: process.env.NEXT_PUBLIC_BOOKING_URL || "",
+  responseTime: "Response within 24 hours",
+  sraNumber: "",
+};
 
+// ---------------------------------------------------------------------------
+// What is not
+// ---------------------------------------------------------------------------
+
+/** Deployment configuration. Deliberately not editable — see the note above. */
+export const deployment = {
   /** Primary/canonical domain. Secondary domains should 301 here. */
   url: "https://johnviolaris.com",
   secondaryUrl: "https://drivingjustice.co.uk",
-
-  contact: {
-    /** PLACEHOLDER — replace with John's real number. */
-    phoneDisplay:
-      process.env.NEXT_PUBLIC_PHONE_DISPLAY || "Phone details pending",
-    /** PLACEHOLDER — E.164 format, used for tel: links. */
-    phoneE164: process.env.NEXT_PUBLIC_PHONE_NUMBER || "",
-    /**
-     * PLACEHOLDER — John's WhatsApp number. Any ordinary shape is accepted
-     * (`+44 7700 900123`, `07700 900123`, `447700900123`); it is normalised
-     * for `wa.me` by `normaliseWhatsappNumber` below.
-     */
-    whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
-    /** Dialling code assumed when a number is written in national form. */
-    countryCode: "44",
-    email: "contact@johnviolaris.com",
-    responseTime: "Response within 24 hours",
-  },
-
-  /** Set the confirmed TidyCal URL; otherwise direct visitors to contact. */
-  bookingUrl: process.env.NEXT_PUBLIC_BOOKING_URL || "/contact#consultation",
-
-  /**
-   * Set the verified SRA number once confirmed; no number is invented.
-   */
-  sraNumber: null as string | null,
+  /** Dialling code assumed when a number is written in national form. */
+  countryCode: "44",
 } as const;
 
-/** `tel:` href for the configured phone number. */
-export const telHref = siteConfig.contact.phoneE164
-  ? `tel:${siteConfig.contact.phoneE164}`
-  : "/contact#urgent";
+// ---------------------------------------------------------------------------
+// Resolution
+// ---------------------------------------------------------------------------
 
-/** `mailto:` href for the configured email address. */
-export const mailtoHref = `mailto:${siteConfig.contact.email}`;
+export type SiteConfig = SiteSettings &
+  typeof deployment & {
+    /** `tel:` href, or the contact page when no number is confirmed. */
+    telHref: string;
+    mailtoHref: string;
+    /**
+     * Normalised WhatsApp digits, or null when none is usable. Null rather
+     * than a fallback route on purpose: the caller has to decide what to
+     * render instead, so nothing can end up labelled "WhatsApp" while quietly
+     * pointing at the contact page.
+     */
+    whatsappDigits: string | null;
+    /** The booking URL, or the contact page when none is configured. */
+    bookingHref: string;
+  };
 
 /**
- * WhatsApp click-to-chat (PRD §8 — no Business API, just a `wa.me` link).
- *
  * `wa.me` takes digits only: no `+`, spaces, brackets or trunk prefix. Rather
  * than trust whatever shape the configured value arrives in, it is normalised
- * here, so `+44 7700 900123`, `07700 900123` and `447700900123` all produce
- * the same link. A value that cannot be read as a number yields `null` rather
- * than a broken chat link.
+ * here, so `+44 7700 900123`, `07700 900123` and `447700900123` all produce the
+ * same link. A value that cannot be read as a number yields `null` rather than
+ * a broken chat link.
  */
 function normaliseWhatsappNumber(raw: string): string | null {
   let digits = raw.replace(/\D/g, "");
@@ -81,37 +135,84 @@ function normaliseWhatsappNumber(raw: string): string | null {
   // A single leading `0` is a national trunk prefix. The practice covers
   // England & Wales only, so it resolves against the configured dialling code.
   if (digits.startsWith("0")) {
-    digits = siteConfig.contact.countryCode + digits.slice(1);
+    digits = deployment.countryCode + digits.slice(1);
   }
 
   // E.164 permits at most 15 digits; anything under 8 is not a phone number.
   return digits.length >= 8 && digits.length <= 15 ? digits : null;
 }
 
-/** Normalised WhatsApp number, or `null` when none is configured. */
-export const whatsappNumber = siteConfig.contact.whatsappNumber
-  ? normaliseWhatsappNumber(siteConfig.contact.whatsappNumber)
-  : null;
+/** Lay stored settings over the defaults and work out the derived links. */
+export function resolveSiteConfig(
+  stored: Partial<SiteSettings> = {},
+): SiteConfig {
+  // Only non-empty strings override. A setting cleared in the admin means
+  // "unset", which is the default's job to answer — not an empty heading.
+  const values = { ...siteSettingsDefaults };
+
+  for (const key of siteSettingKeys) {
+    const value = stored[key];
+
+    if (typeof value === "string" && value.trim()) {
+      values[key] = value.trim();
+    }
+  }
+
+  return {
+    ...values,
+    ...deployment,
+    telHref: values.phoneE164 ? `tel:${values.phoneE164}` : "/contact#urgent",
+    mailtoHref: `mailto:${values.email}`,
+    whatsappDigits: values.whatsappNumber
+      ? normaliseWhatsappNumber(values.whatsappNumber)
+      : null,
+    bookingHref: values.bookingUrl || "/contact#consultation",
+  };
+}
 
 /**
  * Click-to-chat href, or `null` when no usable number is configured.
  *
- * Null rather than a fallback route on purpose: the caller has to decide what
- * to render instead, so nothing can end up labelled "WhatsApp" while quietly
- * pointing at the contact page.
+ * A standalone function rather than a method on `SiteConfig`, because the
+ * config travels from a Server Component to a Client Component as a prop and a
+ * function cannot make that crossing.
  *
  * Called without a `subject` the chat opens empty, so the visitor says it in
- * their own words. Only a page that already knows the matter — a service page
- * — puts anything in the box, and then only the name of the offence.
+ * their own words. Only a page that already knows the matter — a service page —
+ * puts anything in the box, and then only the name of the offence.
  */
-export function whatsappHref(subject?: string): string | null {
-  if (!whatsappNumber) return null;
-  if (!subject) return `https://wa.me/${whatsappNumber}`;
+export function whatsappHref(
+  config: Pick<SiteConfig, "whatsappDigits">,
+  subject?: string,
+): string | null {
+  if (!config.whatsappDigits) return null;
+  if (!subject) return `https://wa.me/${config.whatsappDigits}`;
 
   const message = `Hello John, I'd like to speak to you about ${subject}.`;
 
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${config.whatsappDigits}?text=${encodeURIComponent(message)}`;
 }
+
+/**
+ * The configuration with no stored settings applied.
+ *
+ * For the two places that must not depend on a database read: the error
+ * boundary and the 404. An error page whose branding needs a query is an error
+ * page that fails when the query is what broke.
+ */
+export const fallbackSiteConfig: SiteConfig = resolveSiteConfig();
+
+// ---------------------------------------------------------------------------
+// Navigation
+//
+// Structure rather than settings: which pages exist and how they are grouped is
+// a decision about the site, not a detail about the practice.
+// ---------------------------------------------------------------------------
+
+export type NavLink = {
+  label: string;
+  href: string;
+};
 
 /** Primary header / mobile navigation. */
 export const mainNav: NavLink[] = [

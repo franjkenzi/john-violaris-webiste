@@ -6,8 +6,13 @@ import { Container } from "@/components/ui/container";
 import { OnThisPage } from "@/components/ui/on-this-page";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
-import { getArticle, getArticles, getServices } from "@/lib/cms/queries";
-import { siteConfig } from "@/lib/site-config";
+import {
+  getArticle,
+  getArticles,
+  getServices,
+  getSiteConfig,
+} from "@/lib/cms/queries";
+
 import { slugify } from "@/lib/slug";
 
 /**
@@ -54,10 +59,11 @@ export default async function ArticlePage({
 }) {
   const { slug } = await params;
 
-  const [article, articles, services] = await Promise.all([
+  const [article, articles, services, config] = await Promise.all([
     getArticle(slug),
     getArticles(),
     getServices(),
+    getSiteConfig(),
   ]);
 
   if (!article) notFound();
@@ -97,8 +103,8 @@ export default async function ArticlePage({
             </div>
           )}
           <div className="article-meta">
-            <span>{siteConfig.name}</span>
-            <span>{siteConfig.role}</span>
+            <span>{config.name}</span>
+            <span>{config.role}</span>
             <span>{article.readTime}</span>
           </div>
         </Container>
@@ -157,7 +163,7 @@ export default async function ArticlePage({
                   A free initial consultation. A chance to explain your
                   situation and understand the next step.
                 </p>
-                <Link href={siteConfig.bookingUrl} className="action-button">
+                <Link href={config.bookingHref} className="action-button">
                   Discuss your case <Icon name="arrowRight" size={17} />
                 </Link>
                 <span className="service-contact-caption">
@@ -184,6 +190,7 @@ export default async function ArticlePage({
       </section>
 
       <CtaBanner
+        config={config}
         heading="Still have questions?"
         emphasis="Let’s talk them through."
       />

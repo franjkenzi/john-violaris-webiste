@@ -31,6 +31,12 @@ import type {
   Testimonial,
 } from "@/lib/cms/types";
 import type { SectionContent } from "@/lib/cms/sections/schema";
+import {
+  resolveSiteConfig,
+  siteSettingKeys,
+  type SiteConfig,
+  type SiteSettings,
+} from "@/lib/site-config";
 import { publicClient } from "@/utils/supabase/public";
 
 /**
@@ -404,6 +410,44 @@ export const getSeo = cache(async function getSeo(
  * result; `lib/site-config.ts` stays the place that supplies the defaults when
  * a key is unset.
  */
+/**
+ * The resolved site configuration: stored settings over the defaults, with the
+ * derived links worked out.
+ *
+ * This is what components use. `getSiteSettings` below returns the raw rows and
+ * is for the admin screen that edits them.
+ *
+ * `cache()` matters more here than anywhere else in this file: the header, the
+ * footer, the contact bar and the page itself all want the configuration, and
+ * without deduping that is four identical round trips per render.
+ */
+export const getSiteConfig = cache(async function getSiteConfig(): Promise<
+  SiteConfig
+> {
+  const stored = await getSiteSettings();
+  const values: Partial<SiteSettings> = {};
+
+  /*
+   * Only known keys, and only strings.
+   *
+   * `site_settings` is key/value and holds whatever has been written into it,
+   * including the deployment keys the seed put there before they were settled
+   * as non-editable. Reading by `siteSettingKeys` rather than by whatever came
+   * back means a stray row cannot reach the site, and a jsonb value that is a
+   * number or an object is ignored rather than rendered as "[object Object]"
+   * somewhere in the footer.
+   */
+  for (const key of siteSettingKeys) {
+    const value = stored[key];
+
+    if (typeof value === "string") {
+      values[key] = value;
+    }
+  }
+
+  return resolveSiteConfig(values);
+});
+
 export const getSiteSettings = cache(
   async function getSiteSettings(): Promise<Record<string, unknown>> {
     return safely(

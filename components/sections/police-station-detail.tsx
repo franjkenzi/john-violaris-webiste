@@ -5,12 +5,14 @@ import { Icon } from "@/components/ui/icons";
 import { Lines, Paragraphs } from "@/components/ui/lines";
 import { policeStationDetailDefaults } from "@/lib/content/pages";
 import type { PoliceStationDetailContent } from "@/lib/content/pages";
-import { mailtoHref, siteConfig, telHref } from "@/lib/site-config";
+import type { SiteConfig } from "@/lib/site-config";
 
 export function PoliceStationDetail({
   content = policeStationDetailDefaults,
+  config,
 }: {
   content?: PoliceStationDetailContent;
+  config: SiteConfig;
 }) {
   return (
     <section className="police-detail section-space" aria-labelledby="police-detail-heading">
@@ -59,13 +61,13 @@ export function PoliceStationDetail({
               <h3>{content.urgentHeading}</h3>
               <Paragraphs values={content.urgentBody} />
               <div>
-                <a href={telHref} className="action-button">
+                <a href={config.telHref} className="action-button">
                   <Icon name="call" size={16} />
-                  {siteConfig.contact.phoneE164
+                  {config.phoneE164
                     ? content.urgentCallLabel
                     : content.urgentCallFallbackLabel}
                 </a>
-                <a href={mailtoHref} className="text-link">
+                <a href={config.mailtoHref} className="text-link">
                   {content.urgentEmailLabel}{" "}
                   <Icon name="arrowRight" size={15} />
                 </a>

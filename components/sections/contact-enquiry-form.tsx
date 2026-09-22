@@ -13,7 +13,7 @@ import {
   matterTypes,
   type EnquiryField,
 } from "@/lib/enquiries/schema";
-import { mailtoHref, siteConfig, telHref } from "@/lib/site-config";
+import { useSiteConfig } from "@/components/layout/site-config-provider";
 
 /**
  * The enquiry form (PRD §6.8).
@@ -25,6 +25,7 @@ import { mailtoHref, siteConfig, telHref } from "@/lib/site-config";
  * gives up and leaves.
  */
 export function ContactEnquiryForm() {
+  const config = useSiteConfig();
   const [state, formAction, pending] = useActionState(
     submitEnquiry,
     initialEnquiryFormState,
@@ -97,17 +98,17 @@ export function ContactEnquiryForm() {
               than any form.
             </p>
             <div className="enquiry-direct">
-              <a href={telHref}>
+              <a href={config.telHref}>
                 <Icon name="call" size={18} />
                 <span>
-                  {siteConfig.contact.phoneE164
-                    ? siteConfig.contact.phoneDisplay
+                  {config.phoneE164
+                    ? config.phoneDisplay
                     : "Call John"}
                 </span>
               </a>
-              <a href={mailtoHref}>
+              <a href={config.mailtoHref}>
                 <Icon name="arrowRight" size={18} />
-                <span>{siteConfig.contact.email}</span>
+                <span>{config.email}</span>
               </a>
             </div>
           </div>

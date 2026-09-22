@@ -4,7 +4,7 @@ import { PageIntro } from "@/components/pages/page-intro";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
-import { getArticles } from "@/lib/cms/queries";
+import { getArticles, getSiteConfig } from "@/lib/cms/queries";
 
 /**
  * The blog index lives here rather than in the `[page]` catch-all, so that the
@@ -26,7 +26,10 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogIndexPage() {
-  const articles = await getArticles();
+  const [articles, config] = await Promise.all([
+    getArticles(),
+    getSiteConfig(),
+  ]);
 
   return (
     <>
@@ -110,6 +113,7 @@ export default async function BlogIndexPage() {
         </Container>
       </section>
       <CtaBanner
+        config={config}
         heading="Found the answer?"
         emphasis="Now let’s talk about your case."
       />

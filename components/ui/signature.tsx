@@ -1,13 +1,17 @@
-import { siteConfig } from "@/lib/site-config";
+import { siteSettingsDefaults } from "@/lib/site-config";
 
 /** John's name set in a script face, with a gold rule beneath. */
 export function Signature({
   className = "",
   tone = "dark",
+  name = siteSettingsDefaults.name,
+  jurisdiction = siteSettingsDefaults.jurisdiction,
 }: {
   className?: string;
   /** `dark` for light backgrounds, `light` for navy backgrounds. */
   tone?: "dark" | "light";
+  name?: string;
+  jurisdiction?: string;
 }) {
   return (
     <div className={className}>
@@ -16,7 +20,7 @@ export function Signature({
           tone === "dark" ? "text-ink" : "text-cream"
         }`}
       >
-        {siteConfig.name}
+        {name}
       </p>
       <span
         aria-hidden="true"
@@ -27,7 +31,7 @@ export function Signature({
           tone === "dark" ? "text-muted" : "text-cream/55"
         }`}
       >
-        Solicitor of {siteConfig.jurisdiction}
+        Solicitor of {jurisdiction}
       </p>
     </div>
   );

@@ -2,7 +2,7 @@ import "server-only";
 
 import { Resend } from "resend";
 
-import { siteConfig } from "@/lib/site-config";
+import type { SiteConfig } from "@/lib/site-config";
 
 /**
  * Resend setup.
@@ -26,20 +26,27 @@ export function getResend() {
   return client;
 }
 
-export const emailConfig = {
-  /**
-   * Sending identity. Must be an address on a domain verified in Resend —
-   * until John's domain is verified, Resend's shared `onboarding@resend.dev`
-   * sender works for testing but can only deliver to the account owner.
-   */
-  from:
-    process.env.ENQUIRY_FROM_EMAIL ||
-    `${siteConfig.name} <onboarding@resend.dev>`,
-
-  /** Where enquiry notifications land. */
-  notificationTo:
-    process.env.ENQUIRY_NOTIFICATION_EMAIL || siteConfig.contact.email,
-} as const;
+/**
+ * Sending identity and destination.
+ *
+ * A function of the live configuration rather than a module constant: the
+ * address notifications land at falls back to the contact email, and that is
+ * now a setting John can change. A constant would have frozen whatever it was
+ * at the moment the module first loaded.
+ *
+ * Both environment variables still win. Where the emails go is a deployment
+ * concern, and the sending address in particular has to match a domain
+ * verified in Resend — until John's is, Resend's shared `onboarding@resend.dev`
+ * sender works for testing but can only deliver to the account owner.
+ */
+export function emailConfigFor(config: SiteConfig) {
+  return {
+    from:
+      process.env.ENQUIRY_FROM_EMAIL ||
+      `${config.name} <onboarding@resend.dev>`,
+    notificationTo: process.env.ENQUIRY_NOTIFICATION_EMAIL || config.email,
+  } as const;
+}
 
 /** Escapes interpolated values before they go into an HTML email body. */
 export function escapeHtml(value: string) {

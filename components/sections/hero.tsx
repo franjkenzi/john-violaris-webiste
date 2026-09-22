@@ -11,7 +11,7 @@ import { Icon } from "@/components/ui/icons";
 import { Lines } from "@/components/ui/lines";
 import { heroDefaults, offenceStripDefaults } from "@/lib/content/pages";
 import type { HeroContent } from "@/lib/content/pages";
-import { siteConfig } from "@/lib/site-config";
+import { useSiteConfig } from "@/components/layout/site-config-provider";
 
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
@@ -47,6 +47,7 @@ export function Hero({
   content?: HeroContent;
   strip?: { eyebrow: string };
 }) {
+  const config = useSiteConfig();
   const scrollStageRef = useRef<HTMLDivElement>(null);
   const mobileScrollStageRef = useRef<HTMLDivElement>(null);
   const isMobile = useMediaQuery("(max-width: 639px)");
@@ -127,7 +128,7 @@ export function Hero({
                   separator={<br className="hidden sm:block" />}
                 />
               </p>
-              <Link href={siteConfig.bookingUrl} className="action-button">
+              <Link href={config.bookingHref} className="action-button">
                 {content.ctaLabel} <Icon name="arrowRight" size={19} />
               </Link>
               <p className="hero-reassurance">
@@ -153,8 +154,8 @@ export function Hero({
                       className="hero-portrait-image hero-portrait-image-primary"
                     />
                     <figcaption className="portrait-caption">
-                      <span>{siteConfig.name}</span>
-                      <small>{siteConfig.role}</small>
+                      <span>{config.name}</span>
+                      <small>{config.role}</small>
                     </figcaption>
                   </motion.div>
                   <motion.aside
@@ -167,7 +168,7 @@ export function Hero({
                   >
                     <div className="letter-top">
                       <span>{content.cardLabel}</span>
-                      <span>01 / {siteConfig.initials}</span>
+                      <span>01 / {config.initials}</span>
                     </div>
                     <div className="letter-monogram" aria-hidden="true">
                       J<span>V</span>
@@ -180,7 +181,7 @@ export function Hero({
                         <em>{content.cardBodyEmphasis}</em>
                       </p>
                       <div className="letter-rule" />
-                      <span className="letter-name">{siteConfig.name}</span>
+                      <span className="letter-name">{config.name}</span>
                       <span className="letter-role">{content.cardRole}</span>
                     </div>
                     <Link href="/about" className="letter-footer">

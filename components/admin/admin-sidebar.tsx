@@ -96,12 +96,7 @@ const configurationItems: NavItem[] = [
     icon: Search,
     comingSoon: true,
   },
-  {
-    title: "Site Settings",
-    href: "/admin/site-settings",
-    icon: Settings2,
-    comingSoon: true,
-  },
+  { title: "Site Settings", href: "/admin/site-settings", icon: Settings2 },
 ];
 
 export function AdminSidebar({

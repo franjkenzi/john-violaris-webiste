@@ -15,7 +15,7 @@ import {
   type EnquiryFormState,
   type EnquiryValues,
 } from "@/lib/enquiries/schema";
-import { siteConfig } from "@/lib/site-config";
+import { deployment } from "@/lib/site-config";
 import { createAdminClient } from "@/utils/supabase/admin";
 
 /**
@@ -168,7 +168,7 @@ export async function submitEnquiry(
   const host = requestHeaders.get("host");
   const origin = host
     ? `${forwardedProto ?? (host.startsWith("localhost") ? "http" : "https")}://${host}`
-    : siteConfig.url;
+    : deployment.url;
 
   // Runs once the visitor already has their confirmation screen.
   after(async () => {

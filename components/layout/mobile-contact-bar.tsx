@@ -5,12 +5,8 @@ import { useEffect, useState } from "react";
 
 import { Icon } from "@/components/ui/icons";
 import type { IconName } from "@/components/ui/icons";
-import {
-  mailtoHref,
-  siteConfig,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-config";
+import { useSiteConfig } from "@/components/layout/site-config-provider";
+import { whatsappHref } from "@/lib/site-config";
 
 type Action = {
   label: string;
@@ -41,12 +37,12 @@ export function MobileContactBar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const { contact } = siteConfig;
-  const whatsapp = whatsappHref();
+  const config = useSiteConfig();
+  const whatsapp = whatsappHref(config);
 
   const actions: Action[] = [];
-  if (contact.phoneE164) {
-    actions.push({ label: "Call", href: telHref, icon: "call" });
+  if (config.phoneE164) {
+    actions.push({ label: "Call", href: config.telHref, icon: "call" });
   }
   if (whatsapp) {
     actions.push({
@@ -57,7 +53,7 @@ export function MobileContactBar() {
     });
   }
   if (actions.length === 0) {
-    actions.push({ label: "Email", href: mailtoHref, icon: "mail" });
+    actions.push({ label: "Email", href: config.mailtoHref, icon: "mail" });
   }
 
   return (
@@ -69,7 +65,7 @@ export function MobileContactBar() {
       aria-hidden={!visible}
       inert={!visible}
     >
-      <Link href={siteConfig.bookingUrl} className="mobile-contact-primary">
+      <Link href={config.bookingHref} className="mobile-contact-primary">
         <Icon name="calendar" size={16} />
         Free consultation
       </Link>

@@ -1,12 +1,7 @@
 import Link from "next/link";
 
 import { Icon } from "@/components/ui/icons";
-import {
-  mailtoHref,
-  siteConfig,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-config";
+import { whatsappHref, type SiteConfig } from "@/lib/site-config";
 
 /**
  * Slim contact rail above the masthead.
@@ -20,9 +15,8 @@ import {
  * been confirmed yet is simply absent rather than shown as a dead placeholder;
  * email always works, so the bar never renders empty.
  */
-export function UtilityBar() {
-  const { contact } = siteConfig;
-  const whatsapp = whatsappHref();
+export function UtilityBar({ config }: { config: SiteConfig }) {
+  const whatsapp = whatsappHref(config);
 
   return (
     <div className="utility-bar">
@@ -31,15 +25,15 @@ export function UtilityBar() {
           <span className="utility-dot" aria-hidden="true" />
           Free initial consultation
           <span className="utility-response">
-            <span aria-hidden="true">·</span> {contact.responseTime}
+            <span aria-hidden="true">·</span> {config.responseTime}
           </span>
         </p>
 
         <div className="utility-actions">
-          {contact.phoneE164 ? (
-            <a href={telHref}>
+          {config.phoneE164 ? (
+            <a href={config.telHref}>
               <Icon name="call" size={13} />
-              {contact.phoneDisplay}
+              {config.phoneDisplay}
             </a>
           ) : (
             <Link href="/contact#urgent">
@@ -47,9 +41,9 @@ export function UtilityBar() {
               Urgent hearing or interview?
             </Link>
           )}
-          <a href={mailtoHref} className="utility-email">
+          <a href={config.mailtoHref} className="utility-email">
             <Icon name="mail" size={13} />
-            {contact.email}
+            {config.email}
           </a>
           {whatsapp ? (
             <a href={whatsapp} target="_blank" rel="noopener noreferrer">

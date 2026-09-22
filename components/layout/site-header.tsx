@@ -6,14 +6,9 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { Logo } from "@/components/layout/logo";
 import { ServicesMenu } from "@/components/layout/services-menu";
+import { useSiteConfig } from "@/components/layout/site-config-provider";
+import { mainNav, whatsappHref } from "@/lib/site-config";
 import { Icon } from "@/components/ui/icons";
-import {
-  mailtoHref,
-  mainNav,
-  siteConfig,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-config";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -31,7 +26,8 @@ export function SiteHeader() {
 
   // Null unless a usable number is configured, so the drawer never offers a
   // WhatsApp button that is not WhatsApp.
-  const whatsapp = whatsappHref();
+  const config = useSiteConfig();
+  const whatsapp = whatsappHref(config);
 
   // Lock background scroll and wire up Escape while the drawer is open.
   useEffect(() => {
@@ -101,7 +97,7 @@ export function SiteHeader() {
 
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 xl:h-[86px] xl:gap-6 xl:px-12">
         <div className="flex min-w-0 items-center gap-3">
-          <Logo />
+          <Logo name={config.name} role={config.role} />
           <span
             aria-hidden="true"
             className="hidden h-7 w-px bg-gold/20 xl:block"
@@ -126,7 +122,7 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            href={siteConfig.bookingUrl}
+            href={config.bookingHref}
             className="ml-3 rounded-sharp border border-gold/60 px-4 py-2.5 text-[11px] font-semibold tracking-[0.02em] whitespace-nowrap text-gold-light transition-colors hover:bg-gold hover:text-navy"
           >
             Free Consultation
@@ -136,11 +132,11 @@ export function SiteHeader() {
         {/* ── Mobile actions ───────────────────────────────────── */}
         <div className="flex items-center gap-1 xl:hidden">
           <a
-            href={telHref}
+            href={config.telHref}
             className="flex h-10 w-10 items-center justify-center rounded-sharp text-gold transition-colors hover:bg-white/5"
             aria-label={
-              siteConfig.contact.phoneE164
-                ? `Call John on ${siteConfig.contact.phoneDisplay}`
+              config.phoneE164
+                ? `Call John on ${config.phoneDisplay}`
                 : "Contact John"
             }
           >
@@ -213,7 +209,7 @@ export function SiteHeader() {
 
           <div className="mt-5 grid gap-2.5 border-t border-gold/15 pt-5">
             <Link
-              href={siteConfig.bookingUrl}
+              href={config.bookingHref}
               className="flex items-center justify-center gap-2 rounded-sharp bg-gold px-5 py-3.5 text-xs font-bold uppercase tracking-[0.07em] text-navy"
             >
               <Icon name="calendar" size={16} />
@@ -223,7 +219,7 @@ export function SiteHeader() {
               className={`grid gap-2.5 ${whatsapp ? "grid-cols-2" : "grid-cols-1"}`}
             >
               <a
-                href={telHref}
+                href={config.telHref}
                 className="flex items-center justify-center gap-2 rounded-sharp border border-cream/25 px-4 py-3 text-xs font-semibold uppercase tracking-[0.06em] text-cream"
               >
                 <Icon name="call" size={15} />
@@ -242,10 +238,10 @@ export function SiteHeader() {
               ) : null}
             </div>
             <a
-              href={mailtoHref}
+              href={config.mailtoHref}
               className="pt-1 text-center text-[12.5px] text-cream/58"
             >
-              {siteConfig.contact.email}
+              {config.email}
             </a>
           </div>
         </nav>

@@ -7,7 +7,12 @@ import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { SectionLabel } from "@/components/ui/section-label";
 import { isStaleBundleError } from "@/lib/app-version";
-import { siteConfig, telHref } from "@/lib/site-config";
+/*
+ * The static configuration, not the stored one. An error boundary whose
+ * branding needs a database read is an error boundary that fails when the
+ * database read is what broke.
+ */
+import { fallbackSiteConfig } from "@/lib/site-config";
 
 /**
  * Route-level error boundary.
@@ -62,7 +67,7 @@ export default function ErrorBoundary({
               {stale ? "Refresh the page" : "Try again"}
             </button>
             <ButtonLink
-              href={stale ? "/" : telHref}
+              href={stale ? "/" : fallbackSiteConfig.telHref}
               variant="outline"
               size="lg"
             >
@@ -71,8 +76,8 @@ export default function ErrorBoundary({
               ) : (
                 <>
                   <Icon name="call" size={15} />
-                  {siteConfig.contact.phoneE164
-                    ? `Call ${siteConfig.contact.phoneDisplay}`
+                  {fallbackSiteConfig.phoneE164
+                    ? `Call ${fallbackSiteConfig.phoneDisplay}`
                     : "Urgent? Contact John"}
                 </>
               )}

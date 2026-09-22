@@ -2,7 +2,12 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { SectionLabel } from "@/components/ui/section-label";
-import { siteConfig, telHref } from "@/lib/site-config";
+/*
+ * The static configuration. The 404 renders outside the site layout, so there
+ * is no provider to read from, and a not-found page is the wrong place to
+ * start a query.
+ */
+import { fallbackSiteConfig } from "@/lib/site-config";
 
 export default function NotFound() {
   return (
@@ -26,10 +31,10 @@ export default function NotFound() {
               Until a number is confirmed this routes to the contact page
               rather than rendering the placeholder as a phone number.
             */}
-            <ButtonLink href={telHref} variant="outline" size="lg">
+            <ButtonLink href={fallbackSiteConfig.telHref} variant="outline" size="lg">
               <Icon name="call" size={15} />
-              {siteConfig.contact.phoneE164
-                ? `Call ${siteConfig.contact.phoneDisplay}`
+              {fallbackSiteConfig.phoneE164
+                ? `Call ${fallbackSiteConfig.phoneDisplay}`
                 : "Urgent? Contact John"}
             </ButtonLink>
           </div>

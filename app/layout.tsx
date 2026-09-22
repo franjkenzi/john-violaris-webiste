@@ -7,7 +7,8 @@ import {
 } from "next/font/google";
 
 import { VersionGuard } from "@/components/layout/version-guard";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteConfig } from "@/lib/cms/queries";
+import { deployment } from "@/lib/site-config";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -30,31 +31,43 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: `${siteConfig.name} — Criminal Defence & Motoring Offence Solicitor`,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description:
-    "John Violaris is a criminal defence solicitor specialising in motoring offences and police station representation across England and Wales. You deal directly with John.",
-  applicationName: siteConfig.name,
-  authors: [{ name: siteConfig.name }],
-  icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml", sizes: "any" }],
-    shortcut: ["/favicon.svg"],
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_GB",
-    siteName: siteConfig.name,
-    url: siteConfig.url,
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+/**
+ * `generateMetadata` rather than a static object, so the name in every page
+ * title follows the setting.
+ *
+ * `metadataBase` stays on `deployment`: the canonical domain decides every
+ * canonical URL on the site, and it belongs with the deploy that serves it
+ * rather than with something editable from a browser.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await getSiteConfig();
+
+  return {
+    metadataBase: new URL(deployment.url),
+    title: {
+      default: `${config.name} — Criminal Defence & Motoring Offence Solicitor`,
+      template: `%s | ${config.name}`,
+    },
+    description:
+      "John Violaris is a criminal defence solicitor specialising in motoring offences and police station representation across England and Wales. You deal directly with John.",
+    applicationName: config.name,
+    authors: [{ name: config.name }],
+    icons: {
+      icon: [{ url: "/favicon.svg", type: "image/svg+xml", sizes: "any" }],
+      shortcut: ["/favicon.svg"],
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_GB",
+      siteName: config.name,
+      url: deployment.url,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

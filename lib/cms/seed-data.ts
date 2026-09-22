@@ -222,10 +222,16 @@ export type SeedSiteSetting = {
  *
  * What is absent matters more than what is here. There is no telephone number,
  * WhatsApp number, TidyCal URL or SRA number in this list, because none has
- * been confirmed and PRD §25 forbids inventing one. `lib/site-config.ts` keeps
- * reading those from the environment until the Site Settings section lands, and
- * every route that depends on one stays hidden rather than rendering a control
- * that leads nowhere.
+ * been confirmed and PRD §25 forbids inventing one. `siteSettingsDefaults` in
+ * `lib/site-config.ts` keeps reading those from the environment until John sets
+ * them under Site Settings, and every route that depends on one stays hidden
+ * rather than rendering a control that leads nowhere.
+ *
+ * The canonical domain, the secondary domain and the dialling code are not
+ * here either, and that one is a decision rather than a gap: they are
+ * deployment configuration, they live in `deployment` in `lib/site-config.ts`,
+ * and `20260923103000_drop_deployment_site_settings.sql` removes the rows an
+ * earlier seed created for them.
  *
  * The email address is seeded because it is already published on the contact
  * page, not because it has been verified. Confirm it before launch.
@@ -236,9 +242,6 @@ export const seedSiteSettings: SeedSiteSetting[] = [
   { key: "roleLong", value: "Criminal Defence Solicitor & Motoring Specialist" },
   { key: "initials", value: "JV" },
   { key: "jurisdiction", value: "England & Wales" },
-  { key: "url", value: "https://johnviolaris.com" },
-  { key: "secondaryUrl", value: "https://drivingjustice.co.uk" },
   { key: "email", value: "contact@johnviolaris.com" },
   { key: "responseTime", value: "Response within 24 hours" },
-  { key: "countryCode", value: "44" },
 ];

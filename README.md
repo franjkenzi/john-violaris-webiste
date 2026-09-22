@@ -43,6 +43,9 @@ without stock portraits or invented client reviews.
   rest of the core-page wording, managed at `/admin/website-content`.
 - A CMS-managed fee schedule at `/admin/fees`, with drafts, reordering and
   fees that appear in the table but get no card.
+- Site settings at `/admin/site-settings`: name, contact details, the booking
+  link and the SRA number, with the built-in value shown as each field’s
+  placeholder.
 - A read-only view of the imported ReviewSolicitors reviews, with no edit path,
   so an independently collected review stays one.
 - Page-specific titles, descriptions and canonical URLs; existing homepage structured data.
@@ -50,8 +53,9 @@ without stock portraits or invented client reviews.
 
 ## Content and configuration
 
-`lib/site-config.ts` holds shared contact, booking, domain and navigation settings.
-Optional public environment variables (read at build time):
+`lib/site-config.ts` holds the shape, the defaults and the navigation; the
+values are edited under Site Settings (see below). The environment variables
+below remain the defaults, used until a setting is given a value:
 
 | Variable                      | Purpose                            |
 | ----------------------------- | ---------------------------------- |
@@ -118,6 +122,7 @@ render from `lib/content/`. Sections are migrated one at a time.
 | `form.ts`         | Shared form state and validation for the admin forms           |
 | `sections/`       | The editable page copy — registry, values, save action         |
 | `fees/`           | The fee schedule — field rules and mutations                   |
+| `settings/`       | Site settings — the editable field list and its save action    |
 
 Public reads go through `utils/supabase/public.ts` — the publishable key and no
 cookies, because a page that reads `cookies()` cannot be statically rendered and
@@ -308,6 +313,52 @@ are still to be confirmed, which is the point: taking it down is part of
 launching, so it has to be something John can delete rather than a paragraph
 in a component.
 
+## Site settings
+
+`lib/site-config.ts` is still where every phone number, address, email and
+external URL comes from — but it now holds the *shape and the defaults* rather
+than the values. `/admin/site-settings` edits the values.
+
+The split inside that file is the thing to understand:
+
+- **`SiteSettings`** is what John can edit: his name, role, monogram,
+  jurisdiction, email, both forms of the telephone number, the WhatsApp number,
+  the booking link, the response promise and the SRA number. The defaults are
+  still read from the environment, so an existing deploy keeps working exactly
+  as it did until someone edits a setting; a stored value simply wins over one.
+- **`deployment`** is configuration, not content: the canonical domain, the
+  secondary domain and the dialling code. The canonical domain decides
+  `metadataBase` and every canonical URL on the site, and changing it from a
+  browser would detach them from the domain actually serving the page. An
+  earlier seed put those three in `site_settings`;
+  `20260923103000_drop_deployment_site_settings.sql` takes them back out,
+  because a row that looks authoritative and is ignored is worse than no row.
+
+`resolveSiteConfig` lays stored values over the defaults and derives `telHref`,
+`mailtoHref`, `bookingHref` and the normalised WhatsApp digits. Only non-empty
+values override: clearing a field in the admin deletes its row, which is what
+makes "leave it blank to fall back" true rather than a figure of speech.
+
+### Reaching the components
+
+Server components read it with `getSiteConfig()`. Client components — the
+masthead, the services menu, the docked contact bar, the hero and the enquiry
+form, all of which need scroll listeners, focus traps or `useActionState` —
+take it from `useSiteConfig()`, which the site layout provides after reading it
+once.
+
+`SiteConfig` is plain data for exactly that reason: a function cannot be
+serialised across the server/client boundary, so `whatsappHref(config, subject)`
+is a standalone function taking the config rather than a method on it.
+
+Two places deliberately use `fallbackSiteConfig` instead: `app/error.tsx` and
+`app/not-found.tsx`. An error boundary whose branding needs a database read is
+an error boundary that fails when the read is what broke.
+
+The enquiry emails read the live settings at send time rather than a snapshot
+taken when the module loaded, so an enquiry arriving an hour after John changes
+his telephone number quotes the new one.
+
 ## Reviews
 
 The reviews at `/admin/testimonials` are read only, and that is the point.
@@ -370,16 +421,15 @@ so set `NEXT_PUBLIC_APP_VERSION` explicitly if you deploy uncommitted work.
 This is the public frontend, enquiry capture, a CMS-managed blog and editable
 page copy — not the complete production system in `prd.md`.
 
-Four sections behind `/admin` are still placeholders:
+Three sections behind `/admin` are still placeholders:
 `app/admin/[section]/page.tsx` validates the slug and renders nothing, so
-services, service pages, site settings and per-route SEO metadata are not
-editable, and those parts of the site still render from `lib/content/`. The
-sidebar marks them "Soon" and does not link to them — a link to a route that
-renders nothing reads as a broken page rather than an unbuilt one.
+services, service pages and per-route SEO metadata are not editable, and those
+parts of the site still render from `lib/content/`. The sidebar marks them
+"Soon" and does not link to them — a link to a route that renders nothing reads
+as a broken page rather than an unbuilt one.
 
-The order the rest are planned in: site settings next, which is small and is
-where the SRA number and the confirmed email address belong; then services and
-the offence pages; then per-route SEO metadata.
+The order the rest are planned in: services and the offence pages, then
+per-route SEO metadata.
 
 One part of the fees page is still static: the three-stage scope comparison in
 `FeesMatrix`, which reads `feeStages`, `feeInclusions` and `stageIncludes` from

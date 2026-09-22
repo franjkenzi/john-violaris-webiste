@@ -12,7 +12,6 @@ const sections = new Set([
   "services",
   "service-pages",
   "seo-metadata",
-  "site-settings",
 ]);
 
 export default async function AdminSectionPage({

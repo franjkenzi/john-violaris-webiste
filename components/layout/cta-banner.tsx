@@ -4,7 +4,7 @@ import { Icon } from "@/components/ui/icons";
 import { Lines } from "@/components/ui/lines";
 import { ctaDefaults } from "@/lib/content/pages";
 import type { CtaContent } from "@/lib/content/pages";
-import { siteConfig, mailtoHref } from "@/lib/site-config";
+import type { SiteConfig } from "@/lib/site-config";
 
 /**
  * The band that closes every page but contact.
@@ -21,10 +21,12 @@ import { siteConfig, mailtoHref } from "@/lib/site-config";
  */
 export function CtaBanner({
   content = ctaDefaults,
+  config,
   heading,
   emphasis,
 }: {
   content?: CtaContent;
+  config: SiteConfig;
   /** Overrides the section heading, for a page with its own closing line. */
   heading?: string;
   emphasis?: string;
@@ -52,11 +54,11 @@ export function CtaBanner({
             <p>
               <Lines values={content.body} />
             </p>
-            <Link href={siteConfig.bookingUrl} className="action-button">
+            <Link href={config.bookingHref} className="action-button">
               {content.ctaLabel} <Icon name="arrowRight" size={18} />
             </Link>
-            <a className="closing-email" href={mailtoHref}>
-              {siteConfig.contact.email} <span>↗</span>
+            <a className="closing-email" href={config.mailtoHref}>
+              {config.email} <span>↗</span>
             </a>
           </div>
         </div>

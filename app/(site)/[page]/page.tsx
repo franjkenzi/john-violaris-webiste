@@ -17,7 +17,7 @@ import { Container } from "@/components/ui/container";
 import { ReviewSolicitorsWidget } from "@/components/ui/review-solicitors";
 import { Icon } from "@/components/ui/icons";
 import { Lines, Paragraphs } from "@/components/ui/lines";
-import { getFees, getPagesContent } from "@/lib/cms/queries";
+import { getFees, getPagesContent, getSiteConfig } from "@/lib/cms/queries";
 import { resolveFrom } from "@/lib/cms/sections/resolve";
 import {
   aboutBackgroundDefaults,
@@ -37,12 +37,7 @@ import {
   processDefaults,
   servicesIntroDefaults,
 } from "@/lib/content/pages";
-import {
-  mailtoHref,
-  siteConfig,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-config";
+import { whatsappHref } from "@/lib/site-config";
 
 /**
  * The six pages this route renders.
@@ -86,7 +81,10 @@ export default async function InformationPage({
    * Meet John, which /about renders and the home page renders too. Fetching
    * all three together costs one round trip rather than three.
    */
-  const groups = await getPagesContent(page, "about", "shared");
+  const [groups, config] = await Promise.all([
+    getPagesContent(page, "about", "shared"),
+    getSiteConfig(),
+  ]);
   const own = resolveFrom(groups[page]);
   const about = resolveFrom(groups.about);
   const shared = resolveFrom(groups.shared);
@@ -95,7 +93,7 @@ export default async function InformationPage({
 
   // Null until a usable number is configured; the row is omitted rather than
   // linking the visitor back to the page they are already reading.
-  const whatsapp = whatsappHref();
+  const whatsapp = whatsappHref(config);
   const contact = own("details", contactDetailsDefaults);
   const prepare = own("prepare", contactPrepareDefaults);
 
@@ -141,6 +139,7 @@ export default async function InformationPage({
           <PoliceStation content={own("feature", policeStationDefaults)} />
           <PoliceStationDetail
             content={own("detail", policeStationDetailDefaults)}
+            config={config}
           />
           <section className="section-space">
             <Container>
@@ -195,14 +194,14 @@ export default async function InformationPage({
                     </em>
                   </h2>
                   <div className="contact-methods">
-                    <a href={mailtoHref}>
+                    <a href={config.mailtoHref}>
                       <span>{contact.emailLabel}</span>
-                      <strong>{siteConfig.contact.email}</strong>
+                      <strong>{config.email}</strong>
                       <Icon name="arrowRight" size={20} />
                     </a>
-                    <a href={telHref}>
+                    <a href={config.telHref}>
                       <span>{contact.callLabel}</span>
-                      <strong>{siteConfig.contact.phoneDisplay}</strong>
+                      <strong>{config.phoneDisplay}</strong>
                       <Icon name="call" size={20} />
                     </a>
                     {whatsapp ? (
@@ -238,7 +237,7 @@ export default async function InformationPage({
                     ))}
                   </ul>
                   <Paragraphs values={prepare.listNote} />
-                  <a href={mailtoHref} className="action-button">
+                  <a href={config.mailtoHref} className="action-button">
                     {prepare.ctaLabel} <Icon name="arrowRight" size={17} />
                   </a>
                   <div className="contact-urgent" id="urgent">
@@ -258,7 +257,7 @@ export default async function InformationPage({
         </>
       )}
       {page !== "contact" && (
-        <CtaBanner content={shared("cta", ctaDefaults)} />
+        <CtaBanner content={shared("cta", ctaDefaults)} config={config} />
       )}
     </>
   );

@@ -1,14 +1,15 @@
 import "server-only";
 
+import { getSiteConfig } from "@/lib/cms/queries";
 import {
-  emailConfig,
+  emailConfigFor,
   escapeHtml,
   escapeHtmlWithBreaks,
   getResend,
 } from "@/lib/email/client";
 import { enquiryFullName, type Enquiry } from "@/lib/enquiries/schema";
 import { formatUkDateTime } from "@/lib/format";
-import { siteConfig } from "@/lib/site-config";
+import type { SiteConfig } from "@/lib/site-config";
 
 /**
  * The two enquiry emails (PRD §7): a notification to John carrying the enquiry,
@@ -36,15 +37,15 @@ export type EnquiryEmailOutcome = {
 };
 
 /** Shared shell: centred column, serif masthead, small print footer. */
-function wrap(heading: string, content: string) {
+function wrap(config: SiteConfig, heading: string, content: string) {
   return `<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><title>${escapeHtml(heading)}</title></head>
 <body style="margin:0;padding:24px 12px;background:${cream};color:${body};font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.7;">
   <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid ${line};">
     <div style="padding:20px 28px;background:${navy};color:${cream};">
-      <div style="font-size:19px;letter-spacing:-0.3px;">${escapeHtml(siteConfig.name)}<span style="color:${gold};">.</span></div>
-      <div style="margin-top:4px;font-family:Arial,Helvetica,sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(250,250,248,0.62);">${escapeHtml(siteConfig.role)}</div>
+      <div style="font-size:19px;letter-spacing:-0.3px;">${escapeHtml(config.name)}<span style="color:${gold};">.</span></div>
+      <div style="margin-top:4px;font-family:Arial,Helvetica,sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(250,250,248,0.62);">${escapeHtml(config.role)}</div>
     </div>
     <div style="padding:28px;">
       <h1 style="margin:0 0 18px;font-size:22px;font-weight:400;line-height:1.3;color:${navy};">${escapeHtml(heading)}</h1>
@@ -52,7 +53,7 @@ function wrap(heading: string, content: string) {
     </div>
   </div>
   <div style="max-width:560px;margin:14px auto 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:${muted};text-align:center;">
-    ${escapeHtml(siteConfig.name)} — ${escapeHtml(siteConfig.roleLong)}, ${escapeHtml(siteConfig.jurisdiction)}
+    ${escapeHtml(config.name)} — ${escapeHtml(config.roleLong)}, ${escapeHtml(config.jurisdiction)}
   </div>
 </body>
 </html>`;
@@ -104,7 +105,7 @@ function enquiryDetails(enquiry: Enquiry) {
 // Notification to John
 // ---------------------------------------------------------------------------
 
-function adminEmail(enquiry: Enquiry, adminUrl: string) {
+function adminEmail(config: SiteConfig, enquiry: Enquiry, adminUrl: string) {
   const rows = enquiryDetails(enquiry);
   const name = enquiryFullName(enquiry);
   const received = formatUkDateTime(enquiry.created_at);
@@ -112,6 +113,7 @@ function adminEmail(enquiry: Enquiry, adminUrl: string) {
   const subject = `New enquiry — ${enquiry.matter_type} — ${name}`;
 
   const html = wrap(
+    config,
     "A new enquiry has come in.",
     `
     <p style="margin:0 0 22px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${muted};">Received ${escapeHtml(received)}. Reply to this email to answer ${escapeHtml(name)} directly.</p>
@@ -141,24 +143,25 @@ function adminEmail(enquiry: Enquiry, adminUrl: string) {
  * Deliberately careful wording. It confirms receipt, sets expectations, points
  * urgent matters at the telephone, and makes clear that nothing has been agreed.
  */
-function visitorEmail(enquiry: Enquiry) {
+function visitorEmail(config: SiteConfig, enquiry: Enquiry) {
   const rows = enquiryDetails(enquiry);
-  const hasPhone = Boolean(siteConfig.contact.phoneE164);
+  const hasPhone = Boolean(config.phoneE164);
 
   const urgentText = hasPhone
-    ? `If your matter is urgent — a court hearing tomorrow, or a police interview today — please call ${siteConfig.contact.phoneDisplay} rather than wait for a reply to this email.`
-    : `If your matter is urgent — a court hearing tomorrow, or a police interview today — please use the direct contact details on ${siteConfig.url} rather than wait for a reply to this email.`;
+    ? `If your matter is urgent — a court hearing tomorrow, or a police interview today — please call ${config.phoneDisplay} rather than wait for a reply to this email.`
+    : `If your matter is urgent — a court hearing tomorrow, or a police interview today — please use the direct contact details on ${config.url} rather than wait for a reply to this email.`;
 
   const disclaimer = `Sending an enquiry does not create a solicitor–client relationship. No such relationship exists until John has confirmed that he is able to act and the terms of business are agreed. Please do not send confidential details of your case until then.`;
 
-  const subject = `We have received your enquiry — ${siteConfig.name}`;
+  const subject = `We have received your enquiry — ${config.name}`;
 
   const html = wrap(
+    config,
     "Thank you — your enquiry has arrived.",
     `
     <p style="margin:0 0 16px;">Dear ${escapeHtml(enquiry.first_name)},</p>
     <p style="margin:0 0 16px;">Thank you for getting in touch. Your enquiry has reached John Violaris and he will read it himself — enquiries are not handled by a call centre or passed to junior staff.</p>
-    <p style="margin:0 0 16px;">John will come back to you directly to discuss your situation and what the available options are. ${escapeHtml(siteConfig.contact.responseTime)}.</p>
+    <p style="margin:0 0 16px;">John will come back to you directly to discuss your situation and what the available options are. ${escapeHtml(config.responseTime)}.</p>
     <div style="margin:0 0 22px;padding:14px 16px;background:#f5edd6;border-left:3px solid ${gold};">
       <p style="margin:0;font-size:14px;line-height:1.7;">${escapeHtml(urgentText)}</p>
     </div>
@@ -172,7 +175,7 @@ function visitorEmail(enquiry: Enquiry) {
     ``,
     `Thank you for getting in touch. Your enquiry has reached John Violaris and he will read it himself — enquiries are not handled by a call centre or passed to junior staff.`,
     ``,
-    `John will come back to you directly to discuss your situation and what the available options are. ${siteConfig.contact.responseTime}.`,
+    `John will come back to you directly to discuss your situation and what the available options are. ${config.responseTime}.`,
     ``,
     urgentText,
     ``,
@@ -218,8 +221,17 @@ export async function sendEnquiryEmails(
     };
   }
 
-  const admin = adminEmail(enquiry, adminUrl);
-  const visitor = visitorEmail(enquiry);
+  /*
+   * The live settings, not a snapshot taken when the module loaded. An enquiry
+   * arriving an hour after John changes his telephone number should quote the
+   * new one, and the address the notification goes to falls back to the
+   * contact email, which is now a setting too.
+   */
+  const config = await getSiteConfig();
+  const emailConfig = emailConfigFor(config);
+
+  const admin = adminEmail(config, enquiry, adminUrl);
+  const visitor = visitorEmail(config, enquiry);
 
   const [adminResult, visitorResult] = await Promise.allSettled([
     resend.emails.send({

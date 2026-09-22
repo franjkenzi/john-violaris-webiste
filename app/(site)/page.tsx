@@ -9,7 +9,7 @@ import { ProcessSteps } from "@/components/sections/process-steps";
 import { ServicesGrid } from "@/components/sections/services-grid";
 import { Testimonials } from "@/components/sections/testimonials";
 import { WhyInstruct } from "@/components/sections/why-instruct";
-import { getPagesContent } from "@/lib/cms/queries";
+import { getPagesContent, getSiteConfig } from "@/lib/cms/queries";
 import { resolveFrom } from "@/lib/cms/sections/resolve";
 import {
   ctaDefaults,
@@ -23,7 +23,7 @@ import {
   testimonialsIntroDefaults,
   whyInstructDefaults,
 } from "@/lib/content/pages";
-import { siteConfig } from "@/lib/site-config";
+import { deployment, type SiteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Criminal Defence & Motoring Offence Solicitor — England & Wales",
@@ -32,40 +32,48 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-/** Schema.org markup for the practice and for John himself. */
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "LegalService",
-      "@id": `${siteConfig.url}#practice`,
-      name: siteConfig.name,
-      url: siteConfig.url,
-      description:
-        "Criminal defence solicitor specialising in motoring offences and police station representation across England and Wales.",
-      areaServed: {
-        "@type": "AdministrativeArea",
-        name: siteConfig.jurisdiction,
+/**
+ * Schema.org markup for the practice and for John himself.
+ *
+ * A function of the configuration rather than a constant: the name and the
+ * role it publishes are settings now, and structured data that disagreed with
+ * the page it sits on would be worse than none.
+ */
+function buildJsonLd(config: SiteConfig) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LegalService",
+        "@id": `${deployment.url}#practice`,
+        name: config.name,
+        url: deployment.url,
+        description:
+          "Criminal defence solicitor specialising in motoring offences and police station representation across England and Wales.",
+        areaServed: {
+          "@type": "AdministrativeArea",
+          name: config.jurisdiction,
+        },
+        provider: { "@id": `${deployment.url}#john` },
       },
-      provider: { "@id": `${siteConfig.url}#john` },
-    },
-    {
-      "@type": "Person",
-      "@id": `${siteConfig.url}#john`,
-      name: siteConfig.name,
-      jobTitle: siteConfig.role,
-      url: siteConfig.url,
-      knowsAbout: [
-        "Drink driving",
-        "Drug driving",
-        "Totting up and exceptional hardship",
-        "Special reasons",
-        "Speeding offences",
-        "Police station representation",
-      ],
-    },
-  ],
-};
+      {
+        "@type": "Person",
+        "@id": `${deployment.url}#john`,
+        name: config.name,
+        jobTitle: config.role,
+        url: deployment.url,
+        knowsAbout: [
+          "Drink driving",
+          "Drug driving",
+          "Totting up and exceptional hardship",
+          "Special reasons",
+          "Speeding offences",
+          "Police station representation",
+        ],
+      },
+    ],
+  };
+}
 
 /**
  * The home page draws on five section groups, not one.
@@ -77,6 +85,8 @@ const jsonLd = {
  * whatever has been edited over the copy the page was written with.
  */
 export default async function HomePage() {
+  const config = await getSiteConfig();
+  const jsonLd = buildJsonLd(config);
   const content = await getPagesContent(
     "home",
     "about",
@@ -112,7 +122,7 @@ export default async function HomePage() {
       <ProcessSteps content={shared("process", processDefaults)} />
       <Testimonials content={home("testimonials", testimonialsIntroDefaults)} />
       <FeesPreview content={fees("preview", feesPreviewDefaults)} />
-      <CtaBanner content={shared("cta", ctaDefaults)} />
+      <CtaBanner content={shared("cta", ctaDefaults)} config={config} />
     </>
   );
 }

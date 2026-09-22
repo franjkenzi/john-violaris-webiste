@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { Icon } from "@/components/ui/icons";
 import { serviceGroups } from "@/lib/content/services";
-import { siteConfig, telHref } from "@/lib/site-config";
+import { useSiteConfig } from "@/components/layout/site-config-provider";
 
 /** Delay before a hover-out actually closes, so the pointer can cross the gap. */
 const CLOSE_DELAY_MS = 140;
@@ -18,6 +18,7 @@ const CLOSE_DELAY_MS = 140;
  * positioned against the header, so this must be rendered inside it.
  */
 export function ServicesMenu() {
+  const config = useSiteConfig();
   const pathname = usePathname();
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -223,12 +224,12 @@ export function ServicesMenu() {
                 </p>
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                   <a
-                    href={telHref}
+                    href={config.telHref}
                     className="flex items-center gap-2 font-display text-[17px] font-bold text-gold transition-colors hover:text-gold-light"
                   >
                     <Icon name="call" size={16} />
-                    {siteConfig.contact.phoneE164
-                      ? siteConfig.contact.phoneDisplay
+                    {config.phoneE164
+                      ? config.phoneDisplay
                       : "Speak to John"}
                   </a>
                   <Link

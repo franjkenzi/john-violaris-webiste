@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/layout/logo";
-import { footerNav, mailtoHref, siteConfig, telHref } from "@/lib/site-config";
+import { footerNav, type SiteConfig } from "@/lib/site-config";
 
-export function SiteFooter() {
+export function SiteFooter({ config }: { config: SiteConfig }) {
   return (
     <footer className="editorial-footer">
       <Container>
         <div className="footer-grid">
           <div className="footer-identity">
-            <Logo />
+            <Logo name={config.name} role={config.role} />
             <p>
               Personal representation.
               <br />
@@ -44,7 +44,7 @@ export function SiteFooter() {
               <br />
               Free, confidential and without obligation.
             </p>
-            <Link href={siteConfig.bookingUrl}>
+            <Link href={config.bookingHref}>
               Arrange a consultation <span>↗</span>
             </Link>
 
@@ -57,24 +57,24 @@ export function SiteFooter() {
               <div>
                 <dt>Email</dt>
                 <dd>
-                  <a href={mailtoHref}>{siteConfig.contact.email}</a>
+                  <a href={config.mailtoHref}>{config.email}</a>
                 </dd>
               </div>
-              {siteConfig.contact.phoneE164 ? (
+              {config.phoneE164 ? (
                 <div>
                   <dt>Telephone</dt>
                   <dd>
-                    <a href={telHref}>{siteConfig.contact.phoneDisplay}</a>
+                    <a href={config.telHref}>{config.phoneDisplay}</a>
                   </dd>
                 </div>
               ) : null}
               <div>
                 <dt>Response</dt>
-                <dd>{siteConfig.contact.responseTime}</dd>
+                <dd>{config.responseTime}</dd>
               </div>
               <div>
                 <dt>Coverage</dt>
-                <dd>{siteConfig.jurisdiction}</dd>
+                <dd>{config.jurisdiction}</dd>
               </div>
             </dl>
           </div>
@@ -85,7 +85,7 @@ export function SiteFooter() {
           </p>
           <span>
             Qualified since 2005{" "}
-            {siteConfig.sraNumber ? `· SRA no. ${siteConfig.sraNumber}` : ""}
+            {config.sraNumber ? `· SRA no. ${config.sraNumber}` : ""}
           </span>
           <a href="#main">Back to top ↑</a>
         </div>
