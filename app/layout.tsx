@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import {
-  DM_Sans,
-  Mrs_Saint_Delafield,
-  Playfair_Display,
-} from "next/font/google";
+import { DM_Sans, Playfair_Display } from "next/font/google";
 
 import { VersionGuard } from "@/components/layout/version-guard";
 import { getSiteConfig } from "@/lib/cms/queries";
@@ -15,13 +11,6 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   style: ["normal", "italic"],
   variable: "--font-playfair",
-  display: "swap",
-});
-
-const signature = Mrs_Saint_Delafield({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-signature",
   display: "swap",
 });
 
@@ -73,7 +62,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en-GB"
-      className={`${playfair.variable} ${dmSans.variable} ${signature.variable} h-full`}
+      className={`${playfair.variable} ${dmSans.variable} h-full`}
     >
       <body className="min-h-full bg-cream">
         {children}
