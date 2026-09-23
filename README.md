@@ -106,9 +106,9 @@ Set the verified SRA number in central configuration when supplied.
 ## The CMS content layer
 
 `lib/cms/` is the path between the Supabase content tables and the site. The
-blog, the page copy, the fee schedule, the site settings, the service catalogue
-and the offence pages are all served through it; per-route SEO metadata is the
-one admin section not built yet. Sections were migrated one at a time.
+blog, the page copy, the fee schedule, the site settings, the service catalogue,
+the offence pages and every public route's SEO metadata are served through it.
+Sections were migrated one at a time.
 
 | Module            | Role                                                          |
 | ----------------- | ------------------------------------------------------------- |
@@ -124,6 +124,7 @@ one admin section not built yet. Sections were migrated one at a time.
 | `fees/`           | The fee schedule — field rules and mutations                   |
 | `services/`       | The service catalogue — field rules and mutations              |
 | `service-pages/`  | The offence pages — field rules and mutations                  |
+| `seo/`            | Route registry, metadata resolution, SEO overrides             |
 | `settings/`       | Site settings — the editable field list and its save action    |
 
 Public reads go through `utils/supabase/public.ts` — the publishable key and no
@@ -408,6 +409,52 @@ page in the database up to the site's wording before the switch. It had been
 rewritten in `lib/content/service-detail.ts` after it was seeded, and nothing
 noticed while the pages still rendered from the file.
 
+## SEO metadata
+
+`/admin/seo-metadata` lists every public route — the fixed pages, each
+published offence page and each published article — with what it shows in
+Google, and edits an override for any of them: search title and description,
+share title, description and image, a canonical, and "hide from search".
+
+Three modules in `lib/cms/seo/`, and the split is the design:
+
+- **`routes.ts`** is the route registry: every public route and what it says by
+  default — its heading and standfirst, "*Offence* Solicitor", an article's
+  headline, excerpt and featured image. The SEO admin, each route's
+  `generateMetadata` and `app/sitemap.ts` all read it, so a route cannot be in
+  the sitemap without being editable, or the other way round. The save action
+  also refuses any path not on it.
+- **`resolve.ts`** decides the order (SEO requirement REQ-009): the root layout,
+  then the route's defaults, then the override. It is pure, and `npm run
+  seo:verify` tests the cases the requirement names.
+- **`metadata.ts`** is what the routes call: `seoMetadataFor(path)`.
+
+Things that are easy to get wrong here:
+
+- **Next merges metadata shallowly.** A route that sets any `openGraph` field
+  replaces the root layout's whole `openGraph`, site name and locale included,
+  so the resolver always builds it whole. Before this, articles shipped without
+  `og:site_name`, and every page's `og:url` was the home page.
+- **Titles.** An override is the part before " | John Violaris"; the template
+  adds the rest. A page shares its full title, an article its headline alone —
+  as Next produced before routes set `openGraph` themselves.
+- **Streaming metadata.** In development, and for any route rendered on
+  request, Next 16 may stream the tags into `<body>` for ordinary browsers. It
+  keeps them in `<head>` for crawlers that cannot run JavaScript, WhatsApp and
+  Facebook included (`htmlLimitedBots`). The public pages are prerendered, so
+  their tags are in `<head>` for everyone.
+- **Overrides are keyed by path.** Renaming an article moves its override;
+  deleting an article or a service removes it (`lib/cms/seo/overrides.ts`).
+- An override with nothing left in it is deleted, not stored empty, so
+  "customised" means "has a row". "Reset to defaults" is a second submit button
+  of the editor form, so its result returns through the editor's own state and
+  the fields empty themselves.
+
+`app/sitemap.ts` builds `/sitemap.xml` from the registry, leaving out any route
+hidden from search or canonical to another address. Only routes backed by a row
+carry `lastmod`. `app/robots.ts` allows everything public and disallows
+`/admin`, `/auth` and `/api`.
+
 ## Reviews
 
 The reviews at `/admin/testimonials` are read only, and that is the point.
@@ -470,11 +517,12 @@ so set `NEXT_PUBLIC_APP_VERSION` explicitly if you deploy uncommitted work.
 This is the public frontend, enquiry capture, a CMS-managed blog and editable
 page copy — not the complete production system in `prd.md`.
 
-One section behind `/admin` is still a placeholder:
-`app/admin/[section]/page.tsx` validates the slug and renders nothing, so
-per-route SEO metadata is not editable. The sidebar marks it "Soon" and does
-not link to it — a link to a route that renders nothing reads as a broken page
-rather than an unbuilt one. It is the last section in the planned order.
+Every admin section is built. From `seo_requirements.md`, still open:
+structured data beyond the home page's (REQ-010–019), a default share image
+(REQ-024), the redirect table and host/case redirects (REQ-025–030), an
+`X-Robots-Tag` header on admin routes and `noindex` on preview deployments
+(REQ-035), and the SEO health checks and draft preview in the editor
+(REQ-048, REQ-052).
 
 One part of the fees page is still static: the three-stage scope comparison in
 `FeesMatrix`, which reads `feeStages`, `feeInclusions` and `stageIncludes` from
@@ -483,9 +531,9 @@ means the stage key stops being a union type and `stageIncludes` stops being a
 lookup against a fixed order, so it is a change to the component rather than
 another registry entry.
 
-Analytics, Search Console, sitemap/robots, the remaining Schema.org types,
-Open Graph images, domain configuration and production launch remain separate
-work after that.
+Analytics, Search Console, the remaining Schema.org types, a default Open
+Graph image, domain configuration and production launch remain separate work
+after that.
 
 The existing Next.js/Vercel architecture is retained. No deployment or changes to
 external services are part of this local redesign.

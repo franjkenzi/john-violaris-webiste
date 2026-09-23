@@ -370,6 +370,27 @@ export const listSeoMetadata = cache(async function listSeoMetadata(): Promise<
   return data ?? [];
 });
 
+/** One route's override, or null when the page uses its defaults. */
+export const getSeoRow = cache(async function getSeoRow(
+  path: string,
+): Promise<SeoRow | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("seo_metadata")
+    .select("*")
+    .eq("path", path)
+    .maybeSingle<SeoRow>();
+
+  if (error) {
+    logFailure(`SEO metadata for ${path}`, error);
+
+    return null;
+  }
+
+  return data;
+});
+
 export const listSiteSettings = cache(async function listSiteSettings(): Promise<
   SiteSettingRow[]
 > {

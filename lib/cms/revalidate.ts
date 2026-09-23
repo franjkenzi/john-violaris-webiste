@@ -49,6 +49,13 @@ type Target = { path: string; type?: "page" | "layout" };
 export type RevalidateTarget = string | Target;
 
 /**
+ * `app/sitemap.ts` is cached like any static route. It is a route handler
+ * rather than a page under a layout, so every entity that adds, removes or
+ * re-dates a URL names it outright instead of relying on a layout sweep.
+ */
+const sitemap: Target = { path: "/sitemap.xml" };
+
+/**
  * Routes each entity appears on, before the row's own path is added.
  *
  * `[]` means the entity has no fixed routes — every affected route depends on
@@ -58,17 +65,19 @@ const targets: Record<ContentEntity, Target[]> = {
   // Keyed by section, and a section knows the routes it renders on — several
   // appear on more than one. The caller passes them, from `appearsOn`.
   "page-sections": [],
-  // In the header mega-menu, so on every page.
-  services: [{ path: "/", type: "layout" }],
-  // The catalogue index plus the page itself, which the caller adds.
-  "service-pages": [{ path: "/services" }],
+  // In the header mega-menu, so on every page — and each is a sitemap entry.
+  services: [{ path: "/", type: "layout" }, sitemap],
+  // The catalogue index plus the page itself, which the caller adds. The
+  // sitemap dates an offence page by its last edit.
+  "service-pages": [{ path: "/services" }, sitemap],
   fees: [{ path: "/fees" }, { path: "/" }],
   // Homepage only today; the about page shows none.
   testimonials: [{ path: "/" }],
-  "blog-posts": [{ path: "/blog" }],
+  "blog-posts": [{ path: "/blog" }, sitemap],
   "blog-categories": [{ path: "/blog" }],
-  // Keyed by route, so the caller passes the one that changed.
-  "seo-metadata": [],
+  // Keyed by route, so the caller passes the one that changed. Hiding a page
+  // from search also takes it out of the sitemap.
+  "seo-metadata": [sitemap],
   // Contact details in the header and footer, so on every page.
   "site-settings": [{ path: "/", type: "layout" }],
 };

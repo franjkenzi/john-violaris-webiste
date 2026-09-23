@@ -18,6 +18,7 @@ import { ReviewSolicitorsWidget } from "@/components/ui/review-solicitors";
 import { Icon } from "@/components/ui/icons";
 import { Lines, Paragraphs } from "@/components/ui/lines";
 import { getFees, getPagesContent, getSiteConfig } from "@/lib/cms/queries";
+import { seoMetadataFor } from "@/lib/cms/seo/metadata";
 import { resolveFrom } from "@/lib/cms/sections/resolve";
 import {
   aboutBackgroundDefaults,
@@ -59,13 +60,8 @@ export async function generateMetadata({
   params: Promise<{ page: string }>;
 }): Promise<Metadata> {
   const { page } = await params;
-  const content = pages[page];
-  if (!content) return {};
-  return {
-    title: content.eyebrow,
-    description: content.description,
-    alternates: { canonical: `/${page}` },
-  };
+  // Nothing for a page this route does not render; `notFound()` answers.
+  return seoMetadataFor(`/${page}`);
 }
 export default async function InformationPage({
   params,

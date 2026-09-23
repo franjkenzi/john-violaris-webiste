@@ -46,15 +46,6 @@ type NavItem = {
    * on a count query.
    */
   badge?: ReactNode;
-  /**
-   * Set while the section has no page yet. The item renders as disabled text
-   * rather than a link.
-   *
-   * A link to a route that renders nothing is worse than no link: it reads as
-   * a broken page rather than an unbuilt one. Marking it says which is which,
-   * and the marker comes off with the same commit that adds the page.
-   */
-  comingSoon?: boolean;
 };
 
 const overviewItems: NavItem[] = [
@@ -80,12 +71,7 @@ const contentItems: NavItem[] = [
 ];
 
 const configurationItems: NavItem[] = [
-  {
-    title: "SEO Metadata",
-    href: "/admin/seo-metadata",
-    icon: Search,
-    comingSoon: true,
-  },
+  { title: "SEO Metadata", href: "/admin/seo-metadata", icon: Search },
   { title: "Site Settings", href: "/admin/site-settings", icon: Settings2 },
 ];
 
@@ -193,29 +179,16 @@ function NavGroup({
 
             return (
               <SidebarMenuItem key={item.href}>
-                {item.comingSoon ? (
-                  /* `disabled` already dims it and removes pointer events,
-                     which is also why it carries no tooltip: nothing would
-                     ever trigger one. The "Soon" label says it instead. */
-                  <SidebarMenuButton disabled className="cursor-default">
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={item.title}
+                >
+                  <Link href={item.href}>
                     <item.icon aria-hidden="true" />
                     <span>{item.title}</span>
-                    <span className="ml-auto text-[10px] tracking-wider uppercase">
-                      Soon
-                    </span>
-                  </SidebarMenuButton>
-                ) : (
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive}
-                    tooltip={item.title}
-                  >
-                    <Link href={item.href}>
-                      <item.icon aria-hidden="true" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                )}
+                  </Link>
+                </SidebarMenuButton>
                 {item.badge}
               </SidebarMenuItem>
             );

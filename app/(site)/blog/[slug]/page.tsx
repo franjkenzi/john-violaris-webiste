@@ -13,6 +13,7 @@ import {
   getSiteConfig,
 } from "@/lib/cms/queries";
 
+import { seoMetadataFor } from "@/lib/cms/seo/metadata";
 import { slugify } from "@/lib/slug";
 
 /**
@@ -34,22 +35,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticle(slug);
-  if (!article) return {};
-  return {
-    title: article.title,
-    description: article.excerpt,
-    alternates: { canonical: `/blog/${article.slug}` },
-    openGraph: {
-      title: article.title,
-      description: article.excerpt,
-      type: "article",
-      ...(article.publishedAt ? { publishedTime: article.publishedAt } : {}),
-      ...(article.featuredImage
-        ? { images: [{ url: article.featuredImage, alt: article.featuredImageAlt }] }
-        : {}),
-    },
-  };
+  // The headline, the excerpt and the featured image, from the route registry
+  // and any SEO override. An unpublished or missing article gets nothing.
+  return seoMetadataFor(`/blog/${slug}`);
 }
 
 export default async function ArticlePage({

@@ -10,6 +10,7 @@ import { ServicesGrid } from "@/components/sections/services-grid";
 import { Testimonials } from "@/components/sections/testimonials";
 import { WhyInstruct } from "@/components/sections/why-instruct";
 import { getPagesContent, getSiteConfig } from "@/lib/cms/queries";
+import { seoMetadataFor } from "@/lib/cms/seo/metadata";
 import { resolveFrom } from "@/lib/cms/sections/resolve";
 import {
   ctaDefaults,
@@ -25,12 +26,10 @@ import {
 } from "@/lib/content/pages";
 import { deployment, type SiteConfig } from "@/lib/site-config";
 
-export const metadata: Metadata = {
-  title: "Criminal Defence & Motoring Offence Solicitor — England & Wales",
-  description:
-    "Facing a driving ban, court hearing or police interview? John Violaris is a criminal defence solicitor with 20+ years' experience and 10,000+ clients represented. Free initial consultation.",
-  alternates: { canonical: "/" },
-};
+/** Title, description and sharing tags, from the route registry and any SEO override. */
+export function generateMetadata(): Promise<Metadata> {
+  return seoMetadataFor("/");
+}
 
 /**
  * Schema.org markup for the practice and for John himself.

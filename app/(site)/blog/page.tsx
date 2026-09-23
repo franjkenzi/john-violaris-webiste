@@ -5,25 +5,19 @@ import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
 import { getArticles, getSiteConfig } from "@/lib/cms/queries";
+import { seoMetadataFor } from "@/lib/cms/seo/metadata";
+import { blogIntroDefaults } from "@/lib/content/pages";
 
 /**
  * The blog index lives here rather than in the `[page]` catch-all, so that the
  * static `/blog` segment and `/blog/[slug]` sit in one tree and there is no
  * ambiguity about which route serves `/blog`.
  */
-const intro = {
-  eyebrow: "Useful information",
-  title: "A little clarity.",
-  emphasis: "Before we talk.",
-  description:
-    "Plain-English explanations of motoring law from a practising solicitor with over 20 years of criminal defence experience.",
-};
+const intro = blogIntroDefaults;
 
-export const metadata: Metadata = {
-  title: intro.eyebrow,
-  description: intro.description,
-  alternates: { canonical: "/blog" },
-};
+export function generateMetadata(): Promise<Metadata> {
+  return seoMetadataFor("/blog");
+}
 
 export default async function BlogIndexPage() {
   const [articles, config] = await Promise.all([

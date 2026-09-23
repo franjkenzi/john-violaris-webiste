@@ -185,16 +185,26 @@ export type BlogPostRow = Timestamps & {
 
 /**
  * `seo_metadata.content`, keyed by site path. Every field is optional: a row
- * overrides only what it sets, and the page's own defaults cover the rest.
+ * overrides only what it sets, and the page's own defaults cover the rest —
+ * see `resolveMetadata` in `lib/cms/seo/resolve.ts`, the one place that
+ * decides the order.
+ *
+ * Absent rather than empty: the editor stores only what was filled in, and a
+ * row with nothing left in it is deleted rather than kept.
  */
 export type SeoContent = {
+  /** The part before " | John Violaris"; the site's title template adds that. */
   title?: string;
   description?: string;
+  /** A path on this site or an absolute URL. Defaults to the page's own. */
   canonical?: string;
   ogTitle?: string;
   ogDescription?: string;
   ogImage?: string;
   ogImageAlt?: string;
+  /** Asks search engines to leave the page out, and drops it from the sitemap. */
+  noIndex?: true;
+  noFollow?: true;
 };
 
 export type SeoRow = Timestamps & {

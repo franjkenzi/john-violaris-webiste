@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { uploadBlogImage } from "@/lib/cms/blog/actions";
 
 /**
- * Choose, upload and preview an article's featured image.
+ * Choose, upload and preview an image — an article's featured image, or a
+ * page's share image under SEO Metadata.
  *
  * The upload happens as soon as a file is chosen rather than on save, so the
  * preview is of the real stored object and the URL is already in the form by
@@ -23,11 +24,14 @@ export function ImageField({
   value,
   onChange,
   describedBy,
+  folder = "posts",
 }: {
   name: string;
   value: string;
   onChange: (url: string) => void;
   describedBy?: string;
+  /** Where the upload is stored: article images, or pages' share images. */
+  folder?: "posts" | "share";
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +45,7 @@ export function ImageField({
     startTransition(async () => {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("folder", folder);
 
       const result = await uploadBlogImage(formData);
 

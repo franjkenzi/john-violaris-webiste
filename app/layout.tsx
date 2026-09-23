@@ -4,6 +4,7 @@ import { DM_Sans, Playfair_Display } from "next/font/google";
 
 import { VersionGuard } from "@/components/layout/version-guard";
 import { getSiteConfig } from "@/lib/cms/queries";
+import { titleSuffix } from "@/lib/cms/seo/resolve";
 import { deployment } from "@/lib/site-config";
 import "./globals.css";
 
@@ -35,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(deployment.url),
     title: {
       default: `${config.name} — Criminal Defence & Motoring Offence Solicitor`,
-      template: `%s | ${config.name}`,
+      template: `%s${titleSuffix(config.name)}`,
     },
     description:
       "John Violaris is a criminal defence solicitor specialising in motoring offences and police station representation across England and Wales. You deal directly with John.",

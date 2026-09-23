@@ -14,6 +14,7 @@ import {
   getServices,
   getSiteConfig,
 } from "@/lib/cms/queries";
+import { seoMetadataFor } from "@/lib/cms/seo/metadata";
 import { whatsappHref } from "@/lib/site-config";
 
 /**
@@ -50,17 +51,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const [service, page, descriptions] = await Promise.all([
-    findService(slug),
-    getServicePage(slug),
-    getServiceDescriptions(),
-  ]);
-  if (!service) return {};
-  return {
-    title: `${service.name} Solicitor`,
-    description: page?.detail.intro ?? descriptions[service.href]?.intro,
-    alternates: { canonical: service.href },
-  };
+  // "<Offence> Solicitor" and the page's standfirst, from the route registry
+  // and any SEO override. An unpublished service gets nothing.
+  return seoMetadataFor(`/services/${slug}`);
 }
 export default async function ServicePage({
   params,

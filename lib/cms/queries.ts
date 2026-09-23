@@ -371,6 +371,119 @@ export const getBlogCategories = cache(
 );
 
 // ---------------------------------------------------------------------------
+// Route index
+// ---------------------------------------------------------------------------
+
+/** A published service, as the route registry needs it. */
+export type IndexedService = {
+  slug: string;
+  name: string;
+  content: ServiceContent;
+  updated_at: string | null;
+  /** The published offence page's standfirst and edit time, if it has one. */
+  page: { intro: string | null; updated_at: string | null } | null;
+};
+
+/** A published article, as the route registry needs it — no body. */
+export type IndexedArticle = {
+  slug: string;
+  title: string;
+  updated_at: string | null;
+  published_at: string | null;
+  excerpt: string | null;
+  featuredImage: string | null;
+  featuredImageAlt: string | null;
+};
+
+type PageEmbed = { intro: string | null; updated_at: string };
+
+/**
+ * Every published service and article, with the little the route registry
+ * needs: what to call the route, what it says by default, and when it last
+ * changed. Two queries for the whole site, not one per route.
+ *
+ * The article body is left behind — it is the largest thing in the CMS, and
+ * nothing here reads it. The page embed rides RLS like everything else, so an
+ * unpublished page arrives as null and its service falls back to the card
+ * summary, as the page itself does.
+ *
+ * The fallback has no dates, and the sitemap then leaves `lastmod` out rather
+ * than stating the build time as though it were an edit.
+ */
+export const getRouteIndex = cache(async function getRouteIndex(): Promise<{
+  services: IndexedService[];
+  articles: IndexedArticle[];
+}> {
+  return safely(
+    "Route index",
+    async () => {
+      const [services, articles] = await Promise.all([
+        publicClient()
+          .from("services")
+          .select(
+            "slug, name, content, updated_at, service_pages(intro:content->>intro, updated_at)",
+          )
+          .order("sort_order", { ascending: true })
+          .returns<
+            (Omit<IndexedService, "page"> & {
+              service_pages: PageEmbed | PageEmbed[] | null;
+            })[]
+          >(),
+        publicClient()
+          .from("blog_posts")
+          .select(
+            "slug, title, updated_at, published_at, excerpt:content->>excerpt, featuredImage:content->>featuredImage, featuredImageAlt:content->>featuredImageAlt",
+          )
+          .order("published_at", { ascending: false, nullsFirst: false })
+          .order("created_at", { ascending: false })
+          .returns<IndexedArticle[]>(),
+      ]);
+
+      if (services.error) throw services.error;
+      if (articles.error) throw articles.error;
+
+      return {
+        services: (services.data ?? []).map(
+          ({ service_pages, ...service }): IndexedService => ({
+            ...service,
+            // One page per service, so PostgREST returns an object; an array
+            // is accepted too rather than trusting the relationship detection.
+            page: Array.isArray(service_pages)
+              ? (service_pages[0] ?? null)
+              : service_pages,
+          }),
+        ),
+        articles: articles.data ?? [],
+      };
+    },
+    () => ({
+      services: seedServices.map((service) => {
+        const page = seedServicePages.find(
+          (row) => row.serviceSlug === service.slug,
+        );
+
+        return {
+          slug: service.slug,
+          name: service.name,
+          content: service.content,
+          updated_at: null,
+          page: page ? { intro: page.content.intro, updated_at: null } : null,
+        };
+      }),
+      articles: seedBlogPosts.map((post) => ({
+        slug: post.slug,
+        title: post.title,
+        updated_at: null,
+        published_at: post.published_at,
+        excerpt: post.content.excerpt,
+        featuredImage: post.content.featuredImage ?? null,
+        featuredImageAlt: post.content.featuredImageAlt ?? null,
+      })),
+    }),
+  );
+});
+
+// ---------------------------------------------------------------------------
 // SEO and settings
 // ---------------------------------------------------------------------------
 
@@ -399,6 +512,33 @@ export const getSeo = cache(async function getSeo(
       return data?.content ?? null;
     },
     () => null,
+  );
+});
+
+/**
+ * Every SEO override, keyed by path.
+ *
+ * For the sitemap, which has to know which routes asked to be left out of
+ * search, and would otherwise make one `getSeo` round trip per URL.
+ */
+export const getSeoOverrides = cache(async function getSeoOverrides(): Promise<
+  Record<string, SeoContent>
+> {
+  return safely(
+    "SEO metadata",
+    async () => {
+      const { data, error } = await publicClient()
+        .from("seo_metadata")
+        .select("path, content")
+        .returns<{ path: string; content: SeoContent }[]>();
+
+      if (error) throw error;
+
+      return Object.fromEntries(
+        (data ?? []).map(({ path, content }) => [path, content]),
+      );
+    },
+    () => ({}),
   );
 });
 

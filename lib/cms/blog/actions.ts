@@ -12,6 +12,7 @@ import {
   type CmsFormState,
 } from "@/lib/cms/form";
 import { revalidateFor } from "@/lib/cms/revalidate";
+import { dropSeoOverride, moveSeoOverride } from "@/lib/cms/seo/overrides";
 import { cmsWrite } from "@/lib/cms/write";
 import {
   blogCategoryFields,
@@ -138,9 +139,13 @@ export async function saveBlogPost(
   // cached and serving under a name nothing points at any more.
   const previousSlug = formData.get("previousSlug");
   const paths = [articlePath(values.slug)];
+  const renamedFrom =
+    typeof previousSlug === "string" && previousSlug && previousSlug !== values.slug
+      ? previousSlug
+      : null;
 
-  if (typeof previousSlug === "string" && previousSlug && previousSlug !== values.slug) {
-    paths.push(articlePath(previousSlug));
+  if (renamedFrom) {
+    paths.push(articlePath(renamedFrom));
   }
 
   const state = await cmsWrite<BlogPostField, { id: string } | null>({
@@ -153,6 +158,11 @@ export async function saveBlogPost(
         ? supabase.from("blog_posts").update(row).eq("id", postId).select("id").maybeSingle()
         : supabase.from("blog_posts").insert(row).select("id").maybeSingle(),
   });
+
+  // The article's SEO override follows it to its new address.
+  if (state.status === "success" && postId && renamedFrom) {
+    await moveSeoOverride(articlePath(renamedFrom), articlePath(values.slug));
+  }
 
   if (state.status === "success" && !postId && state.data?.id) {
     // Straight into the editor for the article that now exists, so the next
@@ -239,6 +249,8 @@ export async function deleteBlogPost(formData: FormData) {
     return;
   }
 
+  if (existing) await dropSeoOverride(articlePath(existing.slug));
+
   revalidateFor("blog-posts", existing ? [articlePath(existing.slug)] : []);
   redirect("/admin/blog-posts");
 }
@@ -317,6 +329,9 @@ export type ImageUploadResult =
 
 const maxImageBytes = 5 * 1024 * 1024;
 
+/** Folders an upload may land in: article images, and pages' share images. */
+const imageFolders = ["posts", "share"] as const;
+
 const allowedImageTypes = new Set([
   "image/jpeg",
   "image/png",
@@ -361,8 +376,14 @@ export async function uploadBlogImage(
     };
   }
 
+  // Which kind of image this is — a featured image or a page's share image —
+  // decides the folder. Taken from an allow-list, never used as given: the
+  // value arrives from the client and ends up in a storage path.
+  const requested = formData.get("folder");
+  const folder = imageFolders.find((known) => known === requested) ?? "posts";
+
   const extension = file.type.split("/")[1].replace("jpeg", "jpg");
-  const path = `posts/${crypto.randomUUID()}.${extension}`;
+  const path = `${folder}/${crypto.randomUUID()}.${extension}`;
 
   const supabase = await createClient();
 

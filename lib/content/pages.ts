@@ -686,6 +686,19 @@ export const testimonialsIntroDefaults: TestimonialsIntroContent = {
 // Page intros
 // ---------------------------------------------------------------------------
 
+/**
+ * The blog index's opening. Kept apart from `pageIntroDefaults` because that
+ * map is also the list of pages the `[page]` route renders, and `/blog` has a
+ * route of its own.
+ */
+export const blogIntroDefaults: PageIntroContent = {
+  eyebrow: "Useful information",
+  title: "A little clarity.",
+  emphasis: "Before we talk.",
+  description:
+    "Plain-English explanations of motoring law from a practising solicitor with over 20 years of criminal defence experience.",
+};
+
 export const pageIntroDefaults: Record<string, PageIntroContent> = {
   about: {
     eyebrow: "About John",

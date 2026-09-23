@@ -13,6 +13,7 @@ import {
   type CmsFormState,
 } from "@/lib/cms/form";
 import { revalidateFor } from "@/lib/cms/revalidate";
+import { dropSeoOverride } from "@/lib/cms/seo/overrides";
 import {
   serviceFields,
   serviceRules,
@@ -294,6 +295,12 @@ export async function deleteService(formData: FormData) {
 
   const supabase = await createClient();
 
+  const { data: existing } = await supabase
+    .from("services")
+    .select("slug")
+    .eq("id", id)
+    .maybeSingle<{ slug: string }>();
+
   const { error } = await supabase.from("services").delete().eq("id", id);
 
   if (error) {
@@ -301,6 +308,10 @@ export async function deleteService(formData: FormData) {
 
     return;
   }
+
+  // Its page's SEO override goes too, rather than passing to whatever is
+  // published at the same address next.
+  if (existing) await dropSeoOverride(`/services/${existing.slug}`);
 
   revalidateFor("services");
   redirect("/admin/services");
