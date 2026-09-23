@@ -24,6 +24,29 @@ import type { SeoContent } from "@/lib/cms/types";
  * wrapper the routes call.
  */
 
+/** An image for `og:image`, with what it shows. */
+export type ShareImage = {
+  url: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+};
+
+/**
+ * The branded card at `/share-image`, for pages with no image of their own.
+ *
+ * Its dimensions are stated so a preview can lay the card out before it has
+ * downloaded it; its description names what it shows.
+ */
+export function defaultShareImage(name: string, role: string): ShareImage {
+  return {
+    url: "/share-image",
+    width: 1200,
+    height: 630,
+    alt: `${name}, ${role}`,
+  };
+}
+
 /** What a route says about itself before anyone overrides it. */
 export type RouteDefaults = {
   /** The part before the title template's suffix. */
@@ -31,7 +54,7 @@ export type RouteDefaults = {
   description?: string;
   /** `article` for a blog post, which also carries `publishedTime`. */
   ogType?: "website" | "article";
-  image?: { url: string; alt?: string };
+  image?: ShareImage;
   publishedTime?: string;
 };
 
@@ -63,6 +86,10 @@ function set(value: string | undefined): string | undefined {
 /**
  * Lay an override over a route's defaults.
  *
+ * The share image has one more layer than the rest: an override's image, then
+ * the route's own (an article's featured image), then `fallbackImage` — the
+ * site's default card — so a shared link never arrives as bare text.
+ *
  * `openGraph` is always built whole, never partially. Next merges metadata
  * shallowly: a page that sets any `openGraph` field replaces the root
  * layout's entire `openGraph` object, site name and locale included. So they
@@ -78,6 +105,7 @@ export function resolveMetadata(
   defaults: RouteDefaults,
   override: SeoContent | null,
   siteName: string,
+  fallbackImage?: ShareImage,
 ): Metadata {
   const title = set(override?.title) ?? defaults.title;
   const description = set(override?.description) ?? defaults.description;
@@ -86,7 +114,7 @@ export function resolveMetadata(
   const overrideImage = set(override?.ogImage);
   const image = overrideImage
     ? { url: overrideImage, alt: set(override?.ogImageAlt) }
-    : defaults.image;
+    : (defaults.image ?? fallbackImage);
 
   const type = defaults.ogType ?? "website";
   const ogDescription = set(override?.ogDescription) ?? description;

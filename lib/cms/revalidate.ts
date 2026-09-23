@@ -78,8 +78,9 @@ const targets: Record<ContentEntity, Target[]> = {
   // Keyed by route, so the caller passes the one that changed. Hiding a page
   // from search also takes it out of the sitemap.
   "seo-metadata": [sitemap],
-  // Contact details in the header and footer, so on every page.
-  "site-settings": [{ path: "/", type: "layout" }],
+  // Contact details in the header and footer, so on every page — and the name
+  // and role on the default share card, which is a route handler of its own.
+  "site-settings": [{ path: "/", type: "layout" }, { path: "/share-image" }],
 };
 
 /** The admin list a section's own writes should refresh. */

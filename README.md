@@ -455,6 +455,29 @@ hidden from search or canonical to another address. Only routes backed by a row
 carry `lastmod`. `app/robots.ts` allows everything public and disallows
 `/admin`, `/auth` and `/api`.
 
+### The default share card
+
+`/share-image` (`app/share-image/route.tsx`) is the card a shared link shows
+when its page has no image of its own: navy and gold, John's name and role from
+Site Settings, and the hero portrait. The resolver uses it last, after an
+override's image and an article's featured image.
+
+- **A route, not an `opengraph-image` file.** File-based metadata outranks
+  `generateMetadata`, so a root `opengraph-image` would replace every page's
+  own share image and every featured image.
+- **JPEG, about 60 KB.** `ImageResponse` renders PNG, and with a photograph in
+  it that is most of a megabyte; WhatsApp is widely reported to drop preview
+  images much over 300 KB. `sharp` re-encodes it.
+- **Built at deploy, rebuilt on a Site Settings save** (`force-static`, and
+  `site-settings` revalidates `/share-image`).
+- **The fonts are the site's own, as TTF,** in `assets/fonts/` —
+  `ImageResponse` cannot read the WOFF2 `next/font` serves. OFL-licensed; see
+  the README there.
+- **Every file path it reads is written out whole.** A path built from a
+  variable makes the bundler trace the entire project, `public/` included, into
+  the function. `outputFileTracingIncludes` in `next.config.ts` names the same
+  files for the rebuild on the server.
+
 ## Reviews
 
 The reviews at `/admin/testimonials` are read only, and that is the point.
@@ -518,8 +541,9 @@ This is the public frontend, enquiry capture, a CMS-managed blog and editable
 page copy — not the complete production system in `prd.md`.
 
 Every admin section is built. From `seo_requirements.md`, still open:
-structured data beyond the home page's (REQ-010–019), a default share image
-(REQ-024), the redirect table and host/case redirects (REQ-025–030), an
+structured data beyond the home page's (REQ-010–019), per-page generated
+share cards (the optional half of REQ-024), the redirect table and host/case
+redirects (REQ-025–030), an
 `X-Robots-Tag` header on admin routes and `noindex` on preview deployments
 (REQ-035), and the SEO health checks and draft preview in the editor
 (REQ-048, REQ-052).
@@ -531,8 +555,8 @@ means the stage key stops being a union type and `stageIncludes` stops being a
 lookup against a fixed order, so it is a change to the component rather than
 another registry entry.
 
-Analytics, Search Console, the remaining Schema.org types, a default Open
-Graph image, domain configuration and production launch remain separate work
+Analytics, Search Console, the remaining Schema.org types, domain
+configuration and production launch remain separate work
 after that.
 
 The existing Next.js/Vercel architecture is retained. No deployment or changes to

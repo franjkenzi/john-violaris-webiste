@@ -87,6 +87,15 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: appVersion,
   },
+
+  /**
+   * Files the default share card reads from disk. It is built at deploy time,
+   * but a Site Settings change rebuilds it on the server, where only traced
+   * files exist — and `public/` is not traced into a function by default.
+   */
+  outputFileTracingIncludes: {
+    "/share-image": ["./assets/fonts/**", "./public/Profile 7.png"],
+  },
 };
 
 export default nextConfig;

@@ -3,7 +3,7 @@ import "server-only";
 import type { Metadata } from "next";
 
 import { getSeo, getSiteConfig } from "@/lib/cms/queries";
-import { resolveMetadata } from "@/lib/cms/seo/resolve";
+import { defaultShareImage, resolveMetadata } from "@/lib/cms/seo/resolve";
 import { findSeoRoute } from "@/lib/cms/seo/routes";
 
 /**
@@ -24,5 +24,11 @@ export async function seoMetadataFor(path: string): Promise<Metadata> {
 
   if (!route) return {};
 
-  return resolveMetadata(path, route.defaults, override, config.name);
+  return resolveMetadata(
+    path,
+    route.defaults,
+    override,
+    config.name,
+    defaultShareImage(config.name, config.role),
+  );
 }

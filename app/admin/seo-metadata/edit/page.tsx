@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { SeoForm } from "@/components/admin/seo-form";
 import { getSeoRow } from "@/lib/cms/admin-queries";
 import { getSiteConfig } from "@/lib/cms/queries";
-import { titleSuffix } from "@/lib/cms/seo/resolve";
+import { defaultShareImage, titleSuffix } from "@/lib/cms/seo/resolve";
 import { findSeoRoute } from "@/lib/cms/seo/routes";
 import { seoValuesFrom } from "@/lib/cms/seo/schema";
 import { formatUkShortDateTime } from "@/lib/format";
@@ -78,6 +78,7 @@ export default async function EditSeoPage({
         noFollow={content?.noFollow === true}
         customised={Boolean(row)}
         suffix={titleSuffix(config.name)}
+        fallbackImage={defaultShareImage(config.name, config.role).url}
       />
     </div>
   );

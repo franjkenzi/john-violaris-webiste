@@ -11,7 +11,11 @@
  *
  * `resolveMetadata` is pure, so this needs no database and no server.
  */
-import { belongsInSitemap, resolveMetadata } from "@/lib/cms/seo/resolve.ts";
+import {
+  belongsInSitemap,
+  defaultShareImage,
+  resolveMetadata,
+} from "@/lib/cms/seo/resolve.ts";
 
 const site = "https://johnviolaris.com";
 const name = "John Violaris";
@@ -108,6 +112,31 @@ const article = resolveMetadata(
 expect("article: headline alone", article.openGraph.title, "Laced drinks");
 expect("article: type and date", [article.openGraph.type, article.openGraph.publishedTime], ["article", "2026-09-01T09:00:00Z"]);
 expect("article: featured image by default", article.openGraph.images, [{ url: "https://example.com/featured.jpg", alt: "Featured" }]);
+
+// The share image's extra layer: override, then the route's own, then the
+// site's default card — so a shared link is never bare text.
+const card = defaultShareImage(name, "Criminal Defence Solicitor");
+
+expect(
+  "default card: described and sized",
+  card,
+  { url: "/share-image", width: 1200, height: 630, alt: "John Violaris, Criminal Defence Solicitor" },
+);
+expect(
+  "default card: used when nothing else is set",
+  resolveMetadata("/fees", { title: "Fees" }, null, name, card).openGraph.images,
+  [card],
+);
+expect(
+  "default card: an article's featured image comes first",
+  resolveMetadata("/blog/a", { title: "A", image: { url: "/featured.jpg", alt: "F" } }, null, name, card).openGraph.images,
+  [{ url: "/featured.jpg", alt: "F" }],
+);
+expect(
+  "default card: an override image comes before both",
+  resolveMetadata("/blog/a", { title: "A", image: { url: "/featured.jpg" } }, { ogImage: "/mine.jpg", ogImageAlt: "Mine" }, name, card).openGraph.images,
+  [{ url: "/mine.jpg", alt: "Mine" }],
+);
 
 // The sitemap's rules.
 expect("sitemap: an ordinary page is listed", belongsInSitemap("/fees", null, site), true);

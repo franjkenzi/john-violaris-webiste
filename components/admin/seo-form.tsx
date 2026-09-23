@@ -48,6 +48,8 @@ export type SeoFormProps = {
   customised: boolean;
   /** " | John Violaris" — added to the search title, and counted with it. */
   suffix: string;
+  /** The site's default card, shown when neither the page nor John sets one. */
+  fallbackImage: string;
 };
 
 export function SeoForm({
@@ -60,6 +62,7 @@ export function SeoForm({
   noFollow: initialNoFollow,
   customised,
   suffix,
+  fallbackImage,
 }: SeoFormProps) {
   const [state, formAction] = useActionState(saveSeo, {
     ...initialSeoFormState,
@@ -128,7 +131,7 @@ export function SeoForm({
       : shownTitle;
   const shownShareTitle = ogTitle.trim() || defaultShareTitle;
   const shownShareDescription = ogDescription.trim() || shownDescription;
-  const shownShareImage = ogImage || defaults.image?.url || "";
+  const shownShareImage = ogImage || defaults.image?.url || fallbackImage;
 
   const imageSize = useImageSize(ogImage);
 
@@ -273,7 +276,7 @@ export function SeoForm({
           hint={
             defaults.image
               ? "Left empty, the article’s featured image is used. Best at 1200 × 630 pixels."
-              : "Best at 1200 × 630 pixels. Without one, most apps show the link as text only."
+              : "Left empty, the site’s default card is used — the preview above shows it. Best at 1200 × 630 pixels."
           }
           error={state.fieldErrors.ogImage}
           errorId={errorId("ogImage")}
