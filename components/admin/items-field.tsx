@@ -31,21 +31,29 @@ import { emptyItemRow } from "@/lib/cms/sections/values";
 
 type Row = Record<string, string> & { _key?: string };
 
+/** Editor rows keyed by field, each with a stable React key. */
+function keyed(initial: Record<string, Record<string, string>[]>) {
+  return Object.fromEntries(
+    Object.entries(initial).map(([key, list]) => [key, list.map(withKey)]),
+  );
+}
+
 /**
  * State and handlers for every repeating field of one form.
  *
- * `initial` is keyed by field, each entry the rows as editor text. Returns a
- * function that gives one field its rows and handlers, ready to spread onto
- * `ItemsField`.
+ * `initial` is keyed by field, each entry the rows as editor text. Returns
+ * `rowsFor`, which gives one field its rows and handlers ready to spread onto
+ * `ItemsField`, and `resetRows`, which replaces them all — for a form whose
+ * content has just been put back to its defaults.
  */
 export function useItemRows(initial: Record<string, Record<string, string>[]>) {
-  const [rows, setRows] = useState<Record<string, Row[]>>(() =>
-    Object.fromEntries(
-      Object.entries(initial).map(([key, list]) => [key, list.map(withKey)]),
-    ),
-  );
+  const [rows, setRows] = useState<Record<string, Row[]>>(() => keyed(initial));
 
-  return function rowsFor(field: SectionField) {
+  function resetRows(next: Record<string, Record<string, string>[]>) {
+    setRows(keyed(next));
+  }
+
+  function rowsFor(field: SectionField) {
     const key = field.key;
 
     return {
@@ -79,7 +87,9 @@ export function useItemRows(initial: Record<string, Record<string, string>[]>) {
           [key]: [...(current[key] ?? []), withKey(emptyItemRow(field))],
         })),
     };
-  };
+  }
+
+  return { rowsFor, resetRows };
 }
 
 export function ItemsField({

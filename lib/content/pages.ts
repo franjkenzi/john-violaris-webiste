@@ -99,6 +99,12 @@ export type HeroContent = {
   ctaLabel: string;
   reassuranceLeft: string;
   reassuranceRight: string;
+  /**
+   * The photograph beside the heading: a path under `public/` or an uploaded
+   * image's storage URL.
+   */
+  portrait: string;
+  portraitAlt: string;
   cardLabel: string;
   cardEyebrow: string;
   cardBody: string[];
@@ -123,6 +129,8 @@ export const heroDefaults: HeroContent = {
   ctaLabel: "Let’s talk about your case",
   reassuranceLeft: "Free initial consultation",
   reassuranceRight: "No obligation",
+  portrait: "/Profile 7.png",
+  portraitAlt: "Portrait of John Violaris, criminal defence solicitor",
   cardLabel: "A personal commitment",
   cardEyebrow: "One solicitor. Throughout.",
   cardBody: ["When you instruct me,", "you deal with"],

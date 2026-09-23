@@ -283,6 +283,24 @@ because it really is in the body of every page, and it revalidates `("/",
 route is added. The article and offence pages pass their own heading to it,
 which stays with those sections rather than here.
 
+### Images
+
+`image` is a field kind like the others: the article picker, uploading to the
+`site/` folder of the image bucket as soon as a file is chosen, and stored as
+the image's address. The hero portrait is the first, with a required
+`portraitAlt` beside it; the default is still `/Profile 7.png`, so a section
+nobody has touched renders exactly as before. The default share card
+(`/share-image`) keeps the bundled portrait whatever the hero shows.
+
+### Reverting
+
+"Revert to original" is a second submit button of the section's own form
+(`name="intent" value="reset"`), not a form of its own. The editor's rows,
+images and text are its own state; as a separate form the revert deleted the
+row but left the editor showing the discarded edits, and the next save put
+them back. Now the answer returns through the editor's state and it resets
+itself. The SEO editor's "Reset to defaults" works the same way.
+
 ## Fees
 
 The fee schedule is managed at `/admin/fees`: add, edit, reorder, publish and

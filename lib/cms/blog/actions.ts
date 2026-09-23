@@ -329,8 +329,11 @@ export type ImageUploadResult =
 
 const maxImageBytes = 5 * 1024 * 1024;
 
-/** Folders an upload may land in: article images, and pages' share images. */
-const imageFolders = ["posts", "share"] as const;
+/**
+ * Folders an upload may land in: article images, pages' share images, and
+ * images in the site's own sections.
+ */
+const imageFolders = ["posts", "share", "site"] as const;
 
 const allowedImageTypes = new Set([
   "image/jpeg",
@@ -376,8 +379,8 @@ export async function uploadBlogImage(
     };
   }
 
-  // Which kind of image this is — a featured image or a page's share image —
-  // decides the folder. Taken from an allow-list, never used as given: the
+  // Which kind of image this is — a featured image, a share image, a section's
+  // image — decides the folder. Taken from an allow-list, never used as given: the
   // value arrives from the client and ends up in a storage path.
   const requested = formData.get("folder");
   const folder = imageFolders.find((known) => known === requested) ?? "posts";

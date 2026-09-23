@@ -58,8 +58,12 @@ export type SectionContent = Record<string, SectionValue>;
  *            new paragraph — see `readParagraphs` in `lib/cms/form.ts`.
  * - `list`   a textarea, one bullet per line.
  * - `items`  a repeating group, described by `item` below.
+ * - `image`  an uploaded image, stored as its address — a path under
+ *            `public/` for the image the site shipped with, or the storage
+ *            URL of one uploaded since. Pair it with a `text` field for its
+ *            description.
  */
-export type FieldKind = "text" | "lines" | "prose" | "list" | "items";
+export type FieldKind = "text" | "lines" | "prose" | "list" | "items" | "image";
 
 /** A field inside a repeating group. */
 export type ItemField = {
@@ -307,6 +311,22 @@ export const pageGroups: PageGroup[] = [
             label: "Below the button, right",
             kind: "text",
             maxLength: 60,
+          },
+          {
+            key: "portrait",
+            label: "Portrait",
+            kind: "image",
+            hint: "The photograph beside the heading. A portrait-shaped image works best — it is shown taller than it is wide. JPEG, PNG, WebP or AVIF, up to 5 MB.",
+            required: true,
+            maxLength: 500,
+          },
+          {
+            key: "portraitAlt",
+            label: "Portrait description",
+            kind: "text",
+            hint: "What the photograph shows, for anyone using a screen reader.",
+            required: true,
+            maxLength: 200,
           },
           {
             key: "cardLabel",
@@ -1023,7 +1043,16 @@ export const pageGroups: PageGroup[] = [
  * `"use server"` module has to be an async function, so a plain constant in
  * `actions.ts` fails the build the moment a Server Component imports from it.
  */
-export const initialSectionFormState: CmsFormState = initialCmsFormState({});
+export const initialSectionFormState: SectionFormState =
+  initialCmsFormState({});
+
+/**
+ * A section editor's state. `reset` marks the answer to "Revert to original",
+ * which the editor has to tell apart from a save: its rows and images still
+ * hold the edits that were just discarded, and have to go back to the
+ * defaults too.
+ */
+export type SectionFormState = CmsFormState & { reset?: boolean };
 
 // ---------------------------------------------------------------------------
 // Lookups

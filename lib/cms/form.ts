@@ -212,6 +212,22 @@ export function validateFields<F extends string>(
 }
 
 /**
+ * A path on this site or a full `https://` address — what a canonical, a share
+ * image or a site image may be. Anything else, a bare domain or a typo, would
+ * point a page, a search engine or a link preview at an address that does not
+ * exist, which is worse than no value at all.
+ */
+export function isAddress(value: string): boolean {
+  if (value.startsWith("/")) return !value.startsWith("//");
+
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Turn a validated numeric field into a number.
  *
  * Only safe after `validateFields` has passed it, which is why it does not

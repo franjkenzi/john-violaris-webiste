@@ -1,13 +1,14 @@
 "use server";
 
 import { requireAdmin } from "@/lib/auth";
-import { formError, type CmsFormState } from "@/lib/cms/form";
-import { revalidateFor, type RevalidateTarget } from "@/lib/cms/revalidate";
+import { formError, isAddress } from "@/lib/cms/form";
+import { type RevalidateTarget } from "@/lib/cms/revalidate";
 import {
   fieldName,
   findSection,
   type SectionContent,
   type SectionDefinition,
+  type SectionFormState,
 } from "@/lib/cms/sections/schema";
 import {
   isEmptyValue,
@@ -16,7 +17,6 @@ import {
   sectionValuesFrom,
 } from "@/lib/cms/sections/values";
 import { cmsWrite } from "@/lib/cms/write";
-import { createClient } from "@/utils/supabase/server";
 
 /**
  * Saving a page section.
@@ -35,9 +35,9 @@ import { createClient } from "@/utils/supabase/server";
  */
 
 export async function savePageSection(
-  _previous: CmsFormState,
+  _previous: SectionFormState,
   formData: FormData,
-): Promise<CmsFormState> {
+): Promise<SectionFormState> {
   await requireAdmin();
 
   const page = readString(formData, "page");
@@ -51,6 +51,43 @@ export async function savePageSection(
         "That section is not one this site has. Reload the page and try again.",
       fieldErrors: {},
       values: {},
+    };
+  }
+
+  /*
+   * "Revert to original" is this form's second submit button rather than a
+   * form of its own, so its answer comes back through the editor's state —
+   * which is how the editor knows to put its rows and images back as well as
+   * its text. As a separate form it left the editor holding the edits it had
+   * just discarded, and the next save restored them.
+   *
+   * Deleting the row rather than writing the defaults into it: the defaults
+   * live in `lib/content/pages.ts` and the read falls back to them when no row
+   * exists, so an absent row *is* the default. Writing a copy of them would
+   * freeze today's wording into the database and quietly detach the section
+   * from the file that defines it.
+   */
+  if (formData.get("intent") === "reset") {
+    const state = await cmsWrite({
+      entity: "page-sections",
+      values: sectionValuesFrom(definition, definition.defaults),
+      successMessage: `${definition.label} is back to its original wording.`,
+      paths: routesFor(definition),
+      run: async (supabase) =>
+        supabase
+          .from("page_sections")
+          .delete()
+          .eq("page", page)
+          .eq("section", key)
+          .select("section"),
+    });
+
+    return {
+      status: state.status,
+      message: state.message,
+      fieldErrors: state.fieldErrors,
+      values: state.values,
+      reset: state.status === "success",
     };
   }
 
@@ -73,6 +110,13 @@ export async function savePageSection(
 
     if (field.required && isEmptyValue(value)) {
       fieldErrors[field.key] = `${field.label} cannot be empty.`;
+    } else if (
+      field.kind === "image" &&
+      typeof value === "string" &&
+      value &&
+      !isAddress(value)
+    ) {
+      fieldErrors[field.key] = "Upload the image again — that address cannot be used.";
     }
 
     content[field.key] = value;
@@ -82,7 +126,7 @@ export async function savePageSection(
     return formError(submitted, fieldErrors);
   }
 
-  return cmsWrite({
+  const state = await cmsWrite({
     entity: "page-sections",
     values: submitted,
     successMessage: `${definition.label} saved.`,
@@ -98,41 +142,14 @@ export async function savePageSection(
         .select("section")
         .maybeSingle(),
   });
-}
 
-/**
- * Put a section back to the copy the site shipped with.
- *
- * Deleting the row rather than writing the defaults into it: the defaults live
- * in `lib/content/pages.ts` and the read falls back to them when no row exists,
- * so an absent row *is* the default. Writing a copy of them would freeze
- * today's wording into the database and quietly detach the section from the
- * file that defines it.
- */
-export async function resetPageSection(formData: FormData) {
-  await requireAdmin();
-
-  const page = readString(formData, "page");
-  const key = readString(formData, "section");
-  const definition = findSection(page, key);
-
-  if (!definition) return;
-
-  const supabase = await createClient();
-
-  const { error } = await supabase
-    .from("page_sections")
-    .delete()
-    .eq("page", page)
-    .eq("section", key);
-
-  if (error) {
-    console.error(`[cms] Failed to reset section ${page}/${key}`, error);
-
-    return;
-  }
-
-  revalidateFor("page-sections", routesFor(definition));
+  // Rebuilt field by field rather than spread: `data` stays on the server.
+  return {
+    status: state.status,
+    message: state.message,
+    fieldErrors: state.fieldErrors,
+    values: state.values,
+  };
 }
 
 // ---------------------------------------------------------------------------

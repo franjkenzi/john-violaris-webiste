@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import {
   formError,
   formFailure,
+  isAddress,
   readCheckbox,
   readFields,
   validateFields,
@@ -11,7 +12,6 @@ import {
 import { findSeoRoute } from "@/lib/cms/seo/routes";
 import {
   emptySeoValues,
-  isAddress,
   seoFields,
   seoRules,
   type SeoField,

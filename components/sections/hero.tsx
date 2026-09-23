@@ -146,8 +146,8 @@ export function Hero({
                     }}
                   >
                     <Image
-                      src="/Profile 7.png"
-                      alt="Portrait of John Violaris, criminal defence solicitor"
+                      src={content.portrait}
+                      alt={content.portraitAlt}
                       fill
                       preload
                       sizes="(max-width: 639px) calc(100vw - 62px), (max-width: 1023px) 34vw, 28vw"

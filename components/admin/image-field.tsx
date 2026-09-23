@@ -30,8 +30,11 @@ export function ImageField({
   value: string;
   onChange: (url: string) => void;
   describedBy?: string;
-  /** Where the upload is stored: article images, or pages' share images. */
-  folder?: "posts" | "share";
+  /**
+   * Where the upload is stored: article images, pages' share images, or
+   * images in the site's own sections, such as the hero portrait.
+   */
+  folder?: "posts" | "share" | "site";
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);

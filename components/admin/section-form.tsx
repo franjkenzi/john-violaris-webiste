@@ -1,10 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useId, useRef } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { RotateCcw } from "lucide-react";
 
-import { DetachedActionForm } from "@/components/admin/detached-action-form";
+import { ImageField } from "@/components/admin/image-field";
 import { ItemsField, useItemRows } from "@/components/admin/items-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "cn";
 import { useControlledAfterReset } from "@/hooks/use-controlled-after-reset";
-import { resetPageSection, savePageSection } from "@/lib/cms/sections/actions";
+import { savePageSection } from "@/lib/cms/sections/actions";
 import {
   fieldName,
   initialSectionFormState,
@@ -20,7 +20,11 @@ import {
   type SectionDefinition,
   type SectionField,
 } from "@/lib/cms/sections/schema";
-import { itemRowsFrom, sectionValuesFrom } from "@/lib/cms/sections/values";
+import {
+  fieldValueFrom,
+  itemRowsFrom,
+  sectionValuesFrom,
+} from "@/lib/cms/sections/values";
 
 /**
  * The editor for one page section.
@@ -36,6 +40,8 @@ import { itemRowsFrom, sectionValuesFrom } from "@/lib/cms/sections/values";
  * by collapsing one.
  *
  * Repeating rows come from `ItemsField`, shared with the offence-page editor.
+ * Image fields are React state too, because the picker is: it uploads as soon
+ * as a file is chosen and hands back an address.
  */
 
 export type SectionFormProps = {
@@ -44,6 +50,24 @@ export type SectionFormProps = {
   /** What is stored, or undefined when the section has never been edited. */
   stored: SectionContent | undefined;
 };
+
+/** Rows for every repeating field of a section, from the given content. */
+function rowsFrom(definition: SectionDefinition, content: SectionContent) {
+  return Object.fromEntries(
+    definition.fields
+      .filter((field) => field.kind === "items")
+      .map((field) => [field.key, itemRowsFrom(field, content)]),
+  );
+}
+
+/** The address of every image field of a section, from the given content. */
+function imagesFrom(definition: SectionDefinition, content: SectionContent) {
+  return Object.fromEntries(
+    definition.fields
+      .filter((field) => field.kind === "image")
+      .map((field) => [field.key, fieldValueFrom(field, content)]),
+  );
+}
 
 export function SectionForm({ page, definition, stored }: SectionFormProps) {
   // The defaults underneath are what the site renders today, so an untouched
@@ -60,13 +84,27 @@ export function SectionForm({ page, definition, stored }: SectionFormProps) {
   useControlledAfterReset(formRef);
   const alertRef = useRef<HTMLParagraphElement>(null);
 
-  const rowsFor = useItemRows(
-    Object.fromEntries(
-      definition.fields
-        .filter((field) => field.kind === "items")
-        .map((field) => [field.key, itemRowsFrom(field, content)]),
-    ),
-  );
+  const { rowsFor, resetRows } = useItemRows(rowsFrom(definition, content));
+  const [images, setImages] = useState(() => imagesFrom(definition, content));
+
+  /*
+   * After "Revert to original" the section is back to its defaults, but the
+   * rows and images here still hold the edits — and saving again would put
+   * them straight back. So a revert puts them back too, adjusted during
+   * render as the new state arrives rather than in an effect, which would
+   * paint the stale values first. The plain text fields need nothing: their
+   * `defaultValue` is the reverted `state.values`.
+   */
+  const [seenState, setSeenState] = useState(state);
+
+  if (state !== seenState) {
+    setSeenState(state);
+
+    if (state.reset) {
+      resetRows(rowsFrom(definition, definition.defaults));
+      setImages(imagesFrom(definition, definition.defaults));
+    }
+  }
 
   useEffect(() => {
     if (state.status !== "error") return;
@@ -81,74 +119,87 @@ export function SectionForm({ page, definition, stored }: SectionFormProps) {
   const errorId = (key: string) =>
     state.fieldErrors[key] ? `${formId}-${key}-error` : undefined;
 
-  const resetFormId = `${formId}-reset`;
-
   return (
-    <>
-      <form ref={formRef} action={formAction} className="space-y-5">
-        <input type="hidden" name="page" value={page} />
-        <input type="hidden" name="section" value={definition.key} />
+    <form ref={formRef} action={formAction} className="space-y-5">
+      <input type="hidden" name="page" value={page} />
+      <input type="hidden" name="section" value={definition.key} />
 
-        {state.message ? (
-          <p
-            ref={alertRef}
-            tabIndex={-1}
-            role={state.status === "error" ? "alert" : "status"}
-            className={cn(
-              "rounded-xl border px-4 py-3 text-sm outline-none",
-              state.status === "error"
-                ? "border-destructive/30 bg-destructive/5 text-destructive"
-                : "border-primary/30 bg-primary/5 text-foreground",
-            )}
-          >
-            {state.message}
-          </p>
-        ) : null}
-
-        {definition.fields.map((field) =>
-          field.kind === "items" ? (
-            <ItemsField
-              key={field.key}
-              field={field}
-              formId={formId}
-              error={state.fieldErrors[field.key]}
-              errorId={errorId(field.key)}
-              {...rowsFor(field)}
-            />
-          ) : (
-            <ScalarField
-              key={field.key}
-              field={field}
-              formId={formId}
-              value={state.values[field.key] ?? ""}
-              error={state.fieldErrors[field.key]}
-              errorId={errorId(field.key)}
-            />
-          ),
-        )}
-
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-          <SaveButton />
-          {/* Only once a section has been edited: there is nothing to undo
-              otherwise, and a button that always does nothing is worse than
-              no button. */}
-          {stored ? (
-            <Button type="submit" form={resetFormId} variant="ghost" size="sm">
-              <RotateCcw aria-hidden="true" />
-              Revert to original
-            </Button>
-          ) : null}
-        </div>
-      </form>
-      {stored ? (
-        <DetachedActionForm
-          id={resetFormId}
-          action={resetPageSection}
-          confirmMessage={`Discard your edits to "${definition.label}" and go back to the original wording?`}
-          fields={{ page, section: definition.key }}
-        />
+      {state.message ? (
+        <p
+          ref={alertRef}
+          tabIndex={-1}
+          role={state.status === "error" ? "alert" : "status"}
+          className={cn(
+            "rounded-xl border px-4 py-3 text-sm outline-none",
+            state.status === "error"
+              ? "border-destructive/30 bg-destructive/5 text-destructive"
+              : "border-primary/30 bg-primary/5 text-foreground",
+          )}
+        >
+          {state.message}
+        </p>
       ) : null}
-    </>
+
+      {definition.fields.map((field) =>
+        field.kind === "items" ? (
+          <ItemsField
+            key={field.key}
+            field={field}
+            formId={formId}
+            error={state.fieldErrors[field.key]}
+            errorId={errorId(field.key)}
+            {...rowsFor(field)}
+          />
+        ) : field.kind === "image" ? (
+          <ImageScalarField
+            key={field.key}
+            field={field}
+            value={images[field.key] ?? ""}
+            onChange={(value) =>
+              setImages((current) => ({ ...current, [field.key]: value }))
+            }
+            error={state.fieldErrors[field.key]}
+            errorId={errorId(field.key)}
+          />
+        ) : (
+          <ScalarField
+            key={field.key}
+            field={field}
+            formId={formId}
+            value={state.values[field.key] ?? ""}
+            error={state.fieldErrors[field.key]}
+            errorId={errorId(field.key)}
+          />
+        ),
+      )}
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+        <SaveButton />
+        {/* Only once a section has been edited: there is nothing to undo
+            otherwise, and a button that always does nothing is worse than no
+            button. A second submit button of this same form, told apart by
+            its `intent`, so the revert's answer arrives in this form's state. */}
+        {stored ? (
+          <Button
+            type="submit"
+            name="intent"
+            value="reset"
+            variant="ghost"
+            size="sm"
+            onClick={(event) => {
+              const confirmed = window.confirm(
+                `Discard your edits to "${definition.label}" and go back to the original wording?`,
+              );
+
+              if (!confirmed) event.preventDefault();
+            }}
+          >
+            <RotateCcw aria-hidden="true" />
+            Revert to original
+          </Button>
+        ) : null}
+      </div>
+    </form>
   );
 }
 
@@ -201,6 +252,46 @@ function ScalarField({
         <Textarea rows={field.rows ?? 3} {...shared} />
       )}
     </Field>
+  );
+}
+
+/**
+ * An image, with the article editor's picker. What the form carries is the
+ * address, in the picker's hidden input; the file itself was uploaded when it
+ * was chosen.
+ */
+function ImageScalarField({
+  field,
+  value,
+  onChange,
+  error,
+  errorId,
+}: {
+  field: SectionField;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+  errorId?: string;
+}) {
+  return (
+    <div className="space-y-1.5" role="group" aria-label={field.label}>
+      <p className="text-sm leading-none font-medium">{field.label}</p>
+      <ImageField
+        name={fieldName(field.key)}
+        value={value}
+        onChange={onChange}
+        describedBy={errorId}
+        folder="site"
+      />
+      {field.hint && !error ? (
+        <p className="text-xs text-muted-foreground">{field.hint}</p>
+      ) : null}
+      {error ? (
+        <p id={errorId} role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }
 

@@ -72,7 +72,7 @@ export function ServicePageForm({ service, page }: ServicePageFormProps) {
 
   const [published, setPublished] = useState(page?.published ?? false);
 
-  const rowsFor = useItemRows(
+  const { rowsFor } = useItemRows(
     Object.fromEntries(
       servicePageItemFields.map((field) => [
         field.key,

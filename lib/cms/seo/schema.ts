@@ -72,22 +72,6 @@ export const titleWarnAt = 60;
 export const descriptionWarnAt = 155;
 
 /**
- * A path on this site or a full `https://` address — what a canonical and a
- * share image may be. Anything else, a bare domain or a typo, would point
- * search engines or a link preview at an address that does not exist, which
- * is worse than no override.
- */
-export function isAddress(value: string): boolean {
-  if (value.startsWith("/")) return !value.startsWith("//");
-
-  try {
-    return new URL(value).protocol === "https:";
-  } catch {
-    return false;
-  }
-}
-
-/**
  * The editor's state. `reset` marks the answer to "Reset to defaults", which
  * the editor needs to know apart from an ordinary save: its own fields still
  * hold the override that was just removed, and have to be emptied.

@@ -35,6 +35,7 @@ export function fieldValueFrom(
 
   switch (field.kind) {
     case "text":
+    case "image":
       return typeof value === "string" ? value : "";
     case "lines":
     case "list":
@@ -119,6 +120,7 @@ export function parseField(field: SectionField, raw: string): string | string[] 
 
   switch (field.kind) {
     case "text":
+    case "image":
       return clamp(raw.trim());
     case "lines":
     case "list":
