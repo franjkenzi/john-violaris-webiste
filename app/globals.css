@@ -71,6 +71,19 @@
     background-color: var(--color-gold);
     color: var(--color-navy);
   }
+
+  /*
+   * An admin table that scrolls sideways in an `overflow-x-auto` wrapper has
+   * to take its screen-reader labels with it. `sr-only` is absolutely
+   * positioned, and a wrapper only clips it when the wrapper is its
+   * containing block; otherwise the label belongs to the admin's `<main>`,
+   * sits wherever the table's last column lands — past the window — and
+   * widens the whole page. Here in `base` so a utility such as `sticky` on
+   * the same element still wins.
+   */
+  :where(.admin-surface) .overflow-x-auto {
+    position: relative;
+  }
 }
 
 @layer components {

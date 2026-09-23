@@ -33,7 +33,14 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             </Suspense>
           }
         />
-        <SidebarInset className="min-h-svh bg-background">
+        {/* `min-w-0` because the inset is a flex item beside the sidebar, and
+            a flex item will not shrink below its content's minimum width by
+            default. The list tables have a `min-w-[48rem]` and sit in their
+            own `overflow-x-auto` wrappers, but that minimum still counts, so
+            without this the whole column kept the table's width and pushed the
+            page a sidebar's width past the window instead of letting the
+            table scroll in its wrapper. */}
+        <SidebarInset className="min-h-svh min-w-0 bg-background">
           <div className="fixed top-3 left-3 z-20 md:hidden">
             <SidebarTrigger className="border bg-background shadow-sm" />
           </div>
