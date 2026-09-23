@@ -455,6 +455,17 @@ hidden from search or canonical to another address. Only routes backed by a row
 carry `lastmod`. `app/robots.ts` allows everything public and disallows
 `/admin`, `/auth` and `/api`.
 
+### Only the canonical host is indexed
+
+`proxy.ts` sends `X-Robots-Tag: noindex, nofollow` on every response whose
+`Host` is not `johnviolaris.com` — the `vercel.app` address that serves as
+staging, preview deployments, `www`, and `localhost` — and on `/admin` and
+`/auth` on every host (REQ-035). Per request, because the pages are static and
+the same HTML is served on every host; from the `Host` header rather than
+`request.nextUrl`, which carries the server's own hostname locally. Until
+johnviolaris.com points at Vercel, nothing the new site serves is indexable,
+which is intended: the domain still serves the old site.
+
 ### The default share card
 
 `/share-image` (`app/share-image/route.tsx`) is the card a shared link shows
@@ -543,10 +554,8 @@ page copy — not the complete production system in `prd.md`.
 Every admin section is built. From `seo_requirements.md`, still open:
 structured data beyond the home page's (REQ-010–019), per-page generated
 share cards (the optional half of REQ-024), the redirect table and host/case
-redirects (REQ-025–030), an
-`X-Robots-Tag` header on admin routes and `noindex` on preview deployments
-(REQ-035), and the SEO health checks and draft preview in the editor
-(REQ-048, REQ-052).
+redirects (REQ-025–030), and the SEO health checks and draft preview in the
+editor (REQ-048, REQ-052).
 
 One part of the fees page is still static: the three-stage scope comparison in
 `FeesMatrix`, which reads `feeStages`, `feeInclusions` and `stageIncludes` from
