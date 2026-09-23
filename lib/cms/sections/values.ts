@@ -1,15 +1,18 @@
+import { isIconName } from "@/components/ui/icons";
 import {
   readLines,
   readParagraphs,
   writeLines,
   writeParagraphs,
 } from "@/lib/cms/form";
-import type {
-  ItemField,
-  SectionContent,
-  SectionDefinition,
-  SectionField,
-  SectionItem,
+import {
+  itemCountName,
+  itemFieldName,
+  type ItemField,
+  type SectionContent,
+  type SectionDefinition,
+  type SectionField,
+  type SectionItem,
 } from "@/lib/cms/sections/schema";
 
 /**
@@ -145,6 +148,88 @@ export function parseItemField(
 /** Is a field's parsed value empty — nothing typed at all? */
 export function isEmptyValue(value: string | string[]): boolean {
   return Array.isArray(value) ? value.length === 0 : value.length === 0;
+}
+
+/** A ceiling on the item scan, so a forged count cannot spin the loop. */
+const maxItemScan = 60;
+
+/**
+ * Read one repeating field's rows out of a submission.
+ *
+ * Shared by every action that saves repeating rows — page sections and offence
+ * pages — so the encoding the editor writes is read back in one place.
+ *
+ * The declared count bounds the scan rather than probing until a gap: a row
+ * removed from the middle of the editor would end the scan early otherwise and
+ * silently drop everything after it.
+ *
+ * A row with nothing in any field is dropped. That is the empty row the editor
+ * adds on "Add" and then nobody fills in, and saving it would put a blank card
+ * on the page. A row with *something* in it but a required part missing is an
+ * error instead, because dropping it would lose what was typed.
+ */
+export function readItems(
+  field: SectionField,
+  formData: FormData,
+): { items: SectionItem[]; error?: string } {
+  if (!field.item) return { items: [] };
+
+  const declared = Number(formData.get(itemCountName(field.key)) ?? 0);
+  const count = Number.isFinite(declared)
+    ? Math.min(Math.max(Math.trunc(declared), 0), maxItemScan)
+    : 0;
+
+  const items: SectionItem[] = [];
+  let error: string | undefined;
+
+  for (let index = 0; index < count; index += 1) {
+    const item: SectionItem = {};
+    let empty = true;
+
+    for (const sub of field.item.fields) {
+      const raw = formData.get(itemFieldName(field.key, index, sub.key));
+      const value = parseItemField(sub, typeof raw === "string" ? raw : "");
+
+      // A `select` always submits one of its options, so it says nothing about
+      // whether anyone wrote in the row. Left to count, every blank row would
+      // be "something typed" and bounce back as missing its other parts.
+      if (sub.kind !== "select" && !isEmptyValue(value)) empty = false;
+
+      item[sub.key] = value;
+    }
+
+    if (empty) continue;
+
+    for (const sub of field.item.fields) {
+      const value = item[sub.key] as string | string[];
+
+      // An icon or an option that is not one we have would render nothing at
+      // all, so it falls back rather than being stored and puzzled over later.
+      if (sub.kind === "icon" && !isIconName(value)) {
+        item[sub.key] = "document";
+      } else if (
+        sub.kind === "select" &&
+        !sub.options?.some((option) => option.value === value)
+      ) {
+        item[sub.key] = sub.options?.[0]?.value ?? "";
+      } else if (sub.required && isEmptyValue(value)) {
+        error ??= `${field.item.label} ${items.length + 1} needs its ${sub.label.toLowerCase()} filled in.`;
+      }
+    }
+
+    items.push(item);
+  }
+
+  if (error) return { items, error };
+
+  if (field.item.max && items.length > field.item.max) {
+    return {
+      items: items.slice(0, field.item.max),
+      error: `${field.label} can hold up to ${field.item.max}. The rest were not saved.`,
+    };
+  }
+
+  return { items };
 }
 
 // ---------------------------------------------------------------------------

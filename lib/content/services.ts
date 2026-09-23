@@ -1,11 +1,16 @@
 import type { IconName } from "@/components/ui/icons";
 
 /**
- * The service catalogue — single source of truth.
+ * The service catalogue as the site shipped with it.
  *
- * Drives the offence rail beneath the hero, the services mega-menu, and (later)
- * the /services page and the individual service pages. Statute references are
- * standard citations but should be confirmed by John before launch.
+ * No longer what the site renders: the catalogue is edited under Services in
+ * the CMS and read through `lib/cms/queries.ts`. This module is the seed that
+ * filled the `services` table and the fallback served when Supabase cannot be
+ * read — see `lib/cms/seed-data.ts`. The types below are still the definition
+ * of what a service *is*; an edit to the words belongs in the CMS.
+ *
+ * Statute references are standard citations but should be confirmed by John
+ * before launch.
  */
 
 export type Service = {
@@ -23,6 +28,17 @@ export type ServiceGroup = {
   heading: string;
   services: Service[];
 };
+
+/**
+ * The one group whose services are not motoring offences.
+ *
+ * An offence page treats its services differently: the reference line under
+ * the name is a descriptor ("Where most cases are heard") rather than a
+ * statute, so it is not read back as one, and the checklist does not ask for a
+ * driving record. The heading is editable in the CMS, which is why it is named
+ * here once and the service editor says what renaming it would change.
+ */
+export const representationGroup = "Representation";
 
 export const serviceGroups: ServiceGroup[] = [
   {
@@ -142,7 +158,7 @@ export const serviceGroups: ServiceGroup[] = [
     ],
   },
   {
-    heading: "Representation",
+    heading: representationGroup,
     services: [
       {
         name: "Police Station",
@@ -177,12 +193,3 @@ export const serviceGroups: ServiceGroup[] = [
     ],
   },
 ];
-
-export const allServices: Service[] = serviceGroups.flatMap(
-  (group) => group.services,
-);
-
-/** The compact set shown in the rail beneath the hero. */
-export const featuredServices: Service[] = allServices.filter(
-  (service) => service.featured,
-);

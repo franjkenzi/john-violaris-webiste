@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 
+import { DetachedActionForm } from "@/components/admin/detached-action-form";
 import { ImageField } from "@/components/admin/image-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { iconNames } from "@/components/ui/icons";
 import { cn } from "cn";
+import { useControlledAfterReset } from "@/hooks/use-controlled-after-reset";
 import { deleteBlogPost, saveBlogPost } from "@/lib/cms/blog/actions";
 import {
   emptyBlogPostValues,
@@ -75,6 +77,7 @@ export function BlogPostForm({ post, categories, services }: BlogPostFormProps) 
 
   const formId = useId();
   const formRef = useRef<HTMLFormElement>(null);
+  useControlledAfterReset(formRef);
   const alertRef = useRef<HTMLParagraphElement>(null);
 
   const [rows, setRows] = useState<Row[]>(() =>
@@ -135,386 +138,408 @@ export function BlogPostForm({ post, categories, services }: BlogPostFormProps) 
     });
   }
 
+  const deleteFormId = `${formId}-delete`;
+
   return (
-    <form ref={formRef} action={formAction} className="space-y-8">
-      {post ? <input type="hidden" name="id" value={post.id} /> : null}
-      {post ? (
-        <input type="hidden" name="previousSlug" value={post.values.slug} />
-      ) : null}
+    <>
+      <form ref={formRef} action={formAction} className="space-y-8">
+        {post ? <input type="hidden" name="id" value={post.id} /> : null}
+        {post ? (
+          <input type="hidden" name="previousSlug" value={post.values.slug} />
+        ) : null}
 
-      {state.message ? (
-        <p
-          ref={alertRef}
-          tabIndex={-1}
-          role={state.status === "error" ? "alert" : "status"}
-          className={cn(
-            "rounded-xl border px-4 py-3 text-sm outline-none",
-            state.status === "error"
-              ? "border-destructive/30 bg-destructive/5 text-destructive"
-              : "border-primary/30 bg-primary/5 text-foreground",
-          )}
-        >
-          {state.message}
-        </p>
-      ) : null}
-
-      {/* ------------------------------------------------------------------ */}
-      <section className="space-y-4 rounded-xl border p-4 md:p-5">
-        <h2 className="font-display text-lg font-semibold">The article</h2>
-
-        <Field
-          label="Title"
-          labelFor={`${formId}-title`}
-          error={state.fieldErrors.title}
-          errorId={errorId("title")}
-        >
-          <Input
-            {...fieldProps("title")}
-            onChange={(event) => {
-              if (!slugTouched) setSlug(slugify(event.target.value));
-            }}
-          />
-        </Field>
-
-        <Field
-          labelFor={`${formId}-slug`}
-          label="URL slug"
-          hint={`The article will live at /blog/${slug || "…"}`}
-          error={state.fieldErrors.slug}
-          errorId={errorId("slug")}
-        >
-          <Input
-            id={`${formId}-slug`}
-            name="slug"
-            value={slug}
-            aria-invalid={state.fieldErrors.slug ? true : undefined}
-            aria-describedby={errorId("slug")}
-            onChange={(event) => {
-              setSlugTouched(true);
-              setSlug(event.target.value);
-            }}
-          />
-        </Field>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field
-            labelFor={`${formId}-categoryId`}
-            label="Category"
-            error={state.fieldErrors.categoryId}
-            errorId={errorId("categoryId")}
+        {state.message ? (
+          <p
+            ref={alertRef}
+            tabIndex={-1}
+            role={state.status === "error" ? "alert" : "status"}
+            className={cn(
+              "rounded-xl border px-4 py-3 text-sm outline-none",
+              state.status === "error"
+                ? "border-destructive/30 bg-destructive/5 text-destructive"
+                : "border-primary/30 bg-primary/5 text-foreground",
+            )}
           >
-            <Select
-              id={`${formId}-categoryId`}
-              name="categoryId"
-              value={categoryId}
-              onChange={setCategoryId}
-            >
-              <option value="">No category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          <Field
-            labelFor={`${formId}-icon`}
-            label="Icon"
-            hint="Shown on the article card, beside the category."
-            error={state.fieldErrors.icon}
-            errorId={errorId("icon")}
-          >
-            <Select
-              id={`${formId}-icon`}
-              name="icon"
-              value={icon}
-              onChange={setIcon}
-            >
-              {iconNames.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </Select>
-          </Field>
-        </div>
-
-        <Field
-          labelFor={`${formId}-excerpt`}
-          label="Excerpt"
-          hint="The card summary, and the description search engines show. Aim for one or two sentences."
-          error={state.fieldErrors.excerpt}
-          errorId={errorId("excerpt")}
-        >
-          <Textarea rows={3} {...fieldProps("excerpt")} />
-        </Field>
-
-        <Field
-          labelFor={`${formId}-standfirst`}
-          label="Standfirst"
-          hint="The opening paragraph beneath the headline, before the first section."
-          error={state.fieldErrors.standfirst}
-          errorId={errorId("standfirst")}
-        >
-          <Textarea rows={3} {...fieldProps("standfirst")} />
-        </Field>
-      </section>
-
-      {/* ------------------------------------------------------------------ */}
-      <section className="space-y-4 rounded-xl border p-4 md:p-5">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <div>
-            <h2 className="font-display text-lg font-semibold">Body</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              One section per heading. Separate paragraphs with a blank line;
-              the list beneath is optional, one item per line.
-            </p>
-          </div>
-          <span className="text-sm text-muted-foreground tabular-nums">
-            {rows.length} {rows.length === 1 ? "section" : "sections"}
-          </span>
-        </div>
-
-        <input type="hidden" name={sectionCountField} value={rows.length} />
-
-        {rows.length === 0 ? (
-          <p className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
-            No sections yet. An article needs at least one before it can be
-            published.
+            {state.message}
           </p>
         ) : null}
 
-        <ol className="space-y-4">
-          {rows.map((row, index) => (
-            <li
-              key={row.key}
-              className={cn(
-                "rounded-lg border p-3 md:p-4",
-                state.sectionErrors[index] && "border-destructive/40 bg-destructive/5",
-              )}
+        {/* ------------------------------------------------------------------ */}
+        <section className="space-y-4 rounded-xl border p-4 md:p-5">
+          <h2 className="font-display text-lg font-semibold">The article</h2>
+
+          <Field
+            label="Title"
+            labelFor={`${formId}-title`}
+            error={state.fieldErrors.title}
+            errorId={errorId("title")}
+          >
+            <Input
+              {...fieldProps("title")}
+              onChange={(event) => {
+                if (!slugTouched) setSlug(slugify(event.target.value));
+              }}
+            />
+          </Field>
+
+          <Field
+            labelFor={`${formId}-slug`}
+            label="URL slug"
+            hint={`The article will live at /blog/${slug || "…"}`}
+            error={state.fieldErrors.slug}
+            errorId={errorId("slug")}
+          >
+            <Input
+              id={`${formId}-slug`}
+              name="slug"
+              value={slug}
+              aria-invalid={state.fieldErrors.slug ? true : undefined}
+              aria-describedby={errorId("slug")}
+              onChange={(event) => {
+                setSlugTouched(true);
+                setSlug(event.target.value);
+              }}
+            />
+          </Field>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field
+              labelFor={`${formId}-categoryId`}
+              label="Category"
+              error={state.fieldErrors.categoryId}
+              errorId={errorId("categoryId")}
             >
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <span className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-                  Section {index + 1}
-                </span>
-                <div className="flex items-center gap-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    disabled={index === 0}
-                    onClick={() => moveRow(index, -1)}
-                  >
-                    <ArrowUp aria-hidden="true" />
-                    <span className="sr-only">Move section {index + 1} up</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    disabled={index === rows.length - 1}
-                    onClick={() => moveRow(index, 1)}
-                  >
-                    <ArrowDown aria-hidden="true" />
-                    <span className="sr-only">Move section {index + 1} down</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      setRows((current) => current.filter((_, i) => i !== index))
-                    }
-                  >
-                    <Trash2 aria-hidden="true" />
-                    <span className="sr-only">Remove section {index + 1}</span>
-                  </Button>
-                </div>
-              </div>
+              <Select
+                id={`${formId}-categoryId`}
+                name="categoryId"
+                value={categoryId}
+                onChange={setCategoryId}
+              >
+                <option value="">No category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
 
-              <div className="space-y-3">
-                <Field label="Heading" labelFor={`${formId}-section-${index}-heading`}>
-                  <Input
-                    id={`${formId}-section-${index}-heading`}
-                    name={sectionField(index, "heading")}
-                    value={row.heading}
-                    onChange={(event) =>
-                      updateRow(index, "heading", event.target.value)
-                    }
-                  />
-                </Field>
-
-                <Field
-                  label="Paragraphs"
-                  labelFor={`${formId}-section-${index}-paragraphs`}
-                >
-                  <Textarea
-                    id={`${formId}-section-${index}-paragraphs`}
-                    name={sectionField(index, "paragraphs")}
-                    rows={6}
-                    value={row.paragraphs}
-                    onChange={(event) =>
-                      updateRow(index, "paragraphs", event.target.value)
-                    }
-                  />
-                </Field>
-
-                <Field
-                  label="Bulleted list"
-                  hint="Optional. One item per line."
-                  labelFor={`${formId}-section-${index}-list`}
-                >
-                  <Textarea
-                    id={`${formId}-section-${index}-list`}
-                    name={sectionField(index, "list")}
-                    rows={3}
-                    value={row.list}
-                    onChange={(event) => updateRow(index, "list", event.target.value)}
-                  />
-                </Field>
-              </div>
-
-              {state.sectionErrors[index] ? (
-                <p role="alert" className="mt-2 text-sm text-destructive">
-                  {state.sectionErrors[index]}
-                </p>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setRows((current) => [...current, newRow()])}
-        >
-          <Plus aria-hidden="true" />
-          Add section
-        </Button>
-      </section>
-
-      {/* ------------------------------------------------------------------ */}
-      <section className="space-y-4 rounded-xl border p-4 md:p-5">
-        <h2 className="font-display text-lg font-semibold">Presentation</h2>
-
-        <Field
-          label="Featured image"
-          hint="Optional. Shown at the top of the article. JPEG, PNG, WebP or AVIF, up to 5 MB."
-        >
-          <ImageField
-            name="featuredImage"
-            value={featuredImage}
-            onChange={setFeaturedImage}
-          />
-        </Field>
-
-        {featuredImage ? (
-          <Field
-            labelFor={`${formId}-featuredImageAlt`}
-            label="Image description"
-            hint="What the image shows, for anyone using a screen reader."
-            error={state.fieldErrors.featuredImageAlt}
-            errorId={errorId("featuredImageAlt")}
-          >
-            <Input {...fieldProps("featuredImageAlt")} />
-          </Field>
-        ) : null}
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field
-            labelFor={`${formId}-relatedService`}
-            label="Related service"
-            hint="Where the article sends a reader who wants help."
-            error={state.fieldErrors.relatedService}
-            errorId={errorId("relatedService")}
-          >
-            <Select
-              id={`${formId}-relatedService`}
-              name="relatedService"
-              value={relatedService}
-              onChange={setRelatedService}
+            <Field
+              labelFor={`${formId}-icon`}
+              label="Icon"
+              hint="Shown on the article card, beside the category."
+              error={state.fieldErrors.icon}
+              errorId={errorId("icon")}
             >
-              <option value="">None</option>
-              {services.map((service) => (
-                <option key={service.href} value={service.href}>
-                  {service.name}
-                </option>
-              ))}
-            </Select>
+              <Select
+                id={`${formId}-icon`}
+                name="icon"
+                value={icon}
+                onChange={setIcon}
+              >
+                {iconNames.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          </div>
+
+          <Field
+            labelFor={`${formId}-excerpt`}
+            label="Excerpt"
+            hint="The card summary, and the description search engines show. Aim for one or two sentences."
+            error={state.fieldErrors.excerpt}
+            errorId={errorId("excerpt")}
+          >
+            <Textarea rows={3} {...fieldProps("excerpt")} />
           </Field>
 
           <Field
-            labelFor={`${formId}-readTime`}
-            label="Read time"
-            hint="Left blank, this is worked out from the word count."
-            error={state.fieldErrors.readTime}
-            errorId={errorId("readTime")}
+            labelFor={`${formId}-standfirst`}
+            label="Standfirst"
+            hint="The opening paragraph beneath the headline, before the first section."
+            error={state.fieldErrors.standfirst}
+            errorId={errorId("standfirst")}
           >
-            <Input placeholder="8 min read" {...fieldProps("readTime")} />
+            <Textarea rows={3} {...fieldProps("standfirst")} />
           </Field>
-        </div>
-      </section>
+        </section>
 
-      {/* ------------------------------------------------------------------ */}
-      <section className="space-y-4 rounded-xl border p-4 md:p-5">
-        <h2 className="font-display text-lg font-semibold">Publication</h2>
-
-        <label className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            name="published"
-            checked={published}
-            onChange={(event) => setPublished(event.target.checked)}
-            className="mt-0.5 size-4 rounded border-input accent-primary"
-          />
-          <span className="text-sm">
-            <span className="font-medium">Published</span>
-            <span className="mt-0.5 block text-muted-foreground">
-              A published article is visible to everyone at its URL and listed
-              under Resources.
+        {/* ------------------------------------------------------------------ */}
+        <section className="space-y-4 rounded-xl border p-4 md:p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <div>
+              <h2 className="font-display text-lg font-semibold">Body</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                One section per heading. Separate paragraphs with a blank line;
+                the list beneath is optional, one item per line.
+              </p>
+            </div>
+            <span className="text-sm text-muted-foreground tabular-nums">
+              {rows.length} {rows.length === 1 ? "section" : "sections"}
             </span>
-          </span>
-        </label>
+          </div>
 
-        <Field
-          labelFor={`${formId}-publishedAt`}
-          label="Publication date"
-          hint="Left blank, publishing sets it to today. It orders the index."
-          error={state.fieldErrors.publishedAt}
-          errorId={errorId("publishedAt")}
-        >
-          <Input type="date" className="w-auto" {...fieldProps("publishedAt")} />
-        </Field>
-      </section>
+          <input type="hidden" name={sectionCountField} value={rows.length} />
 
-      {/* ------------------------------------------------------------------ */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <SaveButton isNew={!post} />
-          <Link
-            href="/admin/blog-posts"
-            className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          {rows.length === 0 ? (
+            <p className="rounded-lg border border-dashed px-4 py-8 text-center text-sm text-muted-foreground">
+              No sections yet. An article needs at least one before it can be
+              published.
+            </p>
+          ) : null}
+
+          <ol className="space-y-4">
+            {rows.map((row, index) => (
+              <li
+                key={row.key}
+                className={cn(
+                  "rounded-lg border p-3 md:p-4",
+                  state.sectionErrors[index] && "border-destructive/40 bg-destructive/5",
+                )}
+              >
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                    Section {index + 1}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === 0}
+                      onClick={() => moveRow(index, -1)}
+                    >
+                      <ArrowUp aria-hidden="true" />
+                      <span className="sr-only">Move section {index + 1} up</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === rows.length - 1}
+                      onClick={() => moveRow(index, 1)}
+                    >
+                      <ArrowDown aria-hidden="true" />
+                      <span className="sr-only">Move section {index + 1} down</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() =>
+                        setRows((current) => current.filter((_, i) => i !== index))
+                      }
+                    >
+                      <Trash2 aria-hidden="true" />
+                      <span className="sr-only">Remove section {index + 1}</span>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Field label="Heading" labelFor={`${formId}-section-${index}-heading`}>
+                    <Input
+                      id={`${formId}-section-${index}-heading`}
+                      name={sectionField(index, "heading")}
+                      value={row.heading}
+                      onChange={(event) =>
+                        updateRow(index, "heading", event.target.value)
+                      }
+                    />
+                  </Field>
+
+                  <Field
+                    label="Paragraphs"
+                    labelFor={`${formId}-section-${index}-paragraphs`}
+                  >
+                    <Textarea
+                      id={`${formId}-section-${index}-paragraphs`}
+                      name={sectionField(index, "paragraphs")}
+                      rows={6}
+                      value={row.paragraphs}
+                      onChange={(event) =>
+                        updateRow(index, "paragraphs", event.target.value)
+                      }
+                    />
+                  </Field>
+
+                  <Field
+                    label="Bulleted list"
+                    hint="Optional. One item per line."
+                    labelFor={`${formId}-section-${index}-list`}
+                  >
+                    <Textarea
+                      id={`${formId}-section-${index}-list`}
+                      name={sectionField(index, "list")}
+                      rows={3}
+                      value={row.list}
+                      onChange={(event) => updateRow(index, "list", event.target.value)}
+                    />
+                  </Field>
+                </div>
+
+                {state.sectionErrors[index] ? (
+                  <p role="alert" className="mt-2 text-sm text-destructive">
+                    {state.sectionErrors[index]}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setRows((current) => [...current, newRow()])}
           >
-            Back to all articles
-          </Link>
-          {post?.published ? (
-            <a
-              href={`/blog/${post.values.slug}`}
-              target="_blank"
-              rel="noopener"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            <Plus aria-hidden="true" />
+            Add section
+          </Button>
+        </section>
+
+        {/* ------------------------------------------------------------------ */}
+        <section className="space-y-4 rounded-xl border p-4 md:p-5">
+          <h2 className="font-display text-lg font-semibold">Presentation</h2>
+
+          <Field
+            label="Featured image"
+            hint="Optional. Shown at the top of the article. JPEG, PNG, WebP or AVIF, up to 5 MB."
+          >
+            <ImageField
+              name="featuredImage"
+              value={featuredImage}
+              onChange={setFeaturedImage}
+            />
+          </Field>
+
+          {featuredImage ? (
+            <Field
+              labelFor={`${formId}-featuredImageAlt`}
+              label="Image description"
+              hint="What the image shows, for anyone using a screen reader."
+              error={state.fieldErrors.featuredImageAlt}
+              errorId={errorId("featuredImageAlt")}
             >
-              View on the site
-              <ExternalLink className="size-3.5" aria-hidden="true" />
-            </a>
+              <Input {...fieldProps("featuredImageAlt")} />
+            </Field>
+          ) : null}
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field
+              labelFor={`${formId}-relatedService`}
+              label="Related service"
+              hint="Where the article sends a reader who wants help."
+              error={state.fieldErrors.relatedService}
+              errorId={errorId("relatedService")}
+            >
+              <Select
+                id={`${formId}-relatedService`}
+                name="relatedService"
+                value={relatedService}
+                onChange={setRelatedService}
+              >
+                <option value="">None</option>
+                {services.map((service) => (
+                  <option key={service.href} value={service.href}>
+                    {service.name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+
+            <Field
+              labelFor={`${formId}-readTime`}
+              label="Read time"
+              hint="Left blank, this is worked out from the word count."
+              error={state.fieldErrors.readTime}
+              errorId={errorId("readTime")}
+            >
+              <Input placeholder="8 min read" {...fieldProps("readTime")} />
+            </Field>
+          </div>
+        </section>
+
+        {/* ------------------------------------------------------------------ */}
+        <section className="space-y-4 rounded-xl border p-4 md:p-5">
+          <h2 className="font-display text-lg font-semibold">Publication</h2>
+
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              name="published"
+              checked={published}
+              onChange={(event) => setPublished(event.target.checked)}
+              className="mt-0.5 size-4 rounded border-input accent-primary"
+            />
+            <span className="text-sm">
+              <span className="font-medium">Published</span>
+              <span className="mt-0.5 block text-muted-foreground">
+                A published article is visible to everyone at its URL and listed
+                under Resources.
+              </span>
+            </span>
+          </label>
+
+          <Field
+            labelFor={`${formId}-publishedAt`}
+            label="Publication date"
+            hint="Left blank, publishing sets it to today. It orders the index."
+            error={state.fieldErrors.publishedAt}
+            errorId={errorId("publishedAt")}
+          >
+            <Input type="date" className="w-auto" {...fieldProps("publishedAt")} />
+          </Field>
+        </section>
+
+        {/* ------------------------------------------------------------------ */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <SaveButton isNew={!post} />
+            <Link
+              href="/admin/blog-posts"
+              className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              Back to all articles
+            </Link>
+            {post?.published ? (
+              <a
+                href={`/blog/${post.values.slug}`}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                View on the site
+                <ExternalLink className="size-3.5" aria-hidden="true" />
+              </a>
+            ) : null}
+          </div>
+
+          {post ? (
+            <Button
+              type="submit"
+              form={deleteFormId}
+              variant="destructive"
+              size="sm"
+            >
+              <Trash2 aria-hidden="true" />
+              Delete article
+            </Button>
           ) : null}
         </div>
-
-        {post ? <DeleteArticle id={post.id} title={post.values.title} /> : null}
-      </div>
-    </form>
+      </form>
+      {post ? (
+        <DetachedActionForm
+          id={deleteFormId}
+          action={deleteBlogPost}
+          confirmMessage={`Permanently delete "${post.values.title}"? This cannot be undone.`}
+          fields={{ id: post.id }}
+        />
+      ) : null}
+    </>
   );
 }
 
@@ -525,33 +550,6 @@ function SaveButton({ isNew }: { isNew: boolean }) {
     <Button type="submit" disabled={pending}>
       {pending ? "Saving…" : isNew ? "Create article" : "Save changes"}
     </Button>
-  );
-}
-
-/**
- * Deletion is permanent, so it asks first. The confirm sits on the form's
- * submit event rather than the button's click, so a keyboard submit is caught
- * too. A nested `<form>` is invalid HTML, which is why this is a sibling of the
- * editor form rather than inside it.
- */
-function DeleteArticle({ id, title }: { id: string; title: string }) {
-  return (
-    <form
-      action={deleteBlogPost}
-      onSubmit={(event) => {
-        const confirmed = window.confirm(
-          `Permanently delete "${title}"? This cannot be undone.`,
-        );
-
-        if (!confirmed) event.preventDefault();
-      }}
-    >
-      <input type="hidden" name="id" value={id} />
-      <Button type="submit" variant="destructive" size="sm">
-        <Trash2 aria-hidden="true" />
-        Delete article
-      </Button>
-    </form>
   );
 }
 

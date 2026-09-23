@@ -1,23 +1,18 @@
 "use server";
 
-import { isIconName } from "@/components/ui/icons";
 import { requireAdmin } from "@/lib/auth";
 import { formError, type CmsFormState } from "@/lib/cms/form";
 import { revalidateFor, type RevalidateTarget } from "@/lib/cms/revalidate";
 import {
   fieldName,
   findSection,
-  itemCountName,
-  itemFieldName,
   type SectionContent,
   type SectionDefinition,
-  type SectionField,
-  type SectionItem,
 } from "@/lib/cms/sections/schema";
 import {
   isEmptyValue,
   parseField,
-  parseItemField,
+  readItems,
   sectionValuesFrom,
 } from "@/lib/cms/sections/values";
 import { cmsWrite } from "@/lib/cms/write";
@@ -38,9 +33,6 @@ import { createClient } from "@/utils/supabase/server";
  * written — that check is what stops arbitrary rows being inserted into the
  * table by a hand-made request.
  */
-
-/** A ceiling on the item scan, so a forged count cannot spin the loop. */
-const maxItems = 60;
 
 export async function savePageSection(
   _previous: CmsFormState,
@@ -172,59 +164,6 @@ function readSubmittedValues(
   }
 
   return values;
-}
-
-/**
- * Read one repeating field's rows.
- *
- * The declared count bounds the scan rather than probing until a gap: a row
- * removed from the middle of the editor would end the scan early otherwise and
- * silently drop everything after it.
- *
- * A row with nothing in any field is dropped. That is the empty row the editor
- * adds on "Add" and then nobody fills in, and saving it would put a blank card
- * on the page.
- */
-function readItems(
-  field: SectionField,
-  formData: FormData,
-): { items: SectionItem[]; error?: string } {
-  if (!field.item) return { items: [] };
-
-  const declared = Number(formData.get(itemCountName(field.key)) ?? 0);
-  const count = Number.isFinite(declared)
-    ? Math.min(Math.max(Math.trunc(declared), 0), maxItems)
-    : 0;
-
-  const items: SectionItem[] = [];
-
-  for (let index = 0; index < count; index += 1) {
-    const item: SectionItem = {};
-    let empty = true;
-
-    for (const sub of field.item.fields) {
-      const raw = readString(formData, itemFieldName(field.key, index, sub.key));
-      const value = parseItemField(sub, raw);
-
-      // An icon that is not one we have would render nothing at all, so it
-      // falls back rather than being stored and puzzled over later.
-      item[sub.key] =
-        sub.kind === "icon" && !isIconName(value) ? "document" : value;
-
-      if (!isEmptyValue(value)) empty = false;
-    }
-
-    if (!empty) items.push(item);
-  }
-
-  if (field.item.max && items.length > field.item.max) {
-    return {
-      items: items.slice(0, field.item.max),
-      error: `${field.label} can hold up to ${field.item.max}. The rest were not saved.`,
-    };
-  }
-
-  return { items };
 }
 
 /**

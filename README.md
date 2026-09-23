@@ -106,9 +106,9 @@ Set the verified SRA number in central configuration when supplied.
 ## The CMS content layer
 
 `lib/cms/` is the path between the Supabase content tables and the site. The
-blog, the page copy and the fee schedule are served through it; the remaining
-admin sections are not built yet, so services and the offence pages still
-render from `lib/content/`. Sections are migrated one at a time.
+blog, the page copy, the fee schedule, the site settings, the service catalogue
+and the offence pages are all served through it; per-route SEO metadata is the
+one admin section not built yet. Sections were migrated one at a time.
 
 | Module            | Role                                                          |
 | ----------------- | ------------------------------------------------------------- |
@@ -122,6 +122,8 @@ render from `lib/content/`. Sections are migrated one at a time.
 | `form.ts`         | Shared form state and validation for the admin forms           |
 | `sections/`       | The editable page copy — registry, values, save action         |
 | `fees/`           | The fee schedule — field rules and mutations                   |
+| `services/`       | The service catalogue — field rules and mutations              |
+| `service-pages/`  | The offence pages — field rules and mutations                  |
 | `settings/`       | Site settings — the editable field list and its save action    |
 
 Public reads go through `utils/supabase/public.ts` — the publishable key and no
@@ -168,8 +170,9 @@ John's edits the next time anyone reset the database.
 The scripts run under plain `node` with `scripts/alias-hook.mjs`, which teaches
 it the `@/*` path alias so the generator can import exactly what the app imports.
 
-`lib/content/services.ts` remains the service catalogue. Concise service summaries
-live in `lib/content/service-descriptions.ts`. Check all professional claims,
+`lib/content/services.ts`, `service-descriptions.ts` and `service-detail.ts`
+are now the seed and the fallback for the service catalogue and the offence
+pages, as `blog.ts` and `fees.ts` are for theirs. Check all professional claims,
 statute references and marketing copy with John before publication. The older
 `lib/content/home.ts` retains previous draft content for reference; its placeholder
 reviews and career history are not rendered by the redesigned pages.
@@ -359,6 +362,52 @@ The enquiry emails read the live settings at send time rather than a snapshot
 taken when the module loaded, so an enquiry arriving an hour after John changes
 his telephone number quotes the new one.
 
+## Services and offence pages
+
+Two admin sections, one per table.
+
+**`/admin/services`** is the catalogue: the name, the menu group, the icon, the
+reference line under the name, the card summary, and whether the service sits
+in the rail of common charges beneath the hero. It drives the services
+mega-menu, the services explorer on the home and services pages, the footer's
+services column and that rail. The site layout reads the catalogue once and
+hands it to those client components through `ServiceCatalogueProvider`, the
+same arrangement as `SiteConfigProvider`; the footer takes it as a prop.
+
+- **The slug is fixed once a service exists.** `/services/<slug>` is the offence
+  page's address, and articles store it as their related service, the main
+  navigation links to one by hand, and search engines have the rest.
+- **Position is not a field.** The arrows move a service within its group; a
+  service added to a group, or moved to another, goes to the end of it; a new
+  group appears at the end of the menu. Groups sit where their first member
+  does, so a raw number would let one service drag its whole group to the top.
+- **Police station representation** links to its own page (`content.href`).
+  The save carries that link over, and it has no offence page to write.
+- The group named in `representationGroup` (`lib/content/services.ts`) is
+  treated as general crime on its pages: no statute sentence, no request for a
+  driving record. Renaming it in the CMS would change that, and the editor says
+  so beside the field.
+
+**`/admin/service-pages`** is the long-form page for each service: the heading
+and standfirst, up to three at-a-glance cards, the points examined, and the
+optional outcomes and ancillary-orders tables. The repeating groups use the
+same `ItemsField` and `readItems` as Website Content. A page is addressed by
+its service, and the first save creates it.
+
+- A draft saves with only a heading. Publishing — from the editor or from the
+  list — needs the rest, so a half-written page cannot go live.
+- A published service with no published page still resolves, with the general
+  copy it always had, rather than 404ing from a link the menu printed.
+- `process` is stored on every page but no page renders it, so it has no field;
+  the save carries it over. The copy every offence page shares — "Clarity
+  first", the checklist, the contact card — is template text, not editable
+  here.
+
+`20260923140000_sync_magistrates_court_page.sql` brought the Magistrates Court
+page in the database up to the site's wording before the switch. It had been
+rewritten in `lib/content/service-detail.ts` after it was seeded, and nothing
+noticed while the pages still rendered from the file.
+
 ## Reviews
 
 The reviews at `/admin/testimonials` are read only, and that is the point.
@@ -421,15 +470,11 @@ so set `NEXT_PUBLIC_APP_VERSION` explicitly if you deploy uncommitted work.
 This is the public frontend, enquiry capture, a CMS-managed blog and editable
 page copy — not the complete production system in `prd.md`.
 
-Three sections behind `/admin` are still placeholders:
+One section behind `/admin` is still a placeholder:
 `app/admin/[section]/page.tsx` validates the slug and renders nothing, so
-services, service pages and per-route SEO metadata are not editable, and those
-parts of the site still render from `lib/content/`. The sidebar marks them
-"Soon" and does not link to them — a link to a route that renders nothing reads
-as a broken page rather than an unbuilt one.
-
-The order the rest are planned in: services and the offence pages, then
-per-route SEO metadata.
+per-route SEO metadata is not editable. The sidebar marks it "Soon" and does
+not link to it — a link to a route that renders nothing reads as a broken page
+rather than an unbuilt one. It is the last section in the planned order.
 
 One part of the fees page is still static: the three-stage scope comparison in
 `FeesMatrix`, which reads `feeStages`, `feeInclusions` and `stageIncludes` from

@@ -8,11 +8,7 @@ import { notFound } from "next/navigation";
  * `blog-categories` no longer reach here at all. Keeping them listed would only
  * hide a routing mistake.
  */
-const sections = new Set([
-  "services",
-  "service-pages",
-  "seo-metadata",
-]);
+const sections = new Set(["seo-metadata"]);
 
 export default async function AdminSectionPage({
   params,

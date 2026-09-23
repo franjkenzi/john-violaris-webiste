@@ -116,6 +116,38 @@ export const getServicePageFor = cache(async function getServicePageFor(
   return data;
 });
 
+/** What the lists need to know about a page, without its whole body. */
+export type ServicePageSummary = Pick<
+  ServicePageRow,
+  "id" | "service_id" | "published" | "updated_at"
+> & { headline: string | null };
+
+/**
+ * Every offence page, drafts included, keyed by the service it belongs to.
+ *
+ * Only the headline is taken from the body: both lists show a page's status
+ * beside its service, and a page body is the largest thing in the CMS.
+ */
+export const listServicePages = cache(async function listServicePages(): Promise<
+  Record<string, ServicePageSummary>
+> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("service_pages")
+    .select("id, service_id, published, updated_at, headline:content->>headline")
+    .limit(listLimit)
+    .returns<ServicePageSummary[]>();
+
+  if (error) {
+    logFailure("service pages", error);
+
+    return {};
+  }
+
+  return Object.fromEntries((data ?? []).map((page) => [page.service_id, page]));
+});
+
 // ---------------------------------------------------------------------------
 // Fees
 // ---------------------------------------------------------------------------

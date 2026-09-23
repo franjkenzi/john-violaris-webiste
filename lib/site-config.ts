@@ -1,4 +1,4 @@
-import { allServices } from "@/lib/content/services";
+import type { Service } from "@/lib/content/services";
 
 /**
  * Site-wide settings: the shape, the defaults, and how the derived links are
@@ -235,31 +235,34 @@ const allCrimeHref = "/services/criminal-defence";
 /**
  * Footer link columns.
  *
- * The services column is derived from the catalogue rather than kept by hand,
- * so a service added to `serviceGroups` appears here without a second edit.
- * `wide` marks the column that runs in two tracks rather than one long list.
+ * A function of the published catalogue rather than a constant, so a service
+ * added, renamed or unpublished under Services changes this column with no
+ * second edit. `wide` marks the column that runs in two tracks rather than one
+ * long list.
  */
-export const footerNav: {
+export function footerNav(services: Service[]): {
   heading: string;
   links: NavLink[];
   wide?: boolean;
-}[] = [
-  {
-    heading: "Services",
-    wide: true,
-    links: [
-      ...allServices.filter((service) => service.href === allCrimeHref),
-      ...allServices.filter((service) => service.href !== allCrimeHref),
-    ].map((service) => ({ label: service.name, href: service.href })),
-  },
-  {
-    heading: "Information",
-    links: [
-      { label: "About John", href: "/about" },
-      { label: "Fees & Pricing", href: "/fees" },
-      { label: "Client Reviews", href: "/reviews" },
-      { label: "Resources", href: "/blog" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-];
+}[] {
+  return [
+    {
+      heading: "Services",
+      wide: true,
+      links: [
+        ...services.filter((service) => service.href === allCrimeHref),
+        ...services.filter((service) => service.href !== allCrimeHref),
+      ].map((service) => ({ label: service.name, href: service.href })),
+    },
+    {
+      heading: "Information",
+      links: [
+        { label: "About John", href: "/about" },
+        { label: "Fees & Pricing", href: "/fees" },
+        { label: "Client Reviews", href: "/reviews" },
+        { label: "Resources", href: "/blog" },
+        { label: "Contact", href: "/contact" },
+      ],
+    },
+  ];
+}

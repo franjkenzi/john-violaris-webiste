@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/layout/logo";
+import type { Service } from "@/lib/content/services";
 import { footerNav, type SiteConfig } from "@/lib/site-config";
 
-export function SiteFooter({ config }: { config: SiteConfig }) {
+export function SiteFooter({
+  config,
+  services,
+}: {
+  config: SiteConfig;
+  /** The published catalogue, flat, for the services column. */
+  services: Service[];
+}) {
   return (
     <footer className="editorial-footer">
       <Container>
@@ -21,7 +29,7 @@ export function SiteFooter({ config }: { config: SiteConfig }) {
               Across England & Wales
             </span>
           </div>
-          {footerNav.map((column) => (
+          {footerNav(services).map((column) => (
             <nav
               key={column.heading}
               className={column.wide ? "footer-services" : undefined}

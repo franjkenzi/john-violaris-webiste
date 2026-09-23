@@ -1,5 +1,11 @@
 /**
- * Per-offence content for the individual service pages.
+ * Per-offence content for the individual service pages, as the site shipped
+ * with it.
+ *
+ * No longer what the site renders: the pages are edited under Service pages in
+ * the CMS. This module is the seed that filled `service_pages` and the fallback
+ * served when Supabase cannot be read — the same arrangement as `services.ts`.
+ * An edit to the words belongs in the CMS; one made here reaches nothing.
  *
  * The headline, intro and the three "at a glance" penalty cards for ten of
  * these offences come straight from the `servicePages` object in

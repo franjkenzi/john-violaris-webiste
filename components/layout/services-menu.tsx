@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { Icon } from "@/components/ui/icons";
-import { serviceGroups } from "@/lib/content/services";
+import { useServiceCatalogue } from "@/components/layout/service-catalogue-provider";
 import { useSiteConfig } from "@/components/layout/site-config-provider";
 
 /** Delay before a hover-out actually closes, so the pointer can cross the gap. */
@@ -19,6 +19,7 @@ const CLOSE_DELAY_MS = 140;
  */
 export function ServicesMenu() {
   const config = useSiteConfig();
+  const { groups: serviceGroups } = useServiceCatalogue();
   const pathname = usePathname();
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);

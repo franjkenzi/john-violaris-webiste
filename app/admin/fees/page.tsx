@@ -3,12 +3,12 @@ import Link from "next/link";
 import { BadgePoundSterling, Plus } from "lucide-react";
 
 import { ClickableRow } from "@/components/admin/clickable-row";
-import { FeeReorder } from "@/components/admin/fee-reorder";
 import { PublishToggle } from "@/components/admin/publish-toggle";
+import { RowReorder } from "@/components/admin/row-reorder";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "cn";
 import { listFees } from "@/lib/cms/admin-queries";
-import { setFeePublished } from "@/lib/cms/fees/actions";
+import { moveFee, setFeePublished } from "@/lib/cms/fees/actions";
 
 export const metadata: Metadata = {
   title: "Fees",
@@ -109,11 +109,12 @@ export default async function AdminFeesPage() {
                       : `${fee.content.included?.length ?? 0} lines`}
                   </td>
                   <td className="px-2 py-2 align-top">
-                    <FeeReorder
+                    <RowReorder
                       id={fee.id}
                       label={fee.title}
                       isFirst={index === 0}
                       isLast={index === fees.length - 1}
+                      action={moveFee}
                     />
                   </td>
                 </ClickableRow>

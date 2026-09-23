@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { useId, useRef, useState } from "react";
+import { useServiceCatalogue } from "@/components/layout/service-catalogue-provider";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { Lines } from "@/components/ui/lines";
 import { servicesIntroDefaults } from "@/lib/content/pages";
 import type { ServicesIntroContent } from "@/lib/content/pages";
-import { serviceGroups } from "@/lib/content/services";
-import { serviceDescriptions } from "@/lib/content/service-descriptions";
 
 export function ServicesGrid({
   content = servicesIntroDefaults,
 }: {
   content?: ServicesIntroContent;
 }) {
+  const { groups: serviceGroups, descriptions: serviceDescriptions } =
+    useServiceCatalogue();
   const [active, setActive] = useState(0);
   const id = useId();
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);

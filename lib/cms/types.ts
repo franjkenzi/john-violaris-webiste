@@ -1,6 +1,6 @@
 import type { IconName } from "@/components/ui/icons";
 import type { ArticleBlock } from "@/lib/content/blog";
-import type { PenaltyCard } from "@/lib/content/service-detail";
+import type { ServiceDetail } from "@/lib/content/service-detail";
 import type { Service, ServiceGroup } from "@/lib/content/services";
 
 /**
@@ -65,17 +65,14 @@ export type ServiceRow = Timestamps & {
   content: ServiceContent;
 };
 
-/** `service_pages.content` — the long-form body of one offence page. */
-export type ServicePageContent = {
-  headline: string;
-  emphasis: string;
-  intro: string;
-  penalties: PenaltyCard[];
-  issuesHeading: string;
-  issuesIntro: string;
-  defenceIssues: { title: string; body: string }[];
-  process: { title: string; body: string }[];
-};
+/**
+ * `service_pages.content` — the long-form body of one offence page.
+ *
+ * Exactly the static `ServiceDetail`, not a copy of its fields. An earlier
+ * copy left out `outcomes` and `ancillaryOrders`, so a page read from Postgres
+ * would have type-checked while silently dropping two of its tables.
+ */
+export type ServicePageContent = ServiceDetail;
 
 export type ServicePageRow = Timestamps & {
   id: string;

@@ -1,0 +1,307 @@
+"use server";
+
+import { redirect } from "next/navigation";
+
+import { isIconName } from "@/components/ui/icons";
+import { requireAdmin } from "@/lib/auth";
+import {
+  formError,
+  formFailure,
+  readCheckbox,
+  readFields,
+  validateFields,
+  type CmsFormState,
+} from "@/lib/cms/form";
+import { revalidateFor } from "@/lib/cms/revalidate";
+import {
+  serviceFields,
+  serviceRules,
+  type ServiceField,
+} from "@/lib/cms/services/schema";
+import type { ServiceContent } from "@/lib/cms/types";
+import { cmsWrite } from "@/lib/cms/write";
+import { createClient } from "@/utils/supabase/server";
+
+/**
+ * Service catalogue mutations.
+ *
+ * Everything that changes what a visitor sees goes through `cmsWrite` or ends
+ * in `revalidateFor("services")`. The catalogue is in the header's mega-menu,
+ * so that sweeps the whole site — which is accurate rather than lazy, and why
+ * no caller passes a path.
+ */
+
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
+
+type StoredService = {
+  id: string;
+  slug: string;
+  sort_order: number;
+  content: ServiceContent;
+};
+
+/**
+ * The `sort_order` that puts a service last in `group`.
+ *
+ * One past the group's highest member. A group nobody has used yet starts at
+ * the next hundred after everything else, the banding the seed laid down, so
+ * it lands at the end of the menu with room to grow.
+ *
+ * Every service is read rather than filtered in the query: there are under
+ * twenty, and the new-group case needs the overall maximum anyway.
+ */
+async function endOfGroup(
+  supabase: SupabaseServerClient,
+  group: string,
+  excludeId: string | null,
+): Promise<number> {
+  const { data } = await supabase
+    .from("services")
+    .select("id, sort_order, content")
+    .returns<Pick<StoredService, "id" | "sort_order" | "content">[]>();
+
+  const others = (data ?? []).filter((row) => row.id !== excludeId);
+  const members = others.filter((row) => row.content.group === group);
+
+  if (members.length > 0) {
+    return Math.max(...members.map((row) => row.sort_order)) + 1;
+  }
+
+  const highest = Math.max(-1, ...others.map((row) => row.sort_order));
+
+  return (Math.floor(highest / 100) + 1) * 100;
+}
+
+/**
+ * Create or update a service.
+ *
+ * The slug is taken on create and never changed afterwards. `/services/<slug>`
+ * is the offence page's address, and articles store it as their related
+ * service, the main navigation links to one of them by hand, and search
+ * engines have the rest. A rename would break every one of those silently.
+ */
+export async function saveService(
+  _previous: CmsFormState<ServiceField>,
+  formData: FormData,
+): Promise<CmsFormState<ServiceField>> {
+  await requireAdmin();
+
+  const id = formData.get("id");
+  const serviceId = typeof id === "string" && id ? id : null;
+
+  const submitted = readFields(formData, serviceFields);
+  const published = readCheckbox(formData, "published");
+  const featured = readCheckbox(formData, "featured");
+
+  const supabase = await createClient();
+
+  // What the form does not carry: the slug once set, the position, and the
+  // police station's link to its own page.
+  let existing: StoredService | null = null;
+
+  if (serviceId) {
+    const { data } = await supabase
+      .from("services")
+      .select("id, slug, sort_order, content")
+      .eq("id", serviceId)
+      .maybeSingle<StoredService>();
+
+    if (!data) {
+      return formFailure(
+        submitted,
+        "This service no longer exists — it may have been deleted in another tab.",
+      );
+    }
+
+    existing = data;
+    submitted.slug = data.slug;
+  }
+
+  const validation = validateFields(submitted, serviceRules);
+
+  if (!validation.ok) {
+    return formError(submitted, validation.fieldErrors);
+  }
+
+  const values = validation.values;
+
+  if (!isIconName(values.icon)) {
+    return formError(values, { icon: "Choose an icon from the list." });
+  }
+
+  const content: ServiceContent = {
+    group: values.group,
+    icon: values.icon,
+    ...(values.statute ? { statute: values.statute } : {}),
+    ...(values.short ? { short: values.short } : {}),
+    ...(featured ? { featured: true } : {}),
+    ...(values.intro ? { intro: values.intro } : {}),
+    ...(existing?.content.href ? { href: existing.content.href } : {}),
+  };
+
+  // Staying in its group keeps its place; joining one puts it at the end.
+  const sortOrder =
+    existing && existing.content.group === values.group
+      ? existing.sort_order
+      : await endOfGroup(supabase, values.group, serviceId);
+
+  const state = await cmsWrite<ServiceField, { id: string } | null>({
+    entity: "services",
+    values,
+    successMessage: published ? "Service saved and published." : "Draft saved.",
+    run: async (client) =>
+      serviceId
+        ? client
+            .from("services")
+            .update({
+              name: values.name,
+              published,
+              sort_order: sortOrder,
+              content,
+            })
+            .eq("id", serviceId)
+            .select("id")
+            .maybeSingle()
+        : client
+            .from("services")
+            .insert({
+              slug: values.slug,
+              name: values.name,
+              published,
+              sort_order: sortOrder,
+              content,
+            })
+            .select("id")
+            .maybeSingle(),
+  });
+
+  if (state.status === "success" && !serviceId && state.data?.id) {
+    // Straight into the editor for the service that now exists, so the next
+    // save updates it rather than inserting a second one.
+    redirect(`/admin/services/${state.data.id}`);
+  }
+
+  // Rebuilt field by field rather than spread: `data` stays on the server.
+  return {
+    status: state.status,
+    message: state.message,
+    fieldErrors: state.fieldErrors,
+    values: state.values,
+  };
+}
+
+/**
+ * Publish or unpublish from the list.
+ *
+ * Unpublishing takes a service out of the menu, the footer, the services page
+ * and the rail beneath the hero, and its offence page stops resolving. The
+ * page's own row is untouched, so publishing again brings all of it back.
+ */
+export async function setServicePublished(id: string, published: boolean) {
+  await requireAdmin();
+
+  if (typeof id !== "string" || typeof published !== "boolean") return;
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("services")
+    .update({ published })
+    .eq("id", id);
+
+  if (error) {
+    console.error(`[cms] Failed to change publish state of service ${id}`, error);
+
+    return;
+  }
+
+  revalidateFor("services");
+}
+
+/**
+ * Move a service up or down within its group.
+ *
+ * Within, not across: the neighbour is the nearest `sort_order` in the same
+ * group. Swapping across a boundary would reorder the groups themselves, since
+ * a group sits where its first member does. Otherwise the same two-update swap
+ * as `moveFee`, and for the same reasons.
+ */
+export async function moveService(id: string, direction: "up" | "down") {
+  await requireAdmin();
+
+  if (typeof id !== "string" || (direction !== "up" && direction !== "down")) {
+    return;
+  }
+
+  const supabase = await createClient();
+
+  const { data: current } = await supabase
+    .from("services")
+    .select("id, sort_order, content")
+    .eq("id", id)
+    .maybeSingle<Pick<StoredService, "id" | "sort_order" | "content">>();
+
+  if (!current) return;
+
+  const { data: neighbour } = await supabase
+    .from("services")
+    .select("id, sort_order")
+    .eq("content->>group", current.content.group)
+    .filter("sort_order", direction === "up" ? "lt" : "gt", current.sort_order)
+    .order("sort_order", { ascending: direction !== "up" })
+    .limit(1)
+    .maybeSingle<{ id: string; sort_order: number }>();
+
+  // Already at the end of its group.
+  if (!neighbour) return;
+
+  const [{ error: firstError }, { error: secondError }] = await Promise.all([
+    supabase
+      .from("services")
+      .update({ sort_order: neighbour.sort_order })
+      .eq("id", current.id),
+    supabase
+      .from("services")
+      .update({ sort_order: current.sort_order })
+      .eq("id", neighbour.id),
+  ]);
+
+  if (firstError || secondError) {
+    console.error(
+      `[cms] Failed to reorder service ${id}`,
+      firstError ?? secondError,
+    );
+
+    return;
+  }
+
+  revalidateFor("services");
+}
+
+/**
+ * Delete a service and, by the foreign key's cascade, its offence page.
+ *
+ * The editor's confirm says so. Articles pointing at the service keep the link
+ * in their data but stop showing it, because the article page only links to a
+ * service it can find in the published catalogue.
+ */
+export async function deleteService(formData: FormData) {
+  await requireAdmin();
+
+  const id = formData.get("id");
+
+  if (typeof id !== "string") return;
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("services").delete().eq("id", id);
+
+  if (error) {
+    console.error(`[cms] Failed to delete service ${id}`, error);
+
+    return;
+  }
+
+  revalidateFor("services");
+  redirect("/admin/services");
+}

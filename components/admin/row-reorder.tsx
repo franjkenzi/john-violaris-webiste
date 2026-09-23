@@ -4,10 +4,9 @@ import { useTransition } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { moveFee } from "@/lib/cms/fees/actions";
 
 /**
- * Move a fee up or down the schedule.
+ * Move a row up or down an ordered list — fees, services.
  *
  * Not optimistic, unlike the publish toggle. A swap changes two rows and the
  * order of the whole list, and painting that before the server agrees would
@@ -15,25 +14,31 @@ import { moveFee } from "@/lib/cms/fees/actions";
  * neighbour is whichever row has the nearest `sort_order` rather than whichever
  * is next on screen. The buttons disable while the transition runs instead.
  *
+ * `action` is the entity's own Server Action, passed in the way
+ * `PublishToggle` takes one, so each list keeps its own rules about what
+ * counts as a neighbour.
+ *
  * `stopPropagation` because these sit inside a row that is itself a link to the
  * editor: without it, reordering would also navigate away from the list.
  */
-export function FeeReorder({
+export function RowReorder({
   id,
   label,
   isFirst,
   isLast,
+  action,
 }: {
   id: string;
   label: string;
   isFirst: boolean;
   isLast: boolean;
+  action: (id: string, direction: "up" | "down") => Promise<void>;
 }) {
   const [pending, startTransition] = useTransition();
 
   function move(direction: "up" | "down") {
     startTransition(async () => {
-      await moveFee(id, direction);
+      await action(id, direction);
     });
   }
 

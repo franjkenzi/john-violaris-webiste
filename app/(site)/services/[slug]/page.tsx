@@ -6,17 +6,41 @@ import { Container } from "@/components/ui/container";
 import { OnThisPage } from "@/components/ui/on-this-page";
 import { Icon } from "@/components/ui/icons";
 import { CtaBanner } from "@/components/layout/cta-banner";
-import { allServices, serviceGroups } from "@/lib/content/services";
-import { serviceDescriptions } from "@/lib/content/service-descriptions";
-import { serviceDetails } from "@/lib/content/service-detail";
-import { getSiteConfig } from "@/lib/cms/queries";
+import { representationGroup } from "@/lib/content/services";
+import {
+  getServiceDescriptions,
+  getServiceGroups,
+  getServicePage,
+  getServices,
+  getSiteConfig,
+} from "@/lib/cms/queries";
 import { whatsappHref } from "@/lib/site-config";
 
-function findService(slug: string) {
-  return allServices.find((service) => service.href === `/services/${slug}`);
+/**
+ * The published service at `/services/<slug>`, or undefined.
+ *
+ * Found in the catalogue rather than through the page join, and the difference
+ * is deliberate: a published service whose page is unwritten or still a draft
+ * is in the menu, so its URL has to render — with the general copy below —
+ * rather than 404 from a link the site itself printed.
+ */
+async function findService(slug: string) {
+  const services = await getServices();
+
+  return services.find((service) => service.href === `/services/${slug}`);
 }
-export function generateStaticParams() {
-  return allServices
+
+/**
+ * Prerender every published service at build time.
+ *
+ * `dynamicParams` is left at its default, so a service added after the build
+ * renders on first request rather than 404ing until the next deploy. Police
+ * station representation links to its own page and is left out here.
+ */
+export async function generateStaticParams() {
+  const services = await getServices();
+
+  return services
     .filter((service) => service.href.startsWith("/services/"))
     .map((service) => ({ slug: service.href.split("/").pop()! }));
 }
@@ -26,12 +50,15 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = findService(slug);
+  const [service, page, descriptions] = await Promise.all([
+    findService(slug),
+    getServicePage(slug),
+    getServiceDescriptions(),
+  ]);
   if (!service) return {};
-  const detail = serviceDetails[service.href];
   return {
     title: `${service.name} Solicitor`,
-    description: detail?.intro ?? serviceDescriptions[service.href]?.intro,
+    description: page?.detail.intro ?? descriptions[service.href]?.intro,
     alternates: { canonical: service.href },
   };
 }
@@ -41,17 +68,21 @@ export default async function ServicePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const service = findService(slug);
+  const [service, page, groups, descriptions, config] = await Promise.all([
+    findService(slug),
+    getServicePage(slug),
+    getServiceGroups(),
+    getServiceDescriptions(),
+    getSiteConfig(),
+  ]);
   if (!service) notFound();
-
-  const config = await getSiteConfig();
 
   // The offence is prefilled into the chat, so a message arriving from this
   // page already says what it is about. Null when no number is configured.
   const whatsapp = whatsappHref(config, service.name);
 
-  const detail = serviceDetails[service.href];
-  const group = serviceGroups.find((candidate) =>
+  const detail = page?.detail;
+  const group = groups.find((candidate) =>
     candidate.services.some((item) => item.href === service.href),
   );
   /*
@@ -69,7 +100,16 @@ export default async function ServicePage({
    * ask for a driving record. On a representation page it cannot: the client
    * may never have been accused of a motoring offence at all.
    */
-  const isMotoringOffence = group?.heading !== "Representation";
+  const isMotoringOffence = group?.heading !== representationGroup;
+  /*
+   * Present and non-empty. The editor stores neither table when it has no
+   * rows, but the content is a database value now, and an empty array should
+   * fall back rather than render a heading over an empty table.
+   */
+  const outcomes = detail?.outcomes?.length ? detail.outcomes : undefined;
+  const ancillaryOrders = detail?.ancillaryOrders?.length
+    ? detail.ancillaryOrders
+    : undefined;
   /* Mirrors the headings rendered below, in document order. */
   const sections = [
     ...(detail ? [{ id: "at-a-glance", label: "At a glance" }] : []),
@@ -78,7 +118,7 @@ export default async function ServicePage({
     ...(detail
       ? [{ id: "sentencing-and-outcomes", label: "Sentencing and outcomes" }]
       : []),
-    ...(detail?.ancillaryOrders
+    ...(ancillaryOrders
       ? [{ id: "ancillary-orders", label: "Ancillary orders" }]
       : []),
     { id: "what-to-share", label: "What to share with me" },
@@ -93,7 +133,7 @@ export default async function ServicePage({
         emphasis={detail?.emphasis ?? "Let’s understand your options."}
         description={
           detail?.intro ??
-          serviceDescriptions[service.href]?.intro ??
+          descriptions[service.href]?.intro ??
           "Personal advice and representation from John Violaris, across England and Wales."
         }
       />
@@ -176,7 +216,7 @@ export default async function ServicePage({
                   <div className="service-outcomes-table-wrap">
                     <table className="service-outcomes-table">
                       <caption>
-                        {detail.outcomes
+                        {outcomes
                           ? "Disposal options at the Magistrates Court"
                           : `Headline consequences for ${service.name}`}
                       </caption>
@@ -187,7 +227,7 @@ export default async function ServicePage({
                         </tr>
                       </thead>
                       <tbody>
-                        {(detail.outcomes ?? detail.penalties).map((row) => (
+                        {(outcomes ?? detail.penalties).map((row) => (
                           <tr key={row.label}>
                             <th scope="row">{row.label}</th>
                             <td>{row.note}</td>
@@ -196,7 +236,7 @@ export default async function ServicePage({
                       </tbody>
                     </table>
                   </div>
-                  {detail.ancillaryOrders && (
+                  {ancillaryOrders && (
                     <>
                       <h3 id="ancillary-orders">Ancillary orders</h3>
                       <p>
@@ -216,7 +256,7 @@ export default async function ServicePage({
                             </tr>
                           </thead>
                           <tbody>
-                            {detail.ancillaryOrders.map((row) => (
+                            {ancillaryOrders.map((row) => (
                               <tr key={row.label}>
                                 <th scope="row">{row.label}</th>
                                 <td>{row.note}</td>

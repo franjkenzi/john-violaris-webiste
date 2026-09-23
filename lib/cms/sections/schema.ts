@@ -65,11 +65,22 @@ export type FieldKind = "text" | "lines" | "prose" | "list" | "items";
 export type ItemField = {
   key: string;
   label: string;
-  /** `prose` stores paragraphs; `icon` offers the icon set; the rest are plain. */
-  kind: "text" | "textarea" | "prose" | "icon";
+  /**
+   * `prose` stores paragraphs; `icon` offers the icon set; `select` offers
+   * `options`; the rest are plain.
+   */
+  kind: "text" | "textarea" | "prose" | "icon" | "select";
   hint?: string;
   maxLength?: number;
   rows?: number;
+  /**
+   * A row that has anything in it must fill this in. Rows left entirely empty
+   * are still dropped rather than rejected — that is the row "Add" created and
+   * nobody used.
+   */
+  required?: boolean;
+  /** Required when `kind` is `select`. The first is the fallback. */
+  options?: { value: string; label: string }[];
 };
 
 export type SectionField = {
