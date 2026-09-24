@@ -1397,6 +1397,9 @@ body {
   line-height: 1.8;
   color: rgb(250 250 248 / 75%);
 }
+.page-intro-action {
+  margin-top: 32px;
+}
 .information-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

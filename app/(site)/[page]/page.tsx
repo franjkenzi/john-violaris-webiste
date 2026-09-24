@@ -30,6 +30,7 @@ import {
   feesScheduleDefaults,
   feesScopeDefaults,
   feesStagesDefaults,
+  leaveReviewLink,
   meetJohnDefaults,
   pageIntroDefaults,
   policeStationDefaults,
@@ -98,7 +99,18 @@ export default async function InformationPage({
 
   return (
     <>
-      <PageIntro {...intro} />
+      <PageIntro {...intro}>
+        {page === "reviews" && (
+          <a
+            href={leaveReviewLink.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="action-button"
+          >
+            {leaveReviewLink.label} <Icon name="arrowRight" size={17} />
+          </a>
+        )}
+      </PageIntro>
       {page === "about" && (
         <>
           {/* The link back to /about belongs on the home page, not here. */}

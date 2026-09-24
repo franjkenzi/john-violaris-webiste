@@ -707,6 +707,18 @@ export const blogIntroDefaults: PageIntroContent = {
     "Plain-English explanations of motoring law from a practising solicitor with over 20 years of criminal defence experience.",
 };
 
+/**
+ * The button under the reviews page opening, which the standfirst asks the
+ * visitor to use. It goes to ReviewSolicitors' own form for reviewing John, so
+ * a review left through it is collected by them like every other one on the
+ * page. Not in the CMS: the address is issued by ReviewSolicitors, and a typo
+ * in it would break the one thing the button is for.
+ */
+export const leaveReviewLink = {
+  label: "Leave a review",
+  href: "https://www.reviewsolicitors.co.uk/review/53461/byvPZJ3nkz",
+};
+
 export const pageIntroDefaults: Record<string, PageIntroContent> = {
   about: {
     eyebrow: "About John",
@@ -741,7 +753,7 @@ export const pageIntroDefaults: Record<string, PageIntroContent> = {
     title: "Verified reviews.",
     emphasis: "Independently collected.",
     description:
-      "Reviews left by John’s clients on ReviewSolicitors, the independent review site for the legal profession. Collected and published by them, not by this website.",
+      "Your views are encouraged and appreciated. Please remember to leave a review!",
   },
   contact: {
     eyebrow: "Speak to John",
