@@ -366,13 +366,13 @@ export default async function ServicePage({
               </aside>
               <aside className="service-fee-card">
                 <span className="eyebrow">Fees and next steps</span>
-                <h2>Know the proposed work before you decide.</h2>
+                <h2>Know the cost before you commit.</h2>
                 <p>
-                  Review the current draft schedule, then confirm the scope and
-                  fee for your own case directly with John.
+                  Once John has looked at your case, he will give you fixed
+                  costs for every eventuality. The first conversation is free.
                 </p>
                 <Link href="/fees" className="text-link">
-                  View the fee guide <Icon name="arrowRight" size={15} />
+                  How fees work <Icon name="arrowRight" size={15} />
                 </Link>
               </aside>
             </div>
