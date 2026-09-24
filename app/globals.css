@@ -1425,20 +1425,47 @@ body {
 .information-grid .text-link {
   margin-top: 25px;
 }
+/*
+  The fees text, set like Meet John: the opening paragraph as a serif lead on
+  the left, the rest as reading text on the right, closing on a highlighted
+  note about the free first conversation.
+*/
 .fees-body {
-  max-width: 720px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 90px;
   border-top: 1px solid var(--color-line);
-  padding-top: 40px;
-}
-.fees-body p {
-  font-size: 16px;
-  line-height: 1.9;
-}
-.fees-body p + p {
-  margin-top: 22px;
+  padding-top: 50px;
 }
 .information-grid + .fees-body {
   margin-top: 80px;
+}
+.fees-body .eyebrow {
+  color: var(--color-gold-ink);
+}
+.fees-body-lead {
+  margin-top: 24px;
+  font: 400 26px/1.45 var(--font-display);
+  letter-spacing: -0.4px;
+  color: var(--color-navy);
+}
+.fees-body-copy {
+  padding-top: 34px;
+}
+.fees-body-copy > p {
+  font-size: 15px;
+  line-height: 1.95;
+}
+.fees-body-copy > p + p {
+  margin-top: 18px;
+}
+.fees-body-copy > .fees-body-closing {
+  margin-top: 32px;
+  padding: 22px 26px;
+  background: var(--color-gold-pale);
+  border-left: 3px solid var(--color-gold);
+  font: italic 400 21px/1.5 var(--font-display);
+  color: var(--color-navy);
 }
 .contact-grid {
   display: grid;
@@ -1633,12 +1660,25 @@ body {
   .information-grid {
     gap: 25px;
   }
+  .fees-body {
+    gap: 45px;
+  }
+  .fees-body-lead {
+    font-size: 22px;
+  }
 }
 @media (max-width: 767px) {
   .contact-grid,
   .service-detail-grid,
-  .information-grid {
+  .information-grid,
+  .fees-body {
     grid-template-columns: 1fr;
+  }
+  .fees-body {
+    gap: 0;
+  }
+  .fees-body-copy {
+    padding-top: 26px;
   }
   .service-contact-card {
     position: static;
@@ -1659,13 +1699,20 @@ body {
     font-size: 13px;
   }
   .fees-body {
-    padding-top: 30px;
-  }
-  .fees-body p {
-    font-size: 15px;
+    padding-top: 36px;
   }
   .information-grid + .fees-body {
     margin-top: 55px;
+  }
+  .fees-body-lead {
+    font-size: 22px;
+  }
+  .fees-body-copy > p {
+    font-size: 14px;
+  }
+  .fees-body-copy > .fees-body-closing {
+    padding: 18px 20px;
+    font-size: 19px;
   }
 }
 .editorial-footer {

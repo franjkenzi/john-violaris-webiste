@@ -91,6 +91,13 @@ export default async function InformationPage({
   const contact = own("details", contactDetailsDefaults);
   const prepare = own("prepare", contactPrepareDefaults);
 
+  // The fees text is laid out by position: the first paragraph is the lead,
+  // the last is the closing note, and the rest sit between them.
+  const feesBody = own("body", feesBodyDefaults);
+  const [feesLead, ...feesRest] = feesBody.body;
+  const feesClosing = feesRest.at(-1);
+  const feesMiddle = feesRest.slice(0, -1);
+
   return (
     <>
       <PageIntro {...intro}>
@@ -171,7 +178,18 @@ export default async function InformationPage({
                 ))}
               </div>
               <div className="fees-body">
-                <Paragraphs values={own("body", feesBodyDefaults).body} />
+                <div>
+                  <p className="eyebrow">
+                    <span className="small-rule" /> {feesBody.eyebrow}
+                  </p>
+                  <p className="fees-body-lead">{feesLead}</p>
+                </div>
+                <div className="fees-body-copy">
+                  <Paragraphs values={feesMiddle} />
+                  {feesClosing ? (
+                    <p className="fees-body-closing">{feesClosing}</p>
+                  ) : null}
+                </div>
               </div>
             </Container>
           </section>

@@ -538,12 +538,18 @@ export const feesPreviewDefaults: FeesPreviewContent = {
 /**
  * The text beneath the numbered cards on the fees page. How fees are worked
  * out, not what they are: the site deliberately publishes no figures.
+ *
+ * The paragraphs are laid out by position: the first is the large lead beside
+ * the eyebrow, the last is set apart as the closing note, and any in between
+ * are ordinary text.
  */
 export type FeesBodyContent = {
+  eyebrow: string;
   body: string[];
 };
 
 export const feesBodyDefaults: FeesBodyContent = {
+  eyebrow: "How fees work",
   body: [
     "Fees can vary for several reasons, such as the number of hearings, their location, whether your case ends up at trial, whether an expert report is needed, how complex your case is etc.",
     "Once I’ve analysed your case and understood the course that it could take, I’ll provide you with fixed preparation and representation costs for every eventuality. Whether you need me for a single appearance or multiple, you’ll know how much it will cost in advance.",

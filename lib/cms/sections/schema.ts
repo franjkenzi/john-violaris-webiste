@@ -774,10 +774,12 @@ export const pageGroups: PageGroup[] = [
         description: "The text beneath the numbered cards on the fees page.",
         appearsOn: ["/fees"],
         fields: [
+          { ...eyebrow, hint: "The small capitals above the first paragraph." },
           {
             key: "body",
             label: "Text",
             kind: "prose",
+            hint: "The first paragraph is set large on the left, the last is highlighted as a closing note, and any in between are ordinary text.",
             required: true,
             maxLength: 800,
             rows: 12,
