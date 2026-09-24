@@ -266,8 +266,9 @@ single ones, for the same reason `readParagraphs` gives.
 
 ### Sections on more than one page
 
-Three sections appear on two routes — Meet John on `/` and `/about`, the police
-station feature on `/` and `/police-station`, the process on `/` and `/about`. Each is edited in one place, under the page it
+Four sections appear on two routes — Meet John on `/` and `/about`, the police
+station feature on `/` and `/police-station`, the questions on `/` and `/fees`,
+the process on `/` and `/about`. Each is edited in one place, under the page it
 belongs to, and every page that renders it reads it from there. `appearsOn` in
 the registry is what the editor shows and what the save revalidates, so the
 routes a change reaches are declared once rather than remembered.
@@ -298,15 +299,16 @@ itself. The SEO editor's "Reset to defaults" works the same way.
 
 ## Fees
 
-The site publishes no fee figures. `/fees` is its opening plus a few paragraphs
-on how fees are worked out, the `body` section of the Fees group under Website
-Content. The questions on the home page (`preview`) are in the same group.
+The site publishes no fee figures. `/fees` has its opening, a few paragraphs
+on how fees are worked out (`body`), three numbered cards (`stages`), the
+stage comparison in `FeesMatrix` (heading editable as `scope`) and the
+questions it shares with the home page (`preview`), all in the Fees group
+under Website Content.
 
-There used to be a fee schedule: fee cards, a full table, a three-stage scope
-comparison and an admin editor at `/admin/fees`. It was removed on 2026-09-24
-because John does not want fee details on the site, and
-`20260924150000_drop_fees.sql` drops the `fees` table it read from. Git
-history has it all.
+There used to be a fee schedule too: fee cards and a full price table, with
+an admin editor at `/admin/fees`. It was removed on 2026-09-24 because John
+does not want prices on the site, and `20260924150000_drop_fees.sql` drops the
+`fees` table it read from. Git history has it all.
 
 ## Site settings
 
@@ -547,6 +549,13 @@ structured data beyond the home page's (REQ-010–019), per-page generated
 share cards (the optional half of REQ-024), the redirect table and host/case
 redirects (REQ-025–030), and the SEO health checks and draft preview in the
 editor (REQ-048, REQ-052).
+
+One part of the fees page is still static: the three-stage scope comparison in
+`FeesMatrix`, which reads `feeStages`, `feeInclusions` and `stageIncludes` from
+`lib/content/fees.ts`. Only its heading is editable. Making the stages editable
+means the stage key stops being a union type and `stageIncludes` stops being a
+lookup against a fixed order, so it is a change to the component rather than
+another registry entry.
 
 Analytics, Search Console, the remaining Schema.org types, domain
 configuration and production launch remain separate work

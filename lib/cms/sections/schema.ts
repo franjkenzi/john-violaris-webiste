@@ -7,6 +7,8 @@ import {
   ctaDefaults,
   feesBodyDefaults,
   feesPreviewDefaults,
+  feesScopeDefaults,
+  feesStagesDefaults,
   heroDefaults,
   meetJohnDefaults,
   offenceStripDefaults,
@@ -764,7 +766,7 @@ export const pageGroups: PageGroup[] = [
     key: "fees",
     label: "Fees",
     description:
-      "The fees page, and the fees note on the home page. The site publishes no fee figures.",
+      "The fees page, and the questions it shares with the home page. The site publishes no fee figures.",
     sections: [
       introSection("fees"),
       {
@@ -785,11 +787,42 @@ export const pageGroups: PageGroup[] = [
         defaults: { ...feesBodyDefaults },
       },
       {
+        key: "stages",
+        label: "How fees are agreed",
+        description: "The three numbered cards beneath the text on the fees page.",
+        appearsOn: ["/fees"],
+        fields: [
+          {
+            key: "cards",
+            label: "Cards",
+            kind: "items",
+            item: {
+              label: "Card",
+              fields: [
+                { key: "eyebrow", label: "Eyebrow", kind: "text", maxLength: 60 },
+                { key: "title", label: "Title", kind: "text", maxLength: 120 },
+                { key: "body", label: "Text", kind: "textarea", maxLength: 600, rows: 3 },
+              ],
+              max: 8,
+            },
+          },
+        ],
+        defaults: { ...feesStagesDefaults },
+      },
+      {
+        key: "scope",
+        label: "What is covered — heading",
+        description: "The heading above the stage comparison table.",
+        appearsOn: ["/fees"],
+        fields: headingFields,
+        defaults: { ...feesScopeDefaults },
+      },
+      {
         key: "preview",
         label: "Honesty and questions",
         description:
-          "The free-consultation note and the frequently asked questions on the home page.",
-        appearsOn: ["/"],
+          "The free-consultation note and the frequently asked questions. Rendered on the home page and the fees page.",
+        appearsOn: ["/", "/fees"],
         fields: [
           eyebrow,
           headline,

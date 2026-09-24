@@ -5,6 +5,8 @@ import { PageIntro } from "@/components/pages/page-intro";
 import { AboutBackground } from "@/components/sections/about-background";
 import { CareerBand } from "@/components/sections/career-band";
 import { ContactEnquiryForm } from "@/components/sections/contact-enquiry-form";
+import { FeesMatrix } from "@/components/sections/fees-matrix";
+import { FeesPreview } from "@/components/sections/fees-preview";
 import { MeetJohn } from "@/components/sections/meet-john";
 import { PoliceStation } from "@/components/sections/police-station";
 import { PoliceStationDetail } from "@/components/sections/police-station-detail";
@@ -24,6 +26,9 @@ import {
   contactPrepareDefaults,
   ctaDefaults,
   feesBodyDefaults,
+  feesPreviewDefaults,
+  feesScopeDefaults,
+  feesStagesDefaults,
   leaveReviewLink,
   meetJohnDefaults,
   pageIntroDefaults,
@@ -155,13 +160,26 @@ export default async function InformationPage({
         </>
       )}
       {page === "fees" && (
-        <section className="section-space">
-          <Container>
-            <div className="fees-body">
-              <Paragraphs values={own("body", feesBodyDefaults).body} />
-            </div>
-          </Container>
-        </section>
+        <>
+          <section className="section-space">
+            <Container>
+              <div className="fees-body">
+                <Paragraphs values={own("body", feesBodyDefaults).body} />
+              </div>
+              <div className="information-grid">
+                {own("stages", feesStagesDefaults).cards.map((card) => (
+                  <article key={card.title}>
+                    <span className="eyebrow">{card.eyebrow}</span>
+                    <h2>{card.title}</h2>
+                    <p>{card.body}</p>
+                  </article>
+                ))}
+              </div>
+            </Container>
+          </section>
+          <FeesMatrix content={own("scope", feesScopeDefaults)} />
+          <FeesPreview content={own("preview", feesPreviewDefaults)} />
+        </>
       )}
       {page === "contact" && (
         <>

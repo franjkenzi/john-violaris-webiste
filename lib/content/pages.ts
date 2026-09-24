@@ -552,6 +552,41 @@ export const feesBodyDefaults: FeesBodyContent = {
   ],
 };
 
+/** The three numbered cards beneath that text. */
+export type FeesStagesContent = {
+  cards: { eyebrow: string; title: string; body: string }[];
+};
+
+export const feesStagesDefaults: FeesStagesContent = {
+  cards: [
+    {
+      eyebrow: "01 / Initial consultation",
+      title: "A conversation. Free.",
+      body: "Talk through what has happened and find out how John can help. There is no obligation to instruct him.",
+    },
+    {
+      eyebrow: "02 / Your case",
+      title: "A clear scope of work.",
+      body: "The work required depends on the allegation, the evidence and the stage of the case. John will discuss your individual requirements.",
+    },
+    {
+      eyebrow: "03 / Before you instruct",
+      title: "Fees discussed with you.",
+      body: "Ask what is included and whether further work or hearings could affect the cost. You can make your decision with that information to hand.",
+    },
+  ],
+};
+
+export const feesScopeDefaults: SectionHeading = {
+  eyebrow: "What is covered",
+  headline: ["Know what you are"],
+  headlineEmphasis: ["paying for."],
+  intro: [
+    "Three stages, and what each one includes.",
+    "Choose a stage to compare.",
+  ],
+};
+
 // ---------------------------------------------------------------------------
 // Contact
 // ---------------------------------------------------------------------------
