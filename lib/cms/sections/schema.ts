@@ -772,7 +772,7 @@ export const pageGroups: PageGroup[] = [
       {
         key: "body",
         label: "How fees work",
-        description: "The text beneath the opening of the fees page.",
+        description: "The text beneath the numbered cards on the fees page.",
         appearsOn: ["/fees"],
         fields: [
           {
@@ -789,7 +789,7 @@ export const pageGroups: PageGroup[] = [
       {
         key: "stages",
         label: "How fees are agreed",
-        description: "The three numbered cards beneath the text on the fees page.",
+        description: "The three numbered cards opening the fees page.",
         appearsOn: ["/fees"],
         fields: [
           {

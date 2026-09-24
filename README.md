@@ -299,8 +299,8 @@ itself. The SEO editor's "Reset to defaults" works the same way.
 
 ## Fees
 
-The site publishes no fee figures. `/fees` has its opening, a few paragraphs
-on how fees are worked out (`body`), three numbered cards (`stages`), the
+The site publishes no fee figures. `/fees` has its opening, three numbered
+cards (`stages`), a few paragraphs on how fees are worked out (`body`), the
 stage comparison in `FeesMatrix` (heading editable as `scope`) and the
 questions it shares with the home page (`preview`), all in the Fees group
 under Website Content.

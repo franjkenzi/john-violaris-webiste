@@ -1437,7 +1437,7 @@ body {
 .fees-body p + p {
   margin-top: 22px;
 }
-.fees-body + .information-grid {
+.information-grid + .fees-body {
   margin-top: 80px;
 }
 .contact-grid {
@@ -1664,7 +1664,7 @@ body {
   .fees-body p {
     font-size: 15px;
   }
-  .fees-body + .information-grid {
+  .information-grid + .fees-body {
     margin-top: 55px;
   }
 }

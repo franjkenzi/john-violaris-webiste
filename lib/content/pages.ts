@@ -536,8 +536,8 @@ export const feesPreviewDefaults: FeesPreviewContent = {
 };
 
 /**
- * Everything the fees page says beneath its opening. How fees are worked out,
- * not what they are: the site deliberately publishes no figures.
+ * The text beneath the numbered cards on the fees page. How fees are worked
+ * out, not what they are: the site deliberately publishes no figures.
  */
 export type FeesBodyContent = {
   body: string[];
@@ -552,7 +552,7 @@ export const feesBodyDefaults: FeesBodyContent = {
   ],
 };
 
-/** The three numbered cards beneath that text. */
+/** The three numbered cards opening the fees page, above that text. */
 export type FeesStagesContent = {
   cards: { eyebrow: string; title: string; body: string }[];
 };

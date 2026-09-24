@@ -163,9 +163,6 @@ export default async function InformationPage({
         <>
           <section className="section-space">
             <Container>
-              <div className="fees-body">
-                <Paragraphs values={own("body", feesBodyDefaults).body} />
-              </div>
               <div className="information-grid">
                 {own("stages", feesStagesDefaults).cards.map((card) => (
                   <article key={card.title}>
@@ -174,6 +171,9 @@ export default async function InformationPage({
                     <p>{card.body}</p>
                   </article>
                 ))}
+              </div>
+              <div className="fees-body">
+                <Paragraphs values={own("body", feesBodyDefaults).body} />
               </div>
             </Container>
           </section>
