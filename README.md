@@ -304,7 +304,9 @@ Content. The questions on the home page (`preview`) are in the same group.
 
 There used to be a fee schedule: fee cards, a full table, a three-stage scope
 comparison and an admin editor at `/admin/fees`. It was removed on 2026-09-24
-because John does not want fee details on the site. Git history has it all.
+because John does not want fee details on the site, and
+`20260924150000_drop_fees.sql` drops the `fees` table it read from. Git
+history has it all.
 
 ## Site settings
 
