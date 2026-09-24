@@ -1425,6 +1425,18 @@ body {
 .information-grid .text-link {
   margin-top: 25px;
 }
+.fees-body {
+  max-width: 720px;
+  border-top: 1px solid var(--color-line);
+  padding-top: 40px;
+}
+.fees-body p {
+  font-size: 16px;
+  line-height: 1.9;
+}
+.fees-body p + p {
+  margin-top: 22px;
+}
 .contact-grid {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
@@ -1642,6 +1654,12 @@ body {
   }
   .page-intro-description {
     font-size: 13px;
+  }
+  .fees-body {
+    padding-top: 30px;
+  }
+  .fees-body p {
+    font-size: 15px;
   }
 }
 .editorial-footer {

@@ -535,28 +535,20 @@ export const feesPreviewDefaults: FeesPreviewContent = {
   ],
 };
 
-/** The three numbered cards that open the fees page. */
-export type FeesStagesContent = {
-  cards: { eyebrow: string; title: string; body: string }[];
+/**
+ * Everything the fees page says beneath its opening. How fees are worked out,
+ * not what they are: the site deliberately publishes no figures.
+ */
+export type FeesBodyContent = {
+  body: string[];
 };
 
-export const feesStagesDefaults: FeesStagesContent = {
-  cards: [
-    {
-      eyebrow: "01 / Initial consultation",
-      title: "A conversation. Free.",
-      body: "Talk through what has happened and find out how John can help. There is no obligation to instruct him.",
-    },
-    {
-      eyebrow: "02 / Your case",
-      title: "A clear scope of work.",
-      body: "The work required depends on the allegation, the evidence and the stage of the case. John will discuss your individual requirements.",
-    },
-    {
-      eyebrow: "03 / Before you instruct",
-      title: "Fees discussed with you.",
-      body: "Ask what is included and whether further work or hearings could affect the cost. You can make your decision with that information to hand.",
-    },
+export const feesBodyDefaults: FeesBodyContent = {
+  body: [
+    "Fees can vary for several reasons, such as the number of hearings, their location, whether your case ends up at trial, whether an expert report is needed, how complex your case is etc.",
+    "Once I’ve analysed your case and understood the course that it could take, I’ll provide you with fixed preparation and representation costs for every eventuality. Whether you need me for a single appearance or multiple, you’ll know how much it will cost in advance.",
+    "Payments can be staged and I will charge you considerably less than a law firm would. Plus, you’d have the advantage of working with me directly rather than several faces with limited understanding of your background and instructions.",
+    "Our initial discussion about your case is free, so you have nothing to lose by booking a call with me.",
   ],
 };
 

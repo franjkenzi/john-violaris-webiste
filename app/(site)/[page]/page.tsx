@@ -5,9 +5,6 @@ import { PageIntro } from "@/components/pages/page-intro";
 import { AboutBackground } from "@/components/sections/about-background";
 import { CareerBand } from "@/components/sections/career-band";
 import { ContactEnquiryForm } from "@/components/sections/contact-enquiry-form";
-import { FeesMatrix } from "@/components/sections/fees-matrix";
-import { FeesSchedule } from "@/components/sections/fees-schedule";
-import { FeesPreview } from "@/components/sections/fees-preview";
 import { MeetJohn } from "@/components/sections/meet-john";
 import { PoliceStation } from "@/components/sections/police-station";
 import { PoliceStationDetail } from "@/components/sections/police-station-detail";
@@ -17,7 +14,7 @@ import { Container } from "@/components/ui/container";
 import { ReviewSolicitorsWidget } from "@/components/ui/review-solicitors";
 import { Icon } from "@/components/ui/icons";
 import { Lines, Paragraphs } from "@/components/ui/lines";
-import { getFees, getPagesContent, getSiteConfig } from "@/lib/cms/queries";
+import { getPagesContent, getSiteConfig } from "@/lib/cms/queries";
 import { seoMetadataFor } from "@/lib/cms/seo/metadata";
 import { resolveFrom } from "@/lib/cms/sections/resolve";
 import {
@@ -26,10 +23,7 @@ import {
   contactDetailsDefaults,
   contactPrepareDefaults,
   ctaDefaults,
-  feesPreviewDefaults,
-  feesScheduleDefaults,
-  feesScopeDefaults,
-  feesStagesDefaults,
+  feesBodyDefaults,
   leaveReviewLink,
   meetJohnDefaults,
   pageIntroDefaults,
@@ -93,9 +87,6 @@ export default async function InformationPage({
   const whatsapp = whatsappHref(config);
   const contact = own("details", contactDetailsDefaults);
   const prepare = own("prepare", contactPrepareDefaults);
-
-  // Only the fees page needs the schedule, so only it pays for the read.
-  const fees = page === "fees" ? await getFees() : [];
 
   return (
     <>
@@ -164,27 +155,13 @@ export default async function InformationPage({
         </>
       )}
       {page === "fees" && (
-        <>
-          <section className="section-space">
-            <Container>
-              <div className="information-grid">
-                {own("stages", feesStagesDefaults).cards.map((card) => (
-                  <article key={card.title}>
-                    <span className="eyebrow">{card.eyebrow}</span>
-                    <h2>{card.title}</h2>
-                    <p>{card.body}</p>
-                  </article>
-                ))}
-              </div>
-            </Container>
-          </section>
-          <FeesMatrix content={own("scope", feesScopeDefaults)} />
-          <FeesSchedule
-            content={own("schedule", feesScheduleDefaults)}
-            fees={fees}
-          />
-          <FeesPreview content={own("preview", feesPreviewDefaults)} />
-        </>
+        <section className="section-space">
+          <Container>
+            <div className="fees-body">
+              <Paragraphs values={own("body", feesBodyDefaults).body} />
+            </div>
+          </Container>
+        </section>
       )}
       {page === "contact" && (
         <>
