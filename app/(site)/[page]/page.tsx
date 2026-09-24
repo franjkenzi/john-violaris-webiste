@@ -5,7 +5,6 @@ import { PageIntro } from "@/components/pages/page-intro";
 import { AboutBackground } from "@/components/sections/about-background";
 import { CareerBand } from "@/components/sections/career-band";
 import { ContactEnquiryForm } from "@/components/sections/contact-enquiry-form";
-import { FeesMatrix } from "@/components/sections/fees-matrix";
 import { FeesPreview } from "@/components/sections/fees-preview";
 import { MeetJohn } from "@/components/sections/meet-john";
 import { PoliceStation } from "@/components/sections/police-station";
@@ -27,7 +26,6 @@ import {
   ctaDefaults,
   feesBodyDefaults,
   feesPreviewDefaults,
-  feesScopeDefaults,
   feesStagesDefaults,
   leaveReviewLink,
   meetJohnDefaults,
@@ -177,7 +175,6 @@ export default async function InformationPage({
               </div>
             </Container>
           </section>
-          <FeesMatrix content={own("scope", feesScopeDefaults)} />
           <FeesPreview content={own("preview", feesPreviewDefaults)} />
         </>
       )}

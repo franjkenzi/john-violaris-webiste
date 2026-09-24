@@ -577,16 +577,6 @@ export const feesStagesDefaults: FeesStagesContent = {
   ],
 };
 
-export const feesScopeDefaults: SectionHeading = {
-  eyebrow: "What is covered",
-  headline: ["Know what you are"],
-  headlineEmphasis: ["paying for."],
-  intro: [
-    "Three stages, and what each one includes.",
-    "Choose a stage to compare.",
-  ],
-};
-
 // ---------------------------------------------------------------------------
 // Contact
 // ---------------------------------------------------------------------------

@@ -7,7 +7,6 @@ import {
   ctaDefaults,
   feesBodyDefaults,
   feesPreviewDefaults,
-  feesScopeDefaults,
   feesStagesDefaults,
   heroDefaults,
   meetJohnDefaults,
@@ -808,14 +807,6 @@ export const pageGroups: PageGroup[] = [
           },
         ],
         defaults: { ...feesStagesDefaults },
-      },
-      {
-        key: "scope",
-        label: "What is covered — heading",
-        description: "The heading above the stage comparison table.",
-        appearsOn: ["/fees"],
-        fields: headingFields,
-        defaults: { ...feesScopeDefaults },
       },
       {
         key: "preview",

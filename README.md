@@ -300,15 +300,15 @@ itself. The SEO editor's "Reset to defaults" works the same way.
 ## Fees
 
 The site publishes no fee figures. `/fees` has its opening, three numbered
-cards (`stages`), a few paragraphs on how fees are worked out (`body`), the
-stage comparison in `FeesMatrix` (heading editable as `scope`) and the
+cards (`stages`), a few paragraphs on how fees are worked out (`body`) and the
 questions it shares with the home page (`preview`), all in the Fees group
 under Website Content.
 
-There used to be a fee schedule too: fee cards and a full price table, with
-an admin editor at `/admin/fees`. It was removed on 2026-09-24 because John
-does not want prices on the site, and `20260924150000_drop_fees.sql` drops the
-`fees` table it read from. Git history has it all.
+There used to be more: a fee schedule (fee cards and a full price table, with
+an admin editor at `/admin/fees`) and a three-stage "What is covered"
+comparison (`FeesMatrix`). Both were removed on 2026-09-24 at John's request,
+and `20260924150000_drop_fees.sql` drops the `fees` table the schedule read
+from. Git history has them.
 
 ## Site settings
 
@@ -549,13 +549,6 @@ structured data beyond the home page's (REQ-010–019), per-page generated
 share cards (the optional half of REQ-024), the redirect table and host/case
 redirects (REQ-025–030), and the SEO health checks and draft preview in the
 editor (REQ-048, REQ-052).
-
-One part of the fees page is still static: the three-stage scope comparison in
-`FeesMatrix`, which reads `feeStages`, `feeInclusions` and `stageIncludes` from
-`lib/content/fees.ts`. Only its heading is editable. Making the stages editable
-means the stage key stops being a union type and `stageIncludes` stops being a
-lookup against a fixed order, so it is a change to the component rather than
-another registry entry.
 
 Analytics, Search Console, the remaining Schema.org types, domain
 configuration and production launch remain separate work

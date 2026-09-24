@@ -2504,123 +2504,6 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════
-   FEE SCOPE — what each stage of instruction covers
-   ══════════════════════════════════════════════════════════ */
-.scope-section {
-  background: var(--color-cream);
-  border-top: 1px solid var(--color-line);
-}
-.scope-section .eyebrow {
-  color: var(--color-gold-ink);
-}
-.scope-stages {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 34px;
-}
-.scope-stage {
-  cursor: pointer;
-  text-align: left;
-  padding: 20px 22px;
-  background: transparent;
-  border: 1px solid var(--color-line);
-  transition:
-    background 0.2s,
-    border-color 0.2s,
-    color 0.2s;
-}
-.scope-stage:hover:not(.active) {
-  background: var(--color-off);
-}
-.scope-stage.active {
-  background: var(--color-navy);
-  border-color: var(--color-navy);
-  color: var(--color-cream);
-}
-.scope-stage-name {
-  display: block;
-  font: 400 21px/1.25 var(--font-display);
-  color: var(--color-navy);
-  letter-spacing: -0.3px;
-}
-.scope-stage.active .scope-stage-name {
-  color: var(--color-cream);
-}
-.scope-stage-blurb {
-  display: block;
-  margin-top: 8px;
-  font-size: 11.5px;
-  line-height: 1.7;
-  color: var(--color-body);
-}
-.scope-stage.active .scope-stage-blurb {
-  color: rgb(250 250 248 / 72%);
-}
-.scope-table {
-  border-top: 1px solid var(--color-line);
-}
-.scope-row {
-  display: grid;
-  grid-template-columns: 1fr repeat(3, 128px);
-  align-items: center;
-  gap: 16px;
-  padding: 15px 16px;
-  border-bottom: 1px solid var(--color-line);
-}
-.scope-row:nth-child(even) {
-  background: var(--color-off);
-}
-.scope-row-head {
-  background: var(--color-navy) !important;
-  color: var(--color-cream);
-}
-.scope-row-head .scope-item,
-.scope-row-head .scope-cell {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-.scope-item {
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--color-body);
-}
-.scope-row-head .scope-item {
-  color: rgb(250 250 248 / 70%);
-}
-.scope-cell {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--color-gold-ink);
-}
-.scope-row-head .scope-cell {
-  color: var(--color-gold);
-}
-.scope-absent {
-  color: var(--color-quiet);
-}
-/* The chosen stage's column is tinted so the comparison has a subject. */
-.scope-table[data-stage="consultation"] .scope-cell[data-col="consultation"],
-.scope-table[data-stage="review"] .scope-cell[data-col="review"],
-.scope-table[data-stage="representation"]
-  .scope-cell[data-col="representation"] {
-  background: rgb(201 168 76 / 14%);
-  align-self: stretch;
-}
-.scope-note {
-  margin-top: 24px;
-  padding: 18px 22px;
-  background: var(--color-off);
-  border-left: 2px solid var(--color-gold);
-  font-size: 12px;
-  line-height: 1.85;
-  color: var(--color-quiet);
-}
-
-/* ══════════════════════════════════════════════════════════
    CONTENTS RAIL — scroll-spy for the long article/service pages
    ══════════════════════════════════════════════════════════ */
 .page-rail {
@@ -2687,9 +2570,6 @@ body {
 }
 
 @media (max-width: 1023px) {
-  .scope-row {
-    grid-template-columns: 1fr repeat(3, 92px);
-  }
   .career-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
@@ -2715,30 +2595,6 @@ body {
   .reasons-grid {
     grid-template-columns: 1fr;
   }
-  .scope-stages {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  .scope-stage {
-    padding: 15px 18px;
-  }
-  .scope-stage-name {
-    font-size: 19px;
-  }
-  /*
-    A three-way comparison does not fit a phone, so the table narrows to the
-    stage the reader picked — which is what the selector above is for.
-  */
-  .scope-row {
-    grid-template-columns: 1fr 56px;
-    gap: 12px;
-  }
-  .scope-table[data-stage="consultation"] .scope-cell:not([data-col="consultation"]),
-  .scope-table[data-stage="review"] .scope-cell:not([data-col="review"]),
-  .scope-table[data-stage="representation"]
-    .scope-cell:not([data-col="representation"]) {
-    display: none;
-  }
 }
 @media (max-width: 639px) {
   .career-band {
@@ -2755,9 +2611,6 @@ body {
   }
   .voice-card {
     padding: 26px 22px 22px;
-  }
-  .scope-item {
-    font-size: 12.5px;
   }
 }
 
