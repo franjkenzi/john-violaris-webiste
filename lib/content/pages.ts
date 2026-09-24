@@ -743,10 +743,10 @@ export const pageIntroDefaults: Record<string, PageIntroContent> = {
   },
   fees: {
     eyebrow: "Fees & consultation",
-    title: "Clarity from",
-    emphasis: "the first conversation.",
+    title: "Losing your freedom is costly",
+    emphasis: "saving it is priceless.",
     description:
-      "Understand the work involved and discuss the fees before deciding whether to instruct John.",
+      "You deserve expert representation without having to pay through the roof for it.",
   },
   reviews: {
     eyebrow: "Client reviews",
