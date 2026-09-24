@@ -1046,11 +1046,15 @@ body {
   background: var(--color-off);
   border-top: 1px solid var(--color-line);
 }
+/*
+  Top-aligned, not centred: centring re-centred the heading every time an
+  answer opened, so the whole left column slid down with it.
+*/
 .questions-grid {
   display: grid;
   grid-template-columns: 1fr 1.25fr;
   gap: 80px;
-  align-items: center;
+  align-items: start;
 }
 .fees-note .display-heading {
   font-size: 39px;
@@ -1061,24 +1065,28 @@ body {
   max-width: 365px;
   margin: 24px 0;
 }
-.questions-list details {
+.question {
   border-bottom: 1px solid var(--color-line);
 }
-.questions-list details:first-child {
+.question:first-child {
   border-top: 1px solid var(--color-line);
 }
-.questions-list summary {
-  list-style: none;
+.question h3 {
+  font: inherit;
+}
+.question button {
   display: flex;
   align-items: center;
   gap: 17px;
-  cursor: pointer;
+  width: 100%;
   padding: 24px 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
   font-size: 12px;
   color: var(--color-navy);
-}
-.questions-list summary::-webkit-details-marker {
-  display: none;
 }
 .question-number {
   color: var(--color-gold-ink);
@@ -1090,13 +1098,51 @@ body {
   font-weight: 300;
   transition: transform 0.2s;
 }
-.questions-list details[open] .question-toggle {
+.question[data-open] .question-toggle {
   transform: rotate(45deg);
 }
-.questions-list details > p {
+/*
+  The answer's row eases between 0fr and 1fr. `visibility` waits for the close
+  to finish before hiding the answer, and switches on at once when it opens.
+*/
+.question-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows 0.35s ease,
+    visibility 0s linear 0.35s;
+}
+.question[data-open] .question-answer {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows 0.35s ease,
+    visibility 0s;
+}
+.question-answer > div {
+  min-height: 0;
+  overflow: hidden;
+}
+.question-answer p {
   padding: 0 30px 25px;
   font-size: 12px;
   line-height: 1.9;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.question[data-open] .question-answer p {
+  opacity: 1;
+  transition: opacity 0.3s ease 0.1s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .question-answer,
+  .question[data-open] .question-answer,
+  .question-answer p,
+  .question[data-open] .question-answer p,
+  .question-toggle {
+    transition: none;
+  }
 }
 .closing-section {
   background: var(--color-gold);
@@ -1342,7 +1388,7 @@ body {
   .fees-note .display-heading {
     font-size: 34px;
   }
-  .questions-list summary {
+  .question button {
     font-size: 12px;
     gap: 12px;
   }

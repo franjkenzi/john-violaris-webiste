@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { QuestionsAccordion } from "@/components/sections/questions-accordion";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
 import { Lines, Paragraphs } from "@/components/ui/lines";
@@ -32,20 +33,7 @@ export function FeesPreview({
               {content.linkLabel} <Icon name="arrowRight" size={17} />
             </Link>
           </div>
-          <div className="questions-list">
-            {content.questions.map((item, index) => (
-              <details key={item.question} name="home-questions">
-                <summary>
-                  <span className="question-number">0{index + 1}</span>
-                  <span>{item.question}</span>
-                  <span className="question-toggle" aria-hidden="true">
-                    +
-                  </span>
-                </summary>
-                <p>{item.answer}</p>
-              </details>
-            ))}
-          </div>
+          <QuestionsAccordion questions={content.questions} />
         </div>
       </Container>
     </section>
