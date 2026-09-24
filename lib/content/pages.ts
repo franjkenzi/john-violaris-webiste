@@ -552,52 +552,6 @@ export const feesBodyDefaults: FeesBodyContent = {
   ],
 };
 
-export const feesScopeDefaults: SectionHeading = {
-  eyebrow: "What is covered",
-  headline: ["Know what you are"],
-  headlineEmphasis: ["paying for."],
-  intro: [
-    "Three stages, and what each one includes.",
-    "Choose a stage to compare.",
-  ],
-};
-
-/**
- * The fee schedule's heading and the notes beneath it.
- *
- * The notes are content, not chrome. The last of them says the figures are
- * still unconfirmed, and taking that down is part of launching — so it has to
- * be something John can delete, not a paragraph in a component.
- */
-export type FeesScheduleContent = SectionHeading & {
-  tableCaption: string;
-  notes: { label: string; body: string }[];
-};
-
-export const feesScheduleDefaults: FeesScheduleContent = {
-  eyebrow: "Draft fixed fees",
-  headline: ["A clear figure."],
-  headlineEmphasis: ["Before you commit."],
-  intro: [
-    "The figures below come from the supplied reference and remain subject to John’s confirmation before launch.",
-  ],
-  tableCaption: "Complete draft fee schedule from the supplied reference",
-  notes: [
-    {
-      label: "Included work:",
-      body: "The reference states that fixed fees include preparatory work and an inter-hearing consultation where relevant.",
-    },
-    {
-      label: "Travel:",
-      body: "Any travel or accommodation needed for a case outside London should be discussed and agreed in advance.",
-    },
-    {
-      label: "Before publication:",
-      body: "John must confirm every fee, what it includes, his VAT status and the applicable travel terms.",
-    },
-  ],
-};
-
 // ---------------------------------------------------------------------------
 // Contact
 // ---------------------------------------------------------------------------

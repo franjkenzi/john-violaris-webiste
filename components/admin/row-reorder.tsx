@@ -6,7 +6,7 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 /**
- * Move a row up or down an ordered list — fees, services.
+ * Move a row up or down an ordered list — services.
  *
  * Not optimistic, unlike the publish toggle. A swap changes two rows and the
  * order of the whole list, and painting that before the server agrees would

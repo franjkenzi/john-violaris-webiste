@@ -8,8 +8,8 @@ import type { ServiceRow } from "@/lib/cms/types";
 /**
  * The service editor's field list, rules and encoding.
  *
- * Shared by the form and the action that receives it, the same way
- * `lib/cms/fees/schema.ts` is, so the two cannot drift apart.
+ * Shared by the form and the action that receives it, so the two cannot
+ * drift apart.
  *
  * What is deliberately not a field:
  *

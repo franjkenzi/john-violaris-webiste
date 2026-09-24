@@ -82,34 +82,6 @@ export type ServicePageRow = Timestamps & {
 };
 
 // ---------------------------------------------------------------------------
-// Fees
-// ---------------------------------------------------------------------------
-
-/**
- * `fees.content`. `price` is a column, and text rather than numeric, because
- * real entries read "£400", "From £X" or "On enquiry".
- */
-export type FeeContent = {
-  description: string;
-  included: string[];
-  /**
-   * Listed in the full table but given no card of its own — the adjourned
-   * hearing fee, which is an add-on to an instruction rather than a way to
-   * instruct John.
-   */
-  tableOnly?: boolean;
-};
-
-export type FeeRow = Timestamps & {
-  id: string;
-  title: string;
-  price: string | null;
-  published: boolean;
-  sort_order: number;
-  content: FeeContent;
-};
-
-// ---------------------------------------------------------------------------
 // Testimonials
 // ---------------------------------------------------------------------------
 
@@ -249,11 +221,6 @@ export type Article = BlogPostContent & {
   /** Category name, resolved from `category_id`. */
   category: string;
   publishedAt: string | null;
-};
-
-export type Fee = FeeContent & {
-  name: string;
-  price: string;
 };
 
 export type Testimonial = TestimonialContent & {

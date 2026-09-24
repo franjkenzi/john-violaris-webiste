@@ -5,7 +5,6 @@ import { cache } from "react";
 import type {
   BlogCategoryRow,
   BlogPostRow,
-  FeeRow,
   SeoRow,
   ServicePageRow,
   ServiceRow,
@@ -146,49 +145,6 @@ export const listServicePages = cache(async function listServicePages(): Promise
   }
 
   return Object.fromEntries((data ?? []).map((page) => [page.service_id, page]));
-});
-
-// ---------------------------------------------------------------------------
-// Fees
-// ---------------------------------------------------------------------------
-
-export const listFees = cache(async function listFees(): Promise<FeeRow[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("fees")
-    .select("*")
-    .order("sort_order", { ascending: true })
-    .limit(listLimit)
-    .returns<FeeRow[]>();
-
-  if (error) {
-    logFailure("fees", error);
-
-    return [];
-  }
-
-  return data ?? [];
-});
-
-export const getFee = cache(async function getFee(
-  id: string,
-): Promise<FeeRow | null> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("fees")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle<FeeRow>();
-
-  if (error) {
-    logFailure(`fee ${id}`, error);
-
-    return null;
-  }
-
-  return data;
 });
 
 // ---------------------------------------------------------------------------

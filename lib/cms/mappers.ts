@@ -1,13 +1,11 @@
 import type {
   Article,
-  Fee,
   Service,
   ServiceGroup,
   Testimonial,
 } from "@/lib/cms/types";
 import type {
   BlogPostContent,
-  FeeContent,
   ServiceContent,
   TestimonialContent,
 } from "@/lib/cms/types";
@@ -86,28 +84,6 @@ export function toServiceDescriptions(
   }
 
   return descriptions;
-}
-
-type FeeLike = {
-  title: string;
-  price: string | null;
-  content: FeeContent;
-};
-
-export function toFee(row: FeeLike): Fee {
-  return {
-    name: row.title,
-    // A fee with no figure reads "On enquiry" rather than an empty cell: the
-    // fees page is a transparency promise (PRD §6.5) and a blank price reads
-    // like an omission.
-    price: row.price ?? "On enquiry",
-    description: row.content.description,
-    included: row.content.included,
-    // Spread rather than set: an absent flag stays absent on both sides, so
-    // `cms:verify` compares a row against the static fee it came from without
-    // one of them carrying a `tableOnly: undefined` the other lacks.
-    ...(row.content.tableOnly ? { tableOnly: true } : {}),
-  };
 }
 
 type TestimonialLike = {

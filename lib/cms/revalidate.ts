@@ -27,7 +27,6 @@ export type ContentEntity =
   | "page-sections"
   | "services"
   | "service-pages"
-  | "fees"
   | "testimonials"
   | "blog-posts"
   | "blog-categories"
@@ -70,7 +69,6 @@ const targets: Record<ContentEntity, Target[]> = {
   // The catalogue index plus the page itself, which the caller adds. The
   // sitemap dates an offence page by its last edit.
   "service-pages": [{ path: "/services" }, sitemap],
-  fees: [{ path: "/fees" }, { path: "/" }],
   // Homepage only today; the about page shows none.
   testimonials: [{ path: "/" }],
   "blog-posts": [{ path: "/blog" }, sitemap],
@@ -88,7 +86,6 @@ const adminSection: Record<ContentEntity, string> = {
   "page-sections": "/admin/website-content",
   services: "/admin/services",
   "service-pages": "/admin/service-pages",
-  fees: "/admin/fees",
   testimonials: "/admin/testimonials",
   "blog-posts": "/admin/blog-posts",
   "blog-categories": "/admin/blog-categories",

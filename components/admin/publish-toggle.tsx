@@ -16,7 +16,7 @@ import { cn } from "cn";
  * the row appears on a public website — not a preference being set.
  *
  * `action` is the entity's own Server Action, passed in rather than imported,
- * so one toggle serves articles, fees and whatever gets an admin list next.
+ * so one toggle serves articles, services and whatever gets an admin list next.
  * It stays a server action across that boundary: what crosses is a reference
  * React can call, not the function body.
  */

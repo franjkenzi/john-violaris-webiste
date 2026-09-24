@@ -96,8 +96,8 @@ export function readCheckbox(formData: FormData, field: string): boolean {
 /**
  * Split a textarea into a list, one item per line.
  *
- * Used for the list fields — what a fee includes, the points examined on an
- * offence page. Blank lines are dropped so a trailing newline does not become
+ * Used for the list fields — the bullet lists in an article and in the page
+ * sections. Blank lines are dropped so a trailing newline does not become
  * an empty bullet on the page.
  */
 export function readLines(value: string): string[] {

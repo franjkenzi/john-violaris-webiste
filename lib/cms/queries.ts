@@ -4,7 +4,6 @@ import { cache } from "react";
 
 import {
   toArticle,
-  toFee,
   toService,
   toServiceDescriptions,
   toServiceGroups,
@@ -13,7 +12,6 @@ import {
 import {
   seedBlogCategories,
   seedBlogPosts,
-  seedFees,
   seedServicePages,
   seedServices,
   seedTestimonials,
@@ -22,7 +20,6 @@ import type {
   Article,
   BlogCategoryRow,
   BlogPostContent,
-  Fee,
   SeoContent,
   Service,
   ServiceContent,
@@ -208,34 +205,6 @@ export const getServicePageSlugs = cache(
     );
   },
 );
-
-// ---------------------------------------------------------------------------
-// Fees
-// ---------------------------------------------------------------------------
-
-type FeeSelect = {
-  title: string;
-  price: string | null;
-  content: import("@/lib/cms/types").FeeContent;
-};
-
-export const getFees = cache(async function getFees(): Promise<Fee[]> {
-  return safely(
-    "Fee schedule",
-    async () => {
-      const { data, error } = await publicClient()
-        .from("fees")
-        .select("title, price, content")
-        .order("sort_order", { ascending: true })
-        .returns<FeeSelect[]>();
-
-      if (error) throw error;
-
-      return (data ?? []).map(toFee);
-    },
-    () => seedFees.map(toFee),
-  );
-});
 
 // ---------------------------------------------------------------------------
 // Testimonials

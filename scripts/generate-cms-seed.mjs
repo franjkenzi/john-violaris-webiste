@@ -24,7 +24,6 @@ import { join } from "node:path";
 import {
   seedBlogCategories,
   seedBlogPosts,
-  seedFees,
   seedServicePages,
   seedServices,
   seedSiteSettings,
@@ -120,24 +119,6 @@ const statements = [
         json(page.content),
       ]),
       where: "join public.services s on s.slug = v.service_slug",
-    }),
-  },
-  {
-    comment:
-      "The draft fee schedule from the supplied reference. Seeded published\n-- because that is what the site shows today. The figures, the VAT position\n-- and the travel terms are all still unconfirmed (PRD §25) and the fees page\n-- still says so — confirm them with John before launch.",
-    sql: seedInto({
-      table: "fees",
-      columns: ["title", "price", "published", "sort_order", "content"],
-      source: "v.title, v.price, v.published, v.sort_order, v.content",
-      from: "title, price, published, sort_order, content",
-      values: rows(seedFees, (fee) => [
-        text(fee.title),
-        text(fee.price),
-        bool(fee.published),
-        int(fee.sort_order),
-        json(fee.content),
-      ]),
-      where: "",
     }),
   },
   {
@@ -247,7 +228,6 @@ writeFileSync(join(migrationsDir, filename), `${header}${body}`, "utf8");
 const counts = {
   services: seedServices.length,
   service_pages: seedServicePages.length,
-  fees: seedFees.length,
   testimonials: seedTestimonials.length,
   blog_categories: seedBlogCategories.length,
   blog_posts: seedBlogPosts.length,

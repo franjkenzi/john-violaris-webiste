@@ -25,9 +25,9 @@ export default async function AdminWebsiteContentPage() {
         <h1 className="font-display text-2xl font-semibold">Website content</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
           The wording on the main pages — headings, introductions, the cards and
-          the steps. Services, fees and articles are managed in their own
-          sections. Anything you have not edited shows the wording the site was
-          built with.
+          the steps. Services and articles are managed in their own sections.
+          Anything you have not edited shows the wording the site was built
+          with.
         </p>
       </header>
 

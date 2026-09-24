@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import {
-  BadgePoundSterling,
   BriefcaseBusiness,
   FolderTree,
   FileText,
@@ -56,7 +55,6 @@ const contentItems: NavItem[] = [
   { title: "Website Content", href: "/admin/website-content", icon: FileText },
   { title: "Services", href: "/admin/services", icon: BriefcaseBusiness },
   { title: "Service Pages", href: "/admin/service-pages", icon: FolderTree },
-  { title: "Fees", href: "/admin/fees", icon: BadgePoundSterling },
   {
     title: "Reviews",
     href: "/admin/testimonials",

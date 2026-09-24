@@ -28,8 +28,8 @@ without stock portraits or invented client reviews.
   automatic dismissal on navigation or resizing to desktop.
 - About, Services, Police Station, Fees, Contact and Useful Information pages.
 - Fifteen service pages generated from a shared template and the service catalogue.
-- Full draft fee schedule carried over from the supplied reference, visibly marked
-  for confirmation before publication.
+- A fees page that explains how fees are worked out, deliberately without
+  figures.
 - A working enquiry form on the contact page: server-side validation with
   field-level errors, a honeypot and a per-address rate limit, storage in
   Supabase, and Resend notification and confirmation emails.
@@ -41,8 +41,6 @@ without stock portraits or invented client reviews.
 - Six complete legal-guide article pages based on the reference index cards.
 - Editable page copy: the hero, section headings, process steps, FAQ and the
   rest of the core-page wording, managed at `/admin/website-content`.
-- A CMS-managed fee schedule at `/admin/fees`, with drafts, reordering and
-  fees that appear in the table but get no card.
 - Site settings at `/admin/site-settings`: name, contact details and the SRA
   number, with the built-in value shown as each field’s placeholder.
 - A read-only view of the imported ReviewSolicitors reviews, with no edit path,
@@ -105,8 +103,8 @@ Set the verified SRA number in central configuration when supplied.
 ## The CMS content layer
 
 `lib/cms/` is the path between the Supabase content tables and the site. The
-blog, the page copy, the fee schedule, the site settings, the service catalogue,
-the offence pages and every public route's SEO metadata are served through it.
+blog, the page copy, the site settings, the service catalogue, the offence
+pages and every public route's SEO metadata are served through it.
 Sections were migrated one at a time.
 
 | Module            | Role                                                          |
@@ -120,7 +118,6 @@ Sections were migrated one at a time.
 | `revalidate.ts`   | Which routes to rebuild after a change                         |
 | `form.ts`         | Shared form state and validation for the admin forms           |
 | `sections/`       | The editable page copy — registry, values, save action         |
-| `fees/`           | The fee schedule — field rules and mutations                   |
 | `services/`       | The service catalogue — field rules and mutations              |
 | `service-pages/`  | The offence pages — field rules and mutations                  |
 | `seo/`            | Route registry, metadata resolution, SEO overrides             |
@@ -172,7 +169,7 @@ it the `@/*` path alias so the generator can import exactly what the app imports
 
 `lib/content/services.ts`, `service-descriptions.ts` and `service-detail.ts`
 are now the seed and the fallback for the service catalogue and the offence
-pages, as `blog.ts` and `fees.ts` are for theirs. Check all professional claims,
+pages, as `blog.ts` is for the blog. Check all professional claims,
 statute references and marketing copy with John before publication. The older
 `lib/content/home.ts` retains previous draft content for reference; its placeholder
 reviews and career history are not rendered by the redesigned pages.
@@ -269,9 +266,8 @@ single ones, for the same reason `readParagraphs` gives.
 
 ### Sections on more than one page
 
-Four sections appear on two routes — Meet John on `/` and `/about`, the police
-station feature on `/` and `/police-station`, the questions on `/` and `/fees`,
-the process on `/` and `/about`. Each is edited in one place, under the page it
+Three sections appear on two routes — Meet John on `/` and `/about`, the police
+station feature on `/` and `/police-station`, the process on `/` and `/about`. Each is edited in one place, under the page it
 belongs to, and every page that renders it reads it from there. `appearsOn` in
 the registry is what the editor shows and what the save revalidates, so the
 routes a change reaches are declared once rather than remembered.
@@ -302,37 +298,13 @@ itself. The SEO editor's "Reset to defaults" works the same way.
 
 ## Fees
 
-The fee schedule is managed at `/admin/fees`: add, edit, reorder, publish and
-unpublish. `FeesSchedule` reads it through `getFees()`, and
-`lib/content/fees.ts` is now the seed and the fallback.
+The site publishes no fee figures. `/fees` is its opening plus a few paragraphs
+on how fees are worked out, the `body` section of the Fees group under Website
+Content. The questions on the home page (`preview`) are in the same group.
 
-`price` is text and optional, and both matter. Text because real entries read
-"£400", "£750 / £1,100" or "From £X" — a numeric column would force every one
-of those into a shape it does not have and then the page would have to put the
-shape back. Optional because a fee whose figure is not settled should be
-publishable as "On enquiry" rather than held back or given an invented number;
-`toFee` supplies that wording, and the admin list prints the same thing so the
-list and the site never disagree.
-
-`content.tableOnly` marks a fee that belongs in the full table but gets no card
-of its own. There is one: the adjourned-hearing fee, which is an add-on to an
-instruction rather than a way to instruct John, so a card offering it beside
-the six real ones would misrepresent what it is. It used to live outside the
-CMS entirely, as `additionalDraftFee` in `lib/content/fees.ts`, which made it
-the one figure on the page no admin screen could reach;
-`20260922160000_add_adjourned_hearing_fee.sql` gives it a row.
-
-Reordering swaps two rows' `sort_order` rather than renumbering the list, so
-the gaps the seed left between them survive. The two updates are not in one
-transaction: a half-applied swap leaves two rows sharing a `sort_order`, which
-is untidy but not broken — nothing depends on the values being distinct and
-moving the fee again fixes it.
-
-The headings, the table caption and the notes beneath the schedule are page
-copy, edited under Website Content. That includes the note saying the figures
-are still to be confirmed, which is the point: taking it down is part of
-launching, so it has to be something John can delete rather than a paragraph
-in a component.
+There used to be a fee schedule: fee cards, a full table, a three-stage scope
+comparison and an admin editor at `/admin/fees`. It was removed on 2026-09-24
+because John does not want fee details on the site. Git history has it all.
 
 ## Site settings
 
@@ -573,13 +545,6 @@ structured data beyond the home page's (REQ-010–019), per-page generated
 share cards (the optional half of REQ-024), the redirect table and host/case
 redirects (REQ-025–030), and the SEO health checks and draft preview in the
 editor (REQ-048, REQ-052).
-
-One part of the fees page is still static: the three-stage scope comparison in
-`FeesMatrix`, which reads `feeStages`, `feeInclusions` and `stageIncludes` from
-`lib/content/fees.ts`. Only its heading is editable. Making the stages editable
-means the stage key stops being a union type and `stageIncludes` stops being a
-lookup against a fixed order, so it is a change to the component rather than
-another registry entry.
 
 Analytics, Search Console, the remaining Schema.org types, domain
 configuration and production launch remain separate work

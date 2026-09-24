@@ -19,7 +19,6 @@
  */
 import {
   toArticle,
-  toFee,
   toServiceDescriptions,
   toServiceGroups,
   toTestimonial,
@@ -27,13 +26,11 @@ import {
 import {
   seedBlogCategories,
   seedBlogPosts,
-  seedFees,
   seedServicePages,
   seedServices,
   seedTestimonials,
 } from "@/lib/cms/seed-data.ts";
 import { articles } from "@/lib/content/blog.ts";
-import { allDraftFees } from "@/lib/content/fees.ts";
 import { testimonials } from "@/lib/content/home.ts";
 import { serviceDescriptions } from "@/lib/content/service-descriptions.ts";
 import { serviceDetails } from "@/lib/content/service-detail.ts";
@@ -96,20 +93,6 @@ expect(
     seedServicePages.map((page) => [`/services/${page.serviceSlug}`, page.content]),
   ),
   serviceDetails,
-);
-
-expect(
-  "fee schedule",
-  seedFees.map(toFee),
-  allDraftFees.map((fee) => ({
-    name: fee.name,
-    price: fee.price,
-    description: fee.description,
-    included: fee.included,
-    // Spread, to match the mapper: an absent flag is absent on both sides
-    // rather than present and undefined on one of them.
-    ...(fee.tableOnly ? { tableOnly: true } : {}),
-  })),
 );
 
 expect(
