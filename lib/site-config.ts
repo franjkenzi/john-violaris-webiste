@@ -40,8 +40,6 @@ export type SiteSettings = {
   phoneE164: string;
   /** Any usual shape; normalised for `wa.me` by `resolveSiteConfig`. */
   whatsappNumber: string;
-  /** The TidyCal consultation URL. Empty routes to the contact page instead. */
-  bookingUrl: string;
   responseTime: string;
   /** Empty until John supplies it; no number is ever invented. */
   sraNumber: string;
@@ -57,7 +55,6 @@ export const siteSettingKeys = [
   "phoneDisplay",
   "phoneE164",
   "whatsappNumber",
-  "bookingUrl",
   "responseTime",
   "sraNumber",
 ] as const satisfies readonly (keyof SiteSettings)[];
@@ -81,7 +78,6 @@ export const siteSettingsDefaults: SiteSettings = {
     process.env.NEXT_PUBLIC_PHONE_DISPLAY || "Phone details pending",
   phoneE164: process.env.NEXT_PUBLIC_PHONE_NUMBER || "",
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
-  bookingUrl: process.env.NEXT_PUBLIC_BOOKING_URL || "",
   responseTime: "Response within 24 hours",
   sraNumber: "",
 };
@@ -115,7 +111,10 @@ export type SiteConfig = SiteSettings &
      * pointing at the contact page.
      */
     whatsappDigits: string | null;
-    /** The booking URL, or the contact page when none is configured. */
+    /**
+     * Where every "book a consultation" button goes: the contact section, which
+     * offers email, telephone and WhatsApp. There is no booking calendar.
+     */
     bookingHref: string;
   };
 
@@ -166,7 +165,7 @@ export function resolveSiteConfig(
     whatsappDigits: values.whatsappNumber
       ? normaliseWhatsappNumber(values.whatsappNumber)
       : null,
-    bookingHref: values.bookingUrl || "/contact#consultation",
+    bookingHref: "/contact#consultation",
   };
 }
 

@@ -43,13 +43,13 @@ without stock portraits or invented client reviews.
   rest of the core-page wording, managed at `/admin/website-content`.
 - A CMS-managed fee schedule at `/admin/fees`, with drafts, reordering and
   fees that appear in the table but get no card.
-- Site settings at `/admin/site-settings`: name, contact details, the booking
-  link and the SRA number, with the built-in value shown as each field’s
-  placeholder.
+- Site settings at `/admin/site-settings`: name, contact details and the SRA
+  number, with the built-in value shown as each field’s placeholder.
 - A read-only view of the imported ReviewSolicitors reviews, with no edit path,
   so an independently collected review stays one.
 - Page-specific titles, descriptions and canonical URLs; existing homepage structured data.
-- Consultation links route to the contact page until a real booking URL is configured.
+- Consultation links route to the contact page, which offers email, telephone
+  and WhatsApp. There is no booking calendar.
 
 ## Content and configuration
 
@@ -62,7 +62,6 @@ below remain the defaults, used until a setting is given a value:
 | `NEXT_PUBLIC_PHONE_NUMBER`    | Confirmed E.164 telephone number   |
 | `NEXT_PUBLIC_PHONE_DISPLAY`   | Human-readable telephone number    |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | WhatsApp number, any usual format  |
-| `NEXT_PUBLIC_BOOKING_URL`     | Confirmed TidyCal consultation URL |
 | `NEXT_PUBLIC_APP_VERSION`     | Build identifier for stale-tab detection (see below). Only needed where the deploy exposes neither a Vercel deployment id nor a git checkout. |
 
 Server-side variables. These are never sent to the browser and must not be
@@ -345,7 +344,7 @@ The split inside that file is the thing to understand:
 
 - **`SiteSettings`** is what John can edit: his name, role, monogram,
   jurisdiction, email, both forms of the telephone number, the WhatsApp number,
-  the booking link, the response promise and the SRA number. The defaults are
+  the response promise and the SRA number. The defaults are
   still read from the environment, so an existing deploy keeps working exactly
   as it did until someone edits a setting; a stored value simply wins over one.
 - **`deployment`** is configuration, not content: the canonical domain, the

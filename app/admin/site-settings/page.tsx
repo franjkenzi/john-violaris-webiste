@@ -21,7 +21,7 @@ export default async function AdminSiteSettingsPage() {
       <header className="mb-6">
         <h1 className="font-display text-2xl font-semibold">Site settings</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-          John&rsquo;s name, contact details and booking link. These appear
+          John&rsquo;s name, contact details and SRA number. These appear
           across the whole site &mdash; the masthead, the footer, every contact
           button and the enquiry emails. Leave a field blank to fall back to the
           value shown in grey.

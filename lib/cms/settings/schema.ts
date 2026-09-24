@@ -27,8 +27,8 @@ export type SettingSpec = {
   hint?: string;
   required?: boolean;
   maxLength: number;
-  /** `tel` and `url` get the matching mobile keyboard and browser validation. */
-  type?: "text" | "email" | "tel" | "url";
+  /** `tel` gets the matching mobile keyboard and browser validation. */
+  type?: "text" | "email" | "tel";
   /**
    * Shown greyed in the input when the setting has no value, so it is obvious
    * what the site falls back to rather than looking like an empty field.
@@ -127,17 +127,9 @@ export const settingGroups: SettingGroup[] = [
     ],
   },
   {
-    label: "Booking and credentials",
-    description: "The consultation link and the regulatory details.",
+    label: "Credentials",
+    description: "The regulatory details.",
     fields: [
-      {
-        key: "bookingUrl",
-        label: "Consultation booking link",
-        type: "url",
-        maxLength: 400,
-        placeholder: "https://tidycal.com/…",
-        hint: "The TidyCal link. Until it is set, every “Book a consultation” button goes to the contact page instead.",
-      },
       {
         key: "sraNumber",
         label: "SRA number",

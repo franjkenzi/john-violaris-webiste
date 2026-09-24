@@ -19,8 +19,9 @@ import { siteSettingKeys } from "@/lib/site-config";
  *
  * A blank field deletes its row rather than storing an empty string. An unset
  * setting is one the defaults in `lib/site-config.ts` answer for, and that is
- * exactly what no row means — so clearing the booking link puts the buttons
- * back to the contact page, which is the behaviour someone clearing it wants.
+ * exactly what no row means — so clearing the telephone number puts every call
+ * link back to the contact page, which is the behaviour someone clearing it
+ * wants.
  */
 
 export async function saveSiteSettings(
@@ -50,7 +51,7 @@ export async function saveSiteSettings(
 
     /*
      * Checked here rather than through `validateFields`, which knows about
-     * slugs, numbers and dates but not about the three shapes that matter on
+     * slugs, numbers and dates but not about the two shapes that matter on
      * this screen. Each message says what to write rather than what is wrong.
      */
     if (spec.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
@@ -60,11 +61,6 @@ export async function saveSiteSettings(
     if (spec.key === "phoneE164" && !/^\+\d{7,15}$/.test(value)) {
       fieldErrors[spec.key] =
         "Write the number in international format, starting with + and digits only — for example +447427260293.";
-    }
-
-    if (spec.type === "url" && !/^https?:\/\/\S+$/.test(value)) {
-      fieldErrors[spec.key] =
-        "A link needs to start with https:// — or leave it blank to send people to the contact page instead.";
     }
   }
 
