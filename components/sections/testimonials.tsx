@@ -13,26 +13,30 @@ const COLUMNS = 3;
 /**
  * Deal round-robin so neighbouring columns never show the same review.
  *
- * Below three reviews there is nothing to deal — a third of two leaves the last
- * column empty — so each column takes the whole list instead, rotated by its
- * own index. A review is then on screen more than once, which two reviews and
- * three columns make unavoidable; what the rotation and the staggered starts
- * buy is that the repeats are never level with each other. The section goes
- * back to dealing on its own as soon as a third review is added.
+ * Dealing only works once every column gets at least two reviews. Deal fewer
+ * and a column holds one review, which the track then repeats to fill itself —
+ * the same card four times over. Until then each column takes the whole list
+ * instead, rotated by its own index so it opens on a different review. A review
+ * is then on screen more than once, which so few reviews and three columns make
+ * unavoidable; what the rotation buys is that the repeats are never level with
+ * each other. The section goes back to dealing on its own at six reviews.
  */
 const columns = Array.from({ length: COLUMNS }, (_, column) =>
-  testimonials.length >= COLUMNS
+  testimonials.length >= COLUMNS * 2
     ? testimonials.filter((_, index) => index % COLUMNS === column)
     : testimonials.map(
         (_, index) => testimonials[(index + column) % testimonials.length],
       ),
 );
 
-/** Seconds per pass. Deliberately uneven so the columns drift out of step. */
-const durations = [26, 34, 30];
+/** Seconds per card. Deliberately uneven so the columns drift out of step. */
+const secondsPerCard = [6.5, 8.5, 7.5];
 
-/** Where each column starts in its pass, as a fraction. Uneven, for the same reason. */
-const starts = [0, 0.38, 0.71];
+/**
+ * Where each column starts, in cards. Under one card each, so the cards sit
+ * staggered against their neighbours without undoing the rotation above.
+ */
+const starts = [0, 0.4, 0.75];
 
 /**
  * Client voices, on navy so the section reads as a pause between the two light
@@ -43,7 +47,7 @@ const starts = [0, 0.38, 0.71];
  * would leave a phone showing only the first of them.
  *
  * Every review here is a verified one from John's ReviewSolicitors profile, and
- * the button underneath leads to the same reviews in full. There are two of
+ * the button underneath leads to the same reviews in full. There are three of
  * them today, so they come round repeatedly; the alternative was writing copy
  * to fill the gap, which is the one thing this section must not do.
  */
@@ -81,14 +85,14 @@ export function Testimonials({
         <div className="voices-marquee">
           <TestimonialColumn
             testimonials={testimonials}
-            duration={30}
+            secondsPerCard={7.5}
             className="voices-column-stacked"
           />
           {columns.map((column, index) => (
             <TestimonialColumn
               key={index}
               testimonials={column}
-              duration={durations[index]}
+              secondsPerCard={secondsPerCard[index]}
               start={starts[index]}
               className={`voices-column-split voices-column-${index + 1}`}
             />

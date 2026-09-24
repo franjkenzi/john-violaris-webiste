@@ -23,8 +23,8 @@ type Playback = {
  * copy shorter than the window would scroll blank space into view at the end of
  * every pass. `.voices-marquee` caps that window at 660px and the shortest card
  * runs around 200px, so four cards clear it whatever the reviews turn out to
- * say. Short lists are repeated up to this count — with two reviews on the site
- * the same pair simply comes round twice per pass.
+ * say. Short lists are repeated up to this count — with three reviews on the
+ * site the same three simply come round twice per pass.
  */
 const MIN_CARDS = 4;
 
@@ -50,6 +50,11 @@ function fillCopy(testimonials: Testimonial[]): Testimonial[] {
  * stoppable to be readable, so it pauses on hover and on focus. The same handle
  * is what `start` seeks with.
  *
+ * Speed and starting point are both given per card, not per pass. How many
+ * cards make up a pass depends on how many reviews there are and how often a
+ * short list had to be repeated, so a per-pass figure would quietly speed the
+ * column up, and move where it starts, every time a review was added.
+ *
  * The scroll runs regardless of `prefers-reduced-motion`, by request. Pausing
  * on hover and focus is what keeps the reviews readable; if the motion ever
  * needs to honour that setting again, gate this effect on `useReducedMotion`
@@ -57,17 +62,17 @@ function fillCopy(testimonials: Testimonial[]): Testimonial[] {
  */
 export function TestimonialColumn({
   testimonials,
-  duration = 24,
+  secondsPerCard = 6,
   start = 0,
   className = "",
 }: {
   testimonials: Testimonial[];
-  /** Seconds for one full pass. Vary it per column so they drift apart. */
-  duration?: number;
+  /** Seconds for one card to scroll past. Vary it per column so they drift apart. */
+  secondsPerCard?: number;
   /**
-   * Where in its own pass the column begins, as a fraction of one. Columns
-   * carrying the same reviews need this: without it they would come round
-   * together on first paint and show the same card side by side.
+   * How many cards into its track the column begins; fractions stagger the
+   * cards against the next column's. Columns carrying the same reviews also
+   * need their lists rotated, or they would open on the same review.
    */
   start?: number;
   className?: string;
@@ -75,10 +80,12 @@ export function TestimonialColumn({
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const playback = useRef<Playback | null>(null);
   const copy = fillCopy(testimonials);
+  const cards = copy.length;
 
   useEffect(() => {
-    if (!scope.current) return;
+    if (!scope.current || cards === 0) return;
 
+    const duration = secondsPerCard * cards;
     const controls = animate(
       scope.current,
       { y: "-50%" },
@@ -87,14 +94,14 @@ export function TestimonialColumn({
 
     // Seeking, not delaying: the column is already part-way through its pass on
     // the first frame rather than waiting to join in.
-    controls.time = duration * start;
+    controls.time = secondsPerCard * (start % cards);
 
     playback.current = controls;
     return () => {
       controls.stop();
       playback.current = null;
     };
-  }, [animate, duration, scope, start]);
+  }, [animate, cards, scope, secondsPerCard, start]);
 
   return (
     <div

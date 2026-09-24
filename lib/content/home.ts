@@ -173,22 +173,31 @@ export const processSteps: ProcessStep[] = [
 ];
 
 /**
- * The reviews on John's ReviewSolicitors profile, transcribed from it.
+ * The reviews on John's ReviewSolicitors profile, transcribed from it, newest
+ * first as the profile lists them.
  *
- * There are two of them, both verified and both five stars, and `/reviews`
- * serves the same two in full straight from ReviewSolicitors — so what the
+ * There are three of them, all verified and all five stars, and `/reviews`
+ * serves the same three in full straight from ReviewSolicitors — so what the
  * homepage says and what the visitor finds on clicking through are the same
  * reviews. The section repeats them rather than padding the gap with writing,
  * and fills out on its own as real ones are added here.
  *
- * Every word is the reviewer's. Henry's is quoted from the middle of a longer
- * review — the whole of it is on the profile — and Joanna's is her review
- * entire. PRD §17: nothing invented, and nothing presented as verified that
- * cannot be pointed at.
+ * Every word is the reviewer's. Teni's is the opening paragraph of a longer
+ * review and Henry's is quoted from the middle of one — the whole of each is on
+ * the profile — and Joanna's is her review entire. PRD §17: nothing invented,
+ * and nothing presented as verified that cannot be pointed at.
  *
  * Source: https://www.reviewsolicitors.co.uk/london/london/ioannis-violaris
  */
 export const testimonials: Testimonial[] = [
+  {
+    quote:
+      "I had an excellent experience with John throughout my driving offence case. He was extremely articulate, knowledgeable, supportive and reassuring from start to finish.",
+    name: "Teni",
+    matter: "Driving offences",
+    rating: 5,
+    source: "ReviewSolicitors",
+  },
   {
     quote:
       "John explained the situation clearly, identified that the prosecution’s evidence had weaknesses, and negotiated a resolution that kept me on the road. He was the only solicitor I called who actually listened to the details before quoting me.",
