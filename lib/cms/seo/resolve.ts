@@ -84,6 +84,25 @@ function set(value: string | undefined): string | undefined {
 }
 
 /**
+ * A route's title, description and canonical path, override first.
+ *
+ * Its own function because two readers need the same answer: the `<head>`,
+ * below, and the page's structured data, which should name the page exactly
+ * as its `<title>` does.
+ */
+export function resolvePageText(
+  path: string,
+  defaults: RouteDefaults,
+  override: SeoContent | null,
+): { title: string; description?: string; canonical: string } {
+  return {
+    title: set(override?.title) ?? defaults.title,
+    description: set(override?.description) ?? defaults.description,
+    canonical: set(override?.canonical) ?? path,
+  };
+}
+
+/**
  * Lay an override over a route's defaults.
  *
  * The share image has one more layer than the rest: an override's image, then
@@ -107,9 +126,11 @@ export function resolveMetadata(
   siteName: string,
   fallbackImage?: ShareImage,
 ): Metadata {
-  const title = set(override?.title) ?? defaults.title;
-  const description = set(override?.description) ?? defaults.description;
-  const canonical = set(override?.canonical) ?? path;
+  const { title, description, canonical } = resolvePageText(
+    path,
+    defaults,
+    override,
+  );
 
   const overrideImage = set(override?.ogImage);
   const image = overrideImage

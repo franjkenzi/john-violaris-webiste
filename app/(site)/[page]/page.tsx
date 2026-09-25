@@ -14,9 +14,17 @@ import { ServicesGrid } from "@/components/sections/services-grid";
 import { Container } from "@/components/ui/container";
 import { ReviewSolicitorsWidget } from "@/components/ui/review-solicitors";
 import { Icon } from "@/components/ui/icons";
+import { JsonLd } from "@/components/ui/json-ld";
 import { Lines, Paragraphs } from "@/components/ui/lines";
 import { getPagesContent, getSiteConfig } from "@/lib/cms/queries";
-import { seoMetadataFor } from "@/lib/cms/seo/metadata";
+import {
+  breadcrumbNode,
+  graph,
+  questionNodes,
+  schemaIds,
+  webPageNode,
+} from "@/lib/cms/seo/json-ld";
+import { seoMetadataFor, structuredDataFor } from "@/lib/cms/seo/metadata";
 import { resolveFrom } from "@/lib/cms/sections/resolve";
 import {
   aboutBackgroundDefaults,
@@ -49,6 +57,17 @@ import { whatsappHref } from "@/lib/site-config";
  */
 const pages = pageIntroDefaults;
 
+/**
+ * Schema.org's word for the page, where it has one. The rest are a plain
+ * `WebPage` — and /fees becomes an `FAQPage` below, when it has questions.
+ */
+const pageTypes: Record<string, "AboutPage" | "CollectionPage" | "ContactPage"> =
+  {
+    about: "AboutPage",
+    services: "CollectionPage",
+    contact: "ContactPage",
+  };
+
 export function generateStaticParams() {
   return Object.keys(pages).map((page) => ({ page }));
 }
@@ -75,9 +94,11 @@ export default async function InformationPage({
    * Meet John, which /about renders and the home page renders too. Fetching
    * all three together costs one round trip rather than three.
    */
-  const [groups, config] = await Promise.all([
+  const path = `/${page}`;
+  const [groups, config, structured] = await Promise.all([
     getPagesContent(page, "about", "shared"),
     getSiteConfig(),
+    structuredDataFor(path, pages[page].eyebrow),
   ]);
   const own = resolveFrom(groups[page]);
   const about = resolveFrom(groups.about);
@@ -97,9 +118,30 @@ export default async function InformationPage({
   const [feesLead, ...feesRest] = feesBody.body;
   const feesClosing = feesRest.at(-1);
   const feesMiddle = feesRest.slice(0, -1);
+  const feesPreview = own("preview", feesPreviewDefaults);
+
+  // The questions shown on /fees. The home page shows the same ones, but
+  // Google asks for a repeated FAQ to be marked up once, and this is where
+  // they are edited.
+  const questions = page === "fees" ? feesPreview.questions : [];
 
   return (
     <>
+      <JsonLd
+        data={graph([
+          ...structured.site,
+          webPageNode({
+            page: structured.page,
+            type: questions.length > 0 ? "FAQPage" : pageTypes[page],
+            about: page === "about" ? schemaIds.john : undefined,
+            mainEntity:
+              questions.length > 0 ? questionNodes(questions) : undefined,
+            hasBreadcrumb: true,
+          }),
+          // The trail `PageIntro` prints: Home / <eyebrow>.
+          breadcrumbNode(path, [{ name: intro.eyebrow, path }]),
+        ])}
+      />
       <PageIntro {...intro}>
         {page === "reviews" && (
           <a
@@ -193,7 +235,7 @@ export default async function InformationPage({
               </div>
             </Container>
           </section>
-          <FeesPreview content={own("preview", feesPreviewDefaults)} />
+          <FeesPreview content={feesPreview} />
         </>
       )}
       {page === "contact" && (
@@ -262,12 +304,6 @@ export default async function InformationPage({
                     <strong>{prepare.urgentHeading}</strong>
                     <Paragraphs values={prepare.urgentBody} />
                   </div>
-                  <p className="contact-preview-note">
-                    Preview: John’s phone, WhatsApp, booking URL, SRA number,
-                    practice arrangement and complaints information must be
-                    confirmed before launch. The email address should also be
-                    checked.
-                  </p>
                 </aside>
               </div>
             </Container>

@@ -9,8 +9,10 @@ import { ProcessSteps } from "@/components/sections/process-steps";
 import { ServicesGrid } from "@/components/sections/services-grid";
 import { Testimonials } from "@/components/sections/testimonials";
 import { WhyInstruct } from "@/components/sections/why-instruct";
+import { JsonLd } from "@/components/ui/json-ld";
 import { getPagesContent, getSiteConfig } from "@/lib/cms/queries";
-import { seoMetadataFor } from "@/lib/cms/seo/metadata";
+import { graph, webPageNode } from "@/lib/cms/seo/json-ld";
+import { seoMetadataFor, structuredDataFor } from "@/lib/cms/seo/metadata";
 import { resolveFrom } from "@/lib/cms/sections/resolve";
 import {
   ctaDefaults,
@@ -24,54 +26,10 @@ import {
   testimonialsIntroDefaults,
   whyInstructDefaults,
 } from "@/lib/content/pages";
-import { deployment, type SiteConfig } from "@/lib/site-config";
 
 /** Title, description and sharing tags, from the route registry and any SEO override. */
 export function generateMetadata(): Promise<Metadata> {
   return seoMetadataFor("/");
-}
-
-/**
- * Schema.org markup for the practice and for John himself.
- *
- * A function of the configuration rather than a constant: the name and the
- * role it publishes are settings now, and structured data that disagreed with
- * the page it sits on would be worse than none.
- */
-function buildJsonLd(config: SiteConfig) {
-  return {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "LegalService",
-        "@id": `${deployment.url}#practice`,
-        name: config.name,
-        url: deployment.url,
-        description:
-          "Criminal defence solicitor specialising in motoring offences and police station representation across England and Wales.",
-        areaServed: {
-          "@type": "AdministrativeArea",
-          name: config.jurisdiction,
-        },
-        provider: { "@id": `${deployment.url}#john` },
-      },
-      {
-        "@type": "Person",
-        "@id": `${deployment.url}#john`,
-        name: config.name,
-        jobTitle: config.role,
-        url: deployment.url,
-        knowsAbout: [
-          "Drink driving",
-          "Drug driving",
-          "Totting up and exceptional hardship",
-          "Special reasons",
-          "Speeding offences",
-          "Police station representation",
-        ],
-      },
-    ],
-  };
 }
 
 /**
@@ -85,7 +43,7 @@ function buildJsonLd(config: SiteConfig) {
  */
 export default async function HomePage() {
   const config = await getSiteConfig();
-  const jsonLd = buildJsonLd(config);
+  const structured = await structuredDataFor("/", config.name);
   const content = await getPagesContent(
     "home",
     "about",
@@ -104,11 +62,14 @@ export default async function HomePage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
+      {/* The practice and John, and nothing page-specific: the home page has
+          no breadcrumb, and its questions are marked up on /fees, where they
+          are edited, since Google wants a repeated FAQ marked up once. */}
+      <JsonLd
+        data={graph([
+          ...structured.site,
+          webPageNode({ page: structured.page, hasBreadcrumb: false }),
+        ])}
       />
       <Hero
         content={home("hero", heroDefaults)}

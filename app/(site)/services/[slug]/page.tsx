@@ -5,6 +5,7 @@ import { PageIntro } from "@/components/pages/page-intro";
 import { Container } from "@/components/ui/container";
 import { OnThisPage } from "@/components/ui/on-this-page";
 import { Icon } from "@/components/ui/icons";
+import { JsonLd } from "@/components/ui/json-ld";
 import { CtaBanner } from "@/components/layout/cta-banner";
 import { representationGroup } from "@/lib/content/services";
 import {
@@ -14,7 +15,14 @@ import {
   getServices,
   getSiteConfig,
 } from "@/lib/cms/queries";
-import { seoMetadataFor } from "@/lib/cms/seo/metadata";
+import {
+  breadcrumbNode,
+  graph,
+  serviceId,
+  serviceNode,
+  webPageNode,
+} from "@/lib/cms/seo/json-ld";
+import { seoMetadataFor, structuredDataFor } from "@/lib/cms/seo/metadata";
 import { whatsappHref } from "@/lib/site-config";
 
 /**
@@ -61,6 +69,7 @@ export default async function ServicePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const path = `/services/${slug}`;
   const [service, page, groups, descriptions, config] = await Promise.all([
     findService(slug),
     getServicePage(slug),
@@ -69,6 +78,7 @@ export default async function ServicePage({
     getSiteConfig(),
   ]);
   if (!service) notFound();
+  const structured = await structuredDataFor(path, `${service.name} Solicitor`);
 
   // The offence is prefilled into the chat, so a message arriving from this
   // page already says what it is about. Null when no number is configured.
@@ -94,6 +104,10 @@ export default async function ServicePage({
    * may never have been accused of a motoring offence at all.
    */
   const isMotoringOffence = group?.heading !== representationGroup;
+  const intro =
+    detail?.intro ??
+    descriptions[service.href]?.intro ??
+    "Personal advice and representation from John Violaris, across England and Wales.";
   /*
    * Present and non-empty. The editor stores neither table when it has no
    * rows, but the content is a database value now, and an empty array should
@@ -119,16 +133,31 @@ export default async function ServicePage({
   ];
   return (
     <>
+      <JsonLd
+        data={graph([
+          ...structured.site,
+          webPageNode({
+            page: structured.page,
+            about: serviceId(path),
+            hasBreadcrumb: true,
+          }),
+          // The trail `PageIntro` prints: Home / <service>.
+          breadcrumbNode(path, [{ name: service.name, path }]),
+          serviceNode({
+            path,
+            name: service.name,
+            description: intro,
+            category: group?.heading,
+            jurisdiction: config.jurisdiction,
+          }),
+        ])}
+      />
       <PageIntro
         /* The breadcrumb reads from `eyebrow`, so the offence name belongs here. */
         eyebrow={service.name}
         title={detail?.headline ?? service.name.replace(" · ", " / ")}
         emphasis={detail?.emphasis ?? "Let’s understand your options."}
-        description={
-          detail?.intro ??
-          descriptions[service.href]?.intro ??
-          "Personal advice and representation from John Violaris, across England and Wales."
-        }
+        description={intro}
       />
       {detail && (
         <section className="penalty-strip" aria-labelledby="at-a-glance">

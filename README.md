@@ -45,7 +45,8 @@ without stock portraits or invented client reviews.
   number, with the built-in value shown as each field’s placeholder.
 - A read-only view of the imported ReviewSolicitors reviews, with no edit path,
   so an independently collected review stays one.
-- Page-specific titles, descriptions and canonical URLs; existing homepage structured data.
+- Page-specific titles, descriptions and canonical URLs, and Schema.org
+  structured data on every public page.
 - Consultation links route to the contact page, which offers email, telephone
   and WhatsApp. There is no booking calendar.
 
@@ -95,8 +96,7 @@ from.
 Phone links still fall back to the contact page when unset and no fabricated
 number is dialled. Note that the contact page does currently render the
 `phoneDisplay` placeholder as though it were a number; that belongs with the
-telephone work rather than the WhatsApp integration. The contact page
-explains the outstanding preview details.
+telephone work rather than the WhatsApp integration.
 Confirm the existing email address (`contact@johnviolaris.com`) before launch.
 Set the verified SRA number in central configuration when supplied.
 
@@ -420,7 +420,9 @@ Three modules in `lib/cms/seo/`, and the split is the design:
 - **`resolve.ts`** decides the order (SEO requirement REQ-009): the root layout,
   then the route's defaults, then the override. It is pure, and `npm run
   seo:verify` tests the cases the requirement names.
-- **`metadata.ts`** is what the routes call: `seoMetadataFor(path)`.
+- **`metadata.ts`** is what the routes call: `seoMetadataFor(path)`, and
+  `structuredDataFor(path)` for the page's Schema.org markup.
+- **`json-ld.ts`** builds that markup. It is pure, like `resolve.ts`.
 
 Things that are easy to get wrong here:
 
@@ -481,6 +483,37 @@ override's image and an article's featured image.
   variable makes the bundler trace the entire project, `public/` included, into
   the function. `outputFileTracingIncludes` in `next.config.ts` names the same
   files for the rebuild on the server.
+
+### Structured data
+
+Every public page carries one JSON-LD block (`components/ui/json-ld.tsx`),
+built in `lib/cms/seo/json-ld.ts`. It is one connected graph, and its nodes
+refer to each other by `@id` instead of repeating a name or number (REQ-017):
+
+- **On every page:** the `WebSite`, the practice (`LegalService`) and John
+  (`Person`), from Site Settings and the published service catalogue. Their
+  `@id`s (`https://johnviolaris.com/#website`, `/#practice`, `/#john`) are
+  permanent once the site is live. Do not change them.
+- **Per page:** a `WebPage` (`AboutPage`, `ContactPage`, `CollectionPage` where
+  one fits), named as its `<title>` is, and a `BreadcrumbList` matching the
+  trail printed above the heading. Service pages add a `Service` provided by
+  the practice, and articles add a `BlogPosting` by John. `/fees` is an
+  `FAQPage` whose questions are the ones on the page. The home page shows the
+  same questions, but they are marked up only once, because Google asks for
+  that.
+
+Nothing unset is emitted. No `telephone` until a number is configured, no SRA
+`identifier` until one is saved in Site Settings. There is no `sameAs`,
+credential, address or price, because none has been confirmed. Reviews get no
+markup: they come from the ReviewSolicitors widget, and REQ-016 says not to
+duplicate those.
+
+`npm run schema:verify` fetches every route in the sitemap from a running
+server (`http://localhost:3000`, or pass another base URL) and checks each
+block. It confirms that every type and property is valid in the Schema.org
+vocabulary, that references resolve, that nothing is empty, and that the
+breadcrumb and FAQ match the page. Before launch, still check one page of each
+kind by hand in Google's Rich Results Test (REQ-019).
 
 ## Reviews
 
@@ -545,12 +578,12 @@ This is the public frontend, enquiry capture, a CMS-managed blog and editable
 page copy — not the complete production system in `prd.md`.
 
 Every admin section is built. From `seo_requirements.md`, still open:
-structured data beyond the home page's (REQ-010–019), per-page generated
-share cards (the optional half of REQ-024), the redirect table and host/case
+the custom JSON-LD field and the editor's schema warnings (REQ-018, and the
+CMS half of REQ-019), per-page generated share cards (the optional half of REQ-024), the redirect table and host/case
 redirects (REQ-025–030), and the SEO health checks and draft preview in the
 editor (REQ-048, REQ-052).
 
-Analytics, Search Console, the remaining Schema.org types, domain
+Analytics, Search Console, domain
 configuration and production launch remain separate work
 after that.
 

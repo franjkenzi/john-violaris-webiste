@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { OnThisPage } from "@/components/ui/on-this-page";
 import { Icon } from "@/components/ui/icons";
+import { JsonLd } from "@/components/ui/json-ld";
 import { CtaBanner } from "@/components/layout/cta-banner";
 import {
   getArticle,
@@ -13,7 +14,15 @@ import {
   getSiteConfig,
 } from "@/lib/cms/queries";
 
-import { seoMetadataFor } from "@/lib/cms/seo/metadata";
+import {
+  articleId,
+  blogPostingNode,
+  breadcrumbNode,
+  graph,
+  webPageNode,
+} from "@/lib/cms/seo/json-ld";
+import { seoMetadataFor, structuredDataFor } from "@/lib/cms/seo/metadata";
+import { blogIntroDefaults } from "@/lib/content/pages";
 import { slugify } from "@/lib/slug";
 
 /**
@@ -46,6 +55,7 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const path = `/blog/${slug}`;
 
   const [article, articles, services, config] = await Promise.all([
     getArticle(slug),
@@ -55,6 +65,10 @@ export default async function ArticlePage({
   ]);
 
   if (!article) notFound();
+
+  const structured = await structuredDataFor(path, article.title);
+  // What the index calls itself, which is also the breadcrumb back to it.
+  const index = blogIntroDefaults.eyebrow;
 
   const related = services.find(
     (service) => service.href === article.relatedService,
@@ -67,10 +81,37 @@ export default async function ArticlePage({
 
   return (
     <>
+      <JsonLd
+        data={graph([
+          ...structured.site,
+          webPageNode({
+            page: structured.page,
+            // The article is the subject, not the practice.
+            about: null,
+            mainEntity: { "@id": articleId(path) },
+            hasBreadcrumb: true,
+          }),
+          // The printed trail stops at the index; the article it leads to is
+          // the heading directly beneath it.
+          breadcrumbNode(path, [
+            { name: index, path: "/blog" },
+            { name: article.title, path },
+          ]),
+          blogPostingNode({
+            path,
+            headline: article.title,
+            description: structured.page.description,
+            image: article.featuredImage,
+            section: article.category,
+            datePublished: article.publishedAt,
+            dateModified: structured.lastModified,
+          }),
+        ])}
+      />
       <section className="article-intro">
         <Container>
           <Link href="/blog" className="breadcrumb">
-            Home <span>/</span> Useful information
+            Home <span>/</span> {index}
           </Link>
           <p className="eyebrow">
             <span className="small-rule" /> {article.category}

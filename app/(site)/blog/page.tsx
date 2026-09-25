@@ -3,9 +3,11 @@ import Link from "next/link";
 import { PageIntro } from "@/components/pages/page-intro";
 import { Container } from "@/components/ui/container";
 import { Icon } from "@/components/ui/icons";
+import { JsonLd } from "@/components/ui/json-ld";
 import { CtaBanner } from "@/components/layout/cta-banner";
 import { getArticles, getSiteConfig } from "@/lib/cms/queries";
-import { seoMetadataFor } from "@/lib/cms/seo/metadata";
+import { breadcrumbNode, graph, webPageNode } from "@/lib/cms/seo/json-ld";
+import { seoMetadataFor, structuredDataFor } from "@/lib/cms/seo/metadata";
 import { blogIntroDefaults } from "@/lib/content/pages";
 
 /**
@@ -20,13 +22,26 @@ export function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogIndexPage() {
-  const [articles, config] = await Promise.all([
+  const [articles, config, structured] = await Promise.all([
     getArticles(),
     getSiteConfig(),
+    structuredDataFor("/blog", intro.eyebrow),
   ]);
 
   return (
     <>
+      <JsonLd
+        data={graph([
+          ...structured.site,
+          webPageNode({
+            page: structured.page,
+            type: "CollectionPage",
+            hasBreadcrumb: true,
+          }),
+          // The trail `PageIntro` prints: Home / <eyebrow>.
+          breadcrumbNode("/blog", [{ name: intro.eyebrow, path: "/blog" }]),
+        ])}
+      />
       <PageIntro {...intro} />
       <section className="section-space">
         <Container>
