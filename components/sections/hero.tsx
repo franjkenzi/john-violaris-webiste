@@ -145,11 +145,19 @@ export function Hero({
                       scale: prefersReducedMotion ? 1 : activePortraitScale,
                     }}
                   >
+                    {/*
+                      The home page's largest paint. Already in the server
+                      HTML, so the browser finds it without a preload; what it
+                      needs is to be fetched first rather than queued behind
+                      the scripts. The Next 16 image docs recommend exactly
+                      this over `preload`.
+                    */}
                     <Image
                       src={content.portrait}
                       alt={content.portraitAlt}
                       fill
-                      preload
+                      loading="eager"
+                      fetchPriority="high"
                       sizes="(max-width: 639px) calc(100vw - 62px), (max-width: 1023px) 34vw, 28vw"
                       className="hero-portrait-image hero-portrait-image-primary"
                     />

@@ -1,9 +1,16 @@
-/** Star rating for testimonials. Accessible name is supplied via `aria-label`. */
+/**
+ * Star rating for testimonials.
+ *
+ * Read out as one image named "Rated 5 out of 5". The role is what makes the
+ * label count: `aria-label` on a plain paragraph is not allowed, and screen
+ * readers are free to ignore it.
+ */
 export function Stars({ rating }: { rating: number }) {
   const filled = Math.max(0, Math.min(5, Math.round(rating)));
   return (
     <p
       className="flex gap-0.5 text-gold"
+      role="img"
       aria-label={`Rated ${filled} out of 5`}
     >
       {Array.from({ length: 5 }, (_, i) => (

@@ -20,10 +20,16 @@ export function Logo({
   name?: string;
   role?: string;
 }) {
+  // The label names everything the link shows, in the order it shows it, so
+  // someone using voice control can say what they see (WCAG 2.5.3), and adds
+  // where it goes. The space between the two lines is for the same reason:
+  // without it the text reads "John ViolarisCriminal Defence Solicitor".
+  const label = compact ? `${name} — home` : `${name}, ${role} — home`;
+
   return (
-    <Link href="/" className="wordmark" aria-label={`${name} — home`}>
+    <Link href="/" className="wordmark" aria-label={label}>
       <span>{name}</span>
-      {!compact && <small>{role}</small>}
+      {!compact && <> <small>{role}</small></>}
     </Link>
   );
 }

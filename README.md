@@ -603,9 +603,35 @@ external services are part of this local redesign.
 Shared styling lives in `app/globals.css`; reusable editorial page intros live in
 `components/pages/page-intro.tsx`. Components default to server rendering except
 navigation and the interactive service explorer. The explorer uses accessible
-tabs with arrow, Home and End keys. FAQs use native `details`/`summary` controls.
+tabs with arrow, Home and End keys. The FAQ opens one answer at a time.
 The layout includes visible focus states and reduced-motion support.
 
 Responsive checks cover 375px, 768px, 1024px and 1440px. The mobile hero reflows the
 monogram card into a compact layout; service cards become a single column and
 sticky service contact panels return to normal flow.
+
+### Performance
+
+Lighthouse, mobile, against a production build (`next build`, then the
+`site-prod` launch configuration on port 3001), 2026-09-25:
+
+| Page            | Performance | Accessibility | Best practices | LCP   |
+| --------------- | ----------- | ------------- | -------------- | ----- |
+| Home            | 90          | 99            | 100            | 3.6 s |
+| Offence page    | 93          | 98            | 100            | 3.2 s |
+| Article         | 97          | 98            | 100            | 2.6 s |
+| Contact, About  | 97          | 98–99         | 100            | 2.6 s |
+
+SEO scores 69 locally only because `proxy.ts` marks every host but
+johnviolaris.com `noindex`. The one accessibility failure left is a heading
+inside the ReviewSolicitors widget, as are the image-size and cache warnings.
+
+The LCP figures are Lighthouse's simulation of a slow phone. In the trace
+itself the home portrait paints with the first content, at about 0.25 s. The
+simulation charges it for every script that loaded before then, and the
+biggest of those is the `motion` library behind the hero's scroll animation.
+That library is the next thing to look at if the numbers need to come down.
+
+Tried and dropped: `experimental.inlineCss`. It inlines the stylesheet twice,
+once as `<style>` and again in the React payload, which took the home page to
+100 KB compressed and lowered every score.
