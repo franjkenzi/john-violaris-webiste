@@ -320,7 +320,12 @@ The split inside that file is the thing to understand:
 
 - **`SiteSettings`** is what John can edit: his name, role, monogram,
   jurisdiction, email, both forms of the telephone number, the WhatsApp number,
-  the response promise and the SRA number. The defaults are
+  the response promise, the SRA number, the year he qualified, and the public
+  profiles that go into the structured data's `sameAs`. The practice's
+  ReviewSolicitors page has a default. The Law Society and LinkedIn profiles
+  have none: a guessed link would tell Google a stranger's page is John's, so
+  they stay empty, and absent from the markup, until the real addresses are
+  entered. A profile link is refused unless it is on the right site. The defaults are
   still read from the environment, so an existing deploy keeps working exactly
   as it did until someone edits a setting; a stored value simply wins over one.
 - **`deployment`** is configuration, not content: the canonical domain, the
@@ -503,8 +508,11 @@ refer to each other by `@id` instead of repeating a name or number (REQ-017):
   that.
 
 Nothing unset is emitted. No `telephone` until a number is configured, no SRA
-`identifier` until one is saved in Site Settings. There is no `sameAs`,
-credential, address or price, because none has been confirmed. Reviews get no
+`identifier` until one is saved in Site Settings, and a profile link appears
+in `sameAs` only once its address is set there. John's qualification is a
+`hasCredential` dated by the "Year qualified" setting, which also drives the
+footer's "Qualified since". There is no address, opening hours or price,
+because the site states none. Reviews get no
 markup: they come from the ReviewSolicitors widget, and REQ-016 says not to
 duplicate those.
 

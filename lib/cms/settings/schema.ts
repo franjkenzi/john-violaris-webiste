@@ -28,7 +28,12 @@ export type SettingSpec = {
   required?: boolean;
   maxLength: number;
   /** `tel` gets the matching mobile keyboard and browser validation. */
-  type?: "text" | "email" | "tel";
+  type?: "text" | "email" | "tel" | "url";
+  /**
+   * For a profile link: the site it must be on. A link to anywhere else is
+   * refused, so a pasted address cannot claim John is someone else's page.
+   */
+  host?: string;
   /**
    * Shown greyed in the input when the setting has no value, so it is obvious
    * what the site falls back to rather than looking like an empty field.
@@ -128,13 +133,46 @@ export const settingGroups: SettingGroup[] = [
   },
   {
     label: "Credentials",
-    description: "The regulatory details.",
+    description:
+      "The regulatory details, and the public profiles that confirm who John is. The profiles are not shown on the page; they tell search engines that these pages and this site are about the same solicitor.",
     fields: [
       {
         key: "sraNumber",
         label: "SRA number",
         maxLength: 40,
         hint: "Printed in the footer once set. Left blank, no number is shown — none is ever invented.",
+      },
+      {
+        key: "qualifiedYear",
+        label: "Year qualified",
+        maxLength: 4,
+        hint: "Printed in the footer as “Qualified since …”. Left blank, the line is left out.",
+      },
+      {
+        key: "reviewSolicitorsUrl",
+        label: "ReviewSolicitors page",
+        type: "url",
+        host: "reviewsolicitors.co.uk",
+        maxLength: 300,
+        hint: "The practice’s page on ReviewSolicitors.",
+      },
+      {
+        key: "lawSocietyUrl",
+        label: "Law Society profile",
+        type: "url",
+        host: "lawsociety.org.uk",
+        maxLength: 300,
+        placeholder: "Not set",
+        hint: "John’s entry on the Law Society’s Find a Solicitor. Left blank until the address is confirmed.",
+      },
+      {
+        key: "linkedinUrl",
+        label: "LinkedIn profile",
+        type: "url",
+        host: "linkedin.com",
+        maxLength: 300,
+        placeholder: "Not set",
+        hint: "John’s own LinkedIn page. Left blank until the address is confirmed.",
       },
     ],
   },

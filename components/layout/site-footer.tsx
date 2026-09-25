@@ -92,8 +92,12 @@ export function SiteFooter({
             © {new Date().getFullYear()} John Violaris. All rights reserved.
           </p>
           <span>
-            Qualified since 2005{" "}
-            {config.sraNumber ? `· SRA no. ${config.sraNumber}` : ""}
+            {[
+              config.qualifiedYear && `Qualified since ${config.qualifiedYear}`,
+              config.sraNumber && `SRA no. ${config.sraNumber}`,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
           </span>
           <a href="#main">Back to top ↑</a>
         </div>

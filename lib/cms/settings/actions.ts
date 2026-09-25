@@ -24,6 +24,29 @@ import { siteSettingKeys } from "@/lib/site-config";
  * wants.
  */
 
+/** Whether `value` is an https address on `host` or one of its subdomains. */
+function isOn(value: string, host: string): boolean {
+  try {
+    const url = new URL(value);
+
+    return (
+      url.protocol === "https:" &&
+      (url.hostname === host || url.hostname.endsWith(`.${host}`))
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** A four-digit year no later than this one. */
+function isPastYear(value: string): boolean {
+  return (
+    /^\d{4}$/.test(value) &&
+    Number(value) >= 1950 &&
+    Number(value) <= new Date().getFullYear()
+  );
+}
+
 export async function saveSiteSettings(
   _previous: CmsFormState<SettingField>,
   formData: FormData,
@@ -51,11 +74,20 @@ export async function saveSiteSettings(
 
     /*
      * Checked here rather than through `validateFields`, which knows about
-     * slugs, numbers and dates but not about the two shapes that matter on
-     * this screen. Each message says what to write rather than what is wrong.
+     * slugs, numbers and dates but not about the shapes that matter on this
+     * screen. Each message says what to write rather than what is wrong.
      */
     if (spec.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       fieldErrors[spec.key] = "That does not look like an email address.";
+    }
+
+    if (spec.host && !isOn(value, spec.host)) {
+      fieldErrors[spec.key] =
+        `Paste the full address of the page, starting with https:// — it must be on ${spec.host}.`;
+    }
+
+    if (spec.key === "qualifiedYear" && !isPastYear(value)) {
+      fieldErrors[spec.key] = "Write the year as four digits, for example 2005.";
     }
 
     if (spec.key === "phoneE164" && !/^\+\d{7,15}$/.test(value)) {

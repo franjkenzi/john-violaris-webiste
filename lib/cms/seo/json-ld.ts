@@ -85,9 +85,10 @@ export function serializeJsonLd(value: JsonLdGraph): string {
  * and footer. `knowsAbout` is the published catalogue for the same reason: a
  * service added or withdrawn changes what John is said to practise.
  *
- * Deliberately absent until they are confirmed: `sameAs` (no profile address
- * has been verified), credentials and the year John was admitted, a postal
- * address, opening hours and a price range.
+ * The profiles in `sameAs` are split by whose they are: ReviewSolicitors lists
+ * the practice, the Law Society and LinkedIn list John. Each is set in Site
+ * Settings and left out while blank. Deliberately absent altogether: a postal
+ * address, opening hours and a price range, none of which the site states.
  */
 export function siteNodes({
   config,
@@ -123,6 +124,7 @@ export function siteNodes({
       // to the contact page.
       ...(config.phoneE164 ? { telephone: config.phoneE164 } : {}),
       areaServed: { "@type": "AdministrativeArea", name: config.jurisdiction },
+      ...sameAs(config.reviewSolicitorsUrl),
       ...(config.sraNumber
         ? {
             identifier: {
@@ -142,8 +144,32 @@ export function siteNodes({
       image: absoluteUrl(portrait),
       worksFor: ref(schemaIds.practice),
       ...(practiceAreas.length > 0 ? { knowsAbout: practiceAreas } : {}),
+      ...sameAs(config.lawSocietyUrl, config.linkedinUrl),
+      // The qualification the footer states, with the year it states.
+      ...(config.qualifiedYear
+        ? {
+            hasCredential: {
+              "@type": "EducationalOccupationalCredential",
+              name: "Solicitor of the Senior Courts of England and Wales",
+              credentialCategory: "Professional qualification",
+              recognizedBy: {
+                "@type": "Organization",
+                name: "Solicitors Regulation Authority",
+                url: "https://www.sra.org.uk/",
+              },
+              dateCreated: config.qualifiedYear,
+            },
+          }
+        : {}),
     },
   ];
+}
+
+/** `sameAs` with whichever of these addresses are set, or nothing. */
+function sameAs(...urls: string[]): { sameAs?: string[] } {
+  const set = urls.filter(Boolean);
+
+  return set.length > 0 ? { sameAs: set } : {};
 }
 
 // ---------------------------------------------------------------------------

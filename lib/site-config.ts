@@ -43,6 +43,16 @@ export type SiteSettings = {
   responseTime: string;
   /** Empty until John supplies it; no number is ever invented. */
   sraNumber: string;
+  /** The year John qualified as a solicitor, e.g. "2005". */
+  qualifiedYear: string;
+  /**
+   * Public profiles that confirm who John is, for search engines' `sameAs`.
+   * Each is empty until its address is confirmed: a guessed profile link
+   * would tell Google that a stranger's page is John's.
+   */
+  reviewSolicitorsUrl: string;
+  lawSocietyUrl: string;
+  linkedinUrl: string;
 };
 
 export const siteSettingKeys = [
@@ -57,6 +67,10 @@ export const siteSettingKeys = [
   "whatsappNumber",
   "responseTime",
   "sraNumber",
+  "qualifiedYear",
+  "reviewSolicitorsUrl",
+  "lawSocietyUrl",
+  "linkedinUrl",
 ] as const satisfies readonly (keyof SiteSettings)[];
 
 /**
@@ -80,6 +94,14 @@ export const siteSettingsDefaults: SiteSettings = {
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "",
   responseTime: "Response within 24 hours",
   sraNumber: "",
+  // What the footer has always printed.
+  qualifiedYear: "2005",
+  // The practice's page on ReviewSolicitors — where the reviews on this site
+  // come from, and the firm the review widgets are keyed to.
+  reviewSolicitorsUrl:
+    "https://www.reviewsolicitors.co.uk/london/london/ioannis-violaris",
+  lawSocietyUrl: "",
+  linkedinUrl: "",
 };
 
 // ---------------------------------------------------------------------------
